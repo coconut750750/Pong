@@ -30,7 +30,11 @@ public class GameThread extends Thread {
             Canvas canvas = _surfaceHolder.lockCanvas();
             _state.update();
             _state.draw(canvas,_paint);
-            _surfaceHolder.unlockCanvasAndPost(canvas);
+            try{
+                _surfaceHolder.unlockCanvasAndPost(canvas);
+            } catch(IllegalStateException e){
+                break;
+            }
         }
     }
 

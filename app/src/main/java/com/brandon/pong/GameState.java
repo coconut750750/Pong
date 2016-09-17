@@ -31,7 +31,8 @@ public class GameState {
 
     //constants
     final static double multiplier = 1.05;
-    final static int batBuffer = 10;
+    final static int batBuffer = 25;
+    final static int maxBallSpeed = 20;
 
     //The bats
     final static int _batLength = 300;
@@ -61,7 +62,6 @@ public class GameState {
         originY = _screenHeight/2;
         _topBatY = 20;
         _bottomBatY = _screenHeight-20-_batHeight;
-        Log.d("hi",""+_screenHeight);
         _topBatX = (_screenWidth/2) - (_batLength / 2);
         _bottomBatX = (_screenWidth/2) - (_batLength / 2);
 
@@ -98,14 +98,18 @@ public class GameState {
 
         //Collisions with the bottom bat
         if(_ballX > _topBatX && _ballX+_ballSize < _topBatX+_batLength && _ballY-_ballSize < _topBatY && _ballY-_ballSize > _topBatY-batBuffer){
-            _ballVelocityX = _ballVelocityX*multiplier;
-            _ballVelocityY = _ballVelocityY*-1*multiplier;
+            if(_ballVelocityX < maxBallSpeed){
+                _ballVelocityX = _ballVelocityX*multiplier;
+                _ballVelocityY = _ballVelocityY*-1*multiplier;
+            }
         }
 
         //Collisions with the top bat
         if(_ballX > _bottomBatX && _ballX+_ballSize < _bottomBatX+_batLength && _ballY+_ballSize > _bottomBatY && _ballY+_ballSize < _bottomBatY+batBuffer) {
-            _ballVelocityX = _ballVelocityX*multiplier;
-            _ballVelocityY = _ballVelocityY*-1*multiplier;
+            if(_ballVelocityX < maxBallSpeed) {
+                _ballVelocityX = _ballVelocityX * multiplier;
+                _ballVelocityY = _ballVelocityY * -1 * multiplier;
+            }
         }
     }
 
@@ -132,23 +136,26 @@ public class GameState {
 
     //the draw method
     public void draw(Canvas canvas, Paint paint) {
+        try{
+            //Clear the screen
+            canvas.drawRGB(20, 20, 20);
 
-//Clear the screen
-        canvas.drawRGB(20, 20, 20);
+            //set the colour
+            paint.setARGB(200, 0, 200, 0);
 
-//set the colour
-        paint.setARGB(200, 0, 200, 0);
+            //draw the ball
+            canvas.drawRect(new Rect(_ballX,_ballY,_ballX + _ballSize,_ballY + _ballSize),
+                    paint);
 
-//draw the ball
-        canvas.drawRect(new Rect(_ballX,_ballY,_ballX + _ballSize,_ballY + _ballSize),
-                paint);
+            //draw the bats
+            canvas.drawRect(new Rect(_topBatX, _topBatY, _topBatX + _batLength,
+                    _topBatY + _batHeight), paint); //top bat
+            canvas.drawRect(new Rect(_bottomBatX, _bottomBatY, _bottomBatX + _batLength,
+                    _bottomBatY + _batHeight), paint); //bottom bat
 
-//draw the bats
-        canvas.drawRect(new Rect(_topBatX, _topBatY, _topBatX + _batLength,
-                _topBatY + _batHeight), paint); //top bat
-        canvas.drawRect(new Rect(_bottomBatX, _bottomBatY, _bottomBatX + _batLength,
-                _bottomBatY + _batHeight), paint); //bottom bat
+        } catch(NullPointerException e){
 
+        }
     }
 
     public static double getBallVelX(){

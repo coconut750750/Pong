@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
                         mHandler = new Handler();
                         if(x > width/2){
                             mHandler.postDelayed(actionRight, 0);
-                            Log.d("x",""+x);
                         } else {
                             mHandler.postDelayed(actionLeft, 0);
                         }

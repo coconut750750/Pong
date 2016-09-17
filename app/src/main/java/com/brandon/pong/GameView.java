@@ -15,12 +15,15 @@ import android.widget.LinearLayout;
 public class GameView extends SurfaceView implements SurfaceHolder.Callback
 {
     private GameThread _thread;
+    private SurfaceHolder holder;
+    private Context context;
 
     public GameView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
 
         //So we can listen for events...
-        SurfaceHolder holder = getHolder();
+        holder = getHolder();
         holder.addCallback(this);
         setFocusable(true);
 
@@ -43,7 +46,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
     //Implemented as part of the SurfaceHolder.Callback interface
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        _thread = new GameThread(holder, context, new Handler());
         _thread.start();
+        holder.addCallback(this);
     }
 
     //Implemented as part of the SurfaceHolder.Callback interface
