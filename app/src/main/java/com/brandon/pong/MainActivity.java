@@ -14,8 +14,7 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button button;
-    Button left;
+    static Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +34,13 @@ public class MainActivity extends AppCompatActivity {
             int xBefore = width/2;
 
             @Override public boolean onTouch(View v, MotionEvent event) {
-                int x = (int)event.getX();
-                switch(event.getAction()) {
+
+                int x = (int) event.getX();
+                switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         if (mHandler != null) return true;
                         mHandler = new Handler();
-                        if(x > width/2){
+                        if (x > width / 2) {
                             mHandler.postDelayed(actionRight, 0);
                         } else {
                             mHandler.postDelayed(actionLeft, 0);
@@ -54,15 +54,16 @@ public class MainActivity extends AppCompatActivity {
                         mHandler = null;
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        if(x > width/2 && xBefore < width/2){
+                        if (x > width / 2 && xBefore < width / 2) {
                             mHandler.removeCallbacks(actionLeft);
                             mHandler.postDelayed(actionRight, 20);
-                        } else if (x < width/2 && xBefore > width/2) {
+                        } else if (x < width / 2 && xBefore > width / 2) {
                             mHandler.removeCallbacks(actionRight);
                             mHandler.postDelayed(actionLeft, 20);
                         }
                         xBefore = x;
                         break;
+
                 }
                 return false;
             }
@@ -71,17 +72,17 @@ public class MainActivity extends AppCompatActivity {
                 @Override public void run() {
                     GameState.mKeyPressed(false);
                     mHandler.postDelayed(this, 20);
+
                 }
             };
             Runnable actionLeft = new Runnable() {
                 @Override public void run() {
                     GameState.mKeyPressed(true);
                     mHandler.postDelayed(this, 20);
+
                 }
             };
         });
-
-
     }
 
 }
