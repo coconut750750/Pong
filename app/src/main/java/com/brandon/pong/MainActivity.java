@@ -1,5 +1,6 @@
 package com.brandon.pong;
 
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -8,7 +9,6 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    //test commit
     Button right;
     Button left;
 
@@ -21,11 +21,30 @@ public class MainActivity extends AppCompatActivity {
         left = (Button)findViewById(R.id.left);
 
         right.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                GameState.mKeyPressed(false);
-                return true;
+            private Handler mHandler;
+
+            @Override public boolean onTouch(View v, MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (mHandler != null) return true;
+                        mHandler = new Handler();
+                        mHandler.postDelayed(mAction, 500);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (mHandler == null) return true;
+                        mHandler.removeCallbacks(mAction);
+                        mHandler = null;
+                        break;
+                }
+                return false;
             }
+
+            Runnable mAction = new Runnable() {
+                @Override public void run() {
+                    System.out.println("Performing action...");
+                    mHandler.postDelayed(this, 500);
+                }
+            };
         });
 
         left.setOnTouchListener(new View.OnTouchListener() {
