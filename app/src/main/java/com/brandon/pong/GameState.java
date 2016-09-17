@@ -35,6 +35,8 @@ public class GameState {
     final static int maxBallSpeed = 20;
     final static int resetBuffer = 50;
     static int resetBuffer1;
+    static int ballDifferenceX;
+    static int ballDifferenceY;
     static int batDifference;
 
     //The bats
@@ -72,6 +74,8 @@ public class GameState {
 
         _ballX = originX;
         _ballY = originY;
+        ballDifferenceX = 0;
+        ballDifferenceY = 0;
         batOrigin = (_screenWidth/2) - (_batLength / 2);
 
         _ballVelocityX = getBallVelX();
@@ -88,6 +92,8 @@ public class GameState {
         if(resetBuffer1!= 0 && resetBuffer1!=resetBuffer){
             _bottomBatX -= batDifference/resetBuffer;
             _topBatX -= batDifference/resetBuffer;
+            //_ballX -= ballDifferenceX/resetBuffer;
+            //_ballY -= ballDifferenceY/resetBuffer;
             resetBuffer1++;
             return;
         } else if (resetBuffer1 == resetBuffer){
@@ -114,6 +120,8 @@ public class GameState {
             //reset bat
             resetBuffer1++;
             batDifference = _topBatX-batOrigin;
+            ballDifferenceX = _ballX-originX;
+            ballDifferenceY = _ballY-originY;
             batEnabled = false;
         }
 
