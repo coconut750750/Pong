@@ -10,24 +10,11 @@
         android:layout_height="match_parent"
         android:id="@+id/gameView"/>
 
-    <LinearLayout
+    <Button
+        android:id="@+id/button"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#00000000"/>
 
-        <Button
-            android:id="@+id/left"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#00000000"/>
-        <Button
-            android:id="@+id/right"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#00000000"/>
-
-
-    </LinearLayout>
 
 </FrameLayout>

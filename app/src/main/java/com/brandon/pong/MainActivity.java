@@ -1,15 +1,20 @@
 package com.brandon.pong;
 
+import android.content.Context;
+import android.graphics.Point;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button right;
+    Button button;
     Button left;
 
     @Override
@@ -17,56 +22,59 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        right = (Button)findViewById(R.id.right);
-        left = (Button)findViewById(R.id.left);
+        button = (Button)findViewById(R.id.button);
 
-        right.setOnTouchListener(new View.OnTouchListener() {
+        WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        final int width = size.x;
+
+        button.setOnTouchListener(new View.OnTouchListener() {
             private Handler mHandler;
+            int xBefore = width/2;
 
             @Override public boolean onTouch(View v, MotionEvent event) {
+                int x = (int)event.getX();
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         if (mHandler != null) return true;
                         mHandler = new Handler();
-                        mHandler.postDelayed(mAction, 0);
+                        if(x > width/2){
+                            mHandler.postDelayed(actionRight, 0);
+                            Log.d("x",""+x);
+                        } else {
+                            mHandler.postDelayed(actionLeft, 0);
+                        }
+
                         break;
                     case MotionEvent.ACTION_UP:
                         if (mHandler == null) return true;
-                        mHandler.removeCallbacks(mAction);
+                        mHandler.removeCallbacks(actionRight);
+                        mHandler.removeCallbacks(actionLeft);
                         mHandler = null;
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        if(x > width/2 && xBefore < width/2){
+                            mHandler.removeCallbacks(actionLeft);
+                            mHandler.postDelayed(actionRight, 20);
+                        } else if (x < width/2 && xBefore > width/2) {
+                            mHandler.removeCallbacks(actionRight);
+                            mHandler.postDelayed(actionLeft, 20);
+                        }
+                        xBefore = x;
                         break;
                 }
                 return false;
             }
 
-            Runnable mAction = new Runnable() {
+            Runnable actionRight = new Runnable() {
                 @Override public void run() {
                     GameState.mKeyPressed(false);
                     mHandler.postDelayed(this, 20);
                 }
             };
-        });
-
-        left.setOnTouchListener(new View.OnTouchListener() {
-            private Handler mHandler;
-
-            @Override public boolean onTouch(View v, MotionEvent event) {
-                switch(event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        if (mHandler != null) return true;
-                        mHandler = new Handler();
-                        mHandler.postDelayed(mAction, 0);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (mHandler == null) return true;
-                        mHandler.removeCallbacks(mAction);
-                        mHandler = null;
-                        break;
-                }
-                return false;
-            }
-
-            Runnable mAction = new Runnable() {
+            Runnable actionLeft = new Runnable() {
                 @Override public void run() {
                     GameState.mKeyPressed(true);
                     mHandler.postDelayed(this, 20);
