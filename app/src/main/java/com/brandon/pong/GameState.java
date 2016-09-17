@@ -10,31 +10,39 @@ import android.view.Display;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 
+import java.util.Random;
+
 /***
  * Created by Brandon on 9/16/16.
  */
 public class GameState {
 
     //screen width and height
-    int _screenWidth;
-    int _screenHeight;
+    static int _screenWidth;
+    static int _screenHeight;
 
     //The ball
     final int _ballSize = 50;
-    int _ballX = 500;
-    int _ballY = 500;
+    int _ballX;
+    int _ballY;
 
-    double _ballVelocityX = 10;
-    double _ballVelocityY = 10;
+    double _ballVelocityX;
+    double _ballVelocityY;
+
+    final static double multiplier = 1.05;
 
     //The bats
-    final int _batLength = 300;
-    final int _batHeight = 50;
+    final static int _batLength = 300;
+    final static int _batHeight = 50;
     static int _topBatX;
     static int _topBatY;
     static int _bottomBatX;
     static int _bottomBatY;
     final static int _batSpeed = 20;
+
+    //Origin
+    static int originX;
+    static int originY;
 
     public GameState(Context context)
     {
@@ -43,15 +51,23 @@ public class GameState {
         Point size = new Point();
         display.getSize(size);
         _screenWidth = size.x;
+        originX = _screenWidth/2;
 
         float density = context.getResources().getDisplayMetrics().density;
         float px = 500 * density;
         _screenHeight = size.y - 200;
+        originY = _screenHeight/2;
         _topBatY = 20;
         _bottomBatY = _screenHeight-20-_batHeight;
         Log.d("hi",""+_screenHeight);
         _topBatX = (_screenWidth/2) - (_batLength / 2);
         _bottomBatX = (_screenWidth/2) - (_batLength / 2);
+
+        _ballX = originX;
+        _ballY = originY;
+
+        _ballVelocityX = getBallVelX();
+        _ballVelocityY = 10;
     }
 
     //The update method
@@ -61,32 +77,33 @@ public class GameState {
         _ballY += _ballVelocityY;
 
         //DEATH!
-        if(_ballY > _screenHeight || _ballY < 0)
-        {_ballX = 500;
-            _ballY = 500;
-            _ballVelocityX = 10;
-            if (_ballY > _screenHeight) {
+        if(_ballY+_ballSize > _screenHeight || _ballY < 0) {
+            _ballVelocityX = getBallVelX();
+
+            if (_ballY+_ballSize > _screenHeight) {
                 _ballVelocityY = 10;
             } else {
                 _ballVelocityY = -10;
-            }}
+            }
+            _ballX = originX;
+            _ballY = originY;
+        }
 
 
         //Collisions with the sides
-        if(_ballX > _screenWidth || _ballX < 0)
+        if(_ballX+_ballSize > _screenWidth || _ballX < 0)
             _ballVelocityX *= -1;
 
         //Collisions with the bats
-        if(_ballX > _topBatX && _ballX < _topBatX+_batLength && _ballY < _topBatY){
-            _ballVelocityX = _ballVelocityX*1.05;
-            _ballVelocityY = _ballVelocityY*-1.05;
+        if(_ballX > _topBatX && _ballX+_ballSize < _topBatX+_batLength && _ballY-_ballSize < _topBatY){
+            _ballVelocityX = _ballVelocityX*multiplier;
+            _ballVelocityY = _ballVelocityY*-1*multiplier;
         }
 
         //Collisions with the bats
-        if(_ballX > _bottomBatX && _ballX < _bottomBatX+_batLength
-                && _ballY > _bottomBatY) {
-            _ballVelocityX = _ballVelocityX*1.05;
-            _ballVelocityY = _ballVelocityY*-1.05;
+        if(_ballX > _bottomBatX && _ballX+_ballSize < _bottomBatX+_batLength && _ballY+_ballSize > _bottomBatY) {
+            _ballVelocityX = _ballVelocityX*multiplier;
+            _ballVelocityY = _ballVelocityY*-1*multiplier;
         }
     }
 
@@ -94,12 +111,18 @@ public class GameState {
     {
         if(isLeft) //left
         {
-            _topBatX += _batSpeed; _bottomBatX -= _batSpeed;
+            if(_topBatX > 0) {
+                _topBatX -= _batSpeed;
+                _bottomBatX -= _batSpeed;
+            }
         }
 
         else //right
         {
-            _topBatX -= _batSpeed; _bottomBatX += _batSpeed;
+            if(_topBatX+_batLength < _screenWidth) {
+                _topBatX += _batSpeed;
+                _bottomBatX += _batSpeed;
+            }
         }
 
         return true;
@@ -124,5 +147,18 @@ public class GameState {
         canvas.drawRect(new Rect(_bottomBatX, _bottomBatY, _bottomBatX + _batLength,
                 _bottomBatY + _batHeight), paint); //bottom bat
 
+    }
+
+    public static double getBallVelX(){
+        double velX;
+        Random r = new Random();
+        velX = r.nextInt(13 - 5) + 5;
+
+        r = new Random();
+        int i = r.nextInt(3 - 1) + 1;
+        if(i == 1){
+            velX = -1*velX;
+        }
+        return velX;
     }
 }

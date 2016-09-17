@@ -11,7 +11,6 @@ public class MainActivity extends AppCompatActivity {
 
     Button right;
     Button left;
-    //comment from phone
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_DOWN:
                         if (mHandler != null) return true;
                         mHandler = new Handler();
-                        mHandler.postDelayed(mAction, 10);
+                        mHandler.postDelayed(mAction, 0);
                         break;
                     case MotionEvent.ACTION_UP:
                         if (mHandler == null) return true;
@@ -56,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_DOWN:
                         if (mHandler != null) return true;
                         mHandler = new Handler();
-                        mHandler.postDelayed(mAction, 10);
+                        mHandler.postDelayed(mAction, 0);
                         break;
                     case MotionEvent.ACTION_UP:
                         if (mHandler == null) return true;
