@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_DOWN:
                         if (mHandler != null) return true;
                         mHandler = new Handler();
-                        mHandler.postDelayed(mAction, 500);
+                        mHandler.postDelayed(mAction, 250);
                         break;
                     case MotionEvent.ACTION_UP:
                         if (mHandler == null) return true;
@@ -41,18 +41,37 @@ public class MainActivity extends AppCompatActivity {
 
             Runnable mAction = new Runnable() {
                 @Override public void run() {
-                    System.out.println("Performing action...");
-                    mHandler.postDelayed(this, 500);
+                    GameState.mKeyPressed(false);
+                    mHandler.postDelayed(this, 50);
                 }
             };
         });
 
         left.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                GameState.mKeyPressed(true);
-                return true;
+            private Handler mHandler;
+
+            @Override public boolean onTouch(View v, MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (mHandler != null) return true;
+                        mHandler = new Handler();
+                        mHandler.postDelayed(mAction, 250);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (mHandler == null) return true;
+                        mHandler.removeCallbacks(mAction);
+                        mHandler = null;
+                        break;
+                }
+                return false;
             }
+
+            Runnable mAction = new Runnable() {
+                @Override public void run() {
+                    GameState.mKeyPressed(true);
+                    mHandler.postDelayed(this, 50);
+                }
+            };
         });
 
 
