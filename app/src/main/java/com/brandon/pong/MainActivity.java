@@ -11,6 +11,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button right;
     Button left;
+    //comment from phone
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
