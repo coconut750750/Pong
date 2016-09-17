@@ -10,7 +10,7 @@ import android.view.Display;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 
-/**
+/***
  * Created by Brandon on 9/16/16.
  */
 public class GameState {
@@ -46,7 +46,7 @@ public class GameState {
 
         float density = context.getResources().getDisplayMetrics().density;
         float px = 500 * density;
-        _screenHeight = (int)px;
+        _screenHeight = size.y - 200;
         _topBatY = 20;
         _bottomBatY = _screenHeight-20-_batHeight;
         Log.d("hi",""+_screenHeight);
@@ -60,14 +60,17 @@ public class GameState {
         _ballX += _ballVelocityX;
         _ballY += _ballVelocityY;
 
-
-
         //DEATH!
         if(_ballY > _screenHeight || _ballY < 0)
         {_ballX = 500;
             _ballY = 500;
             _ballVelocityX = 10;
-            _ballVelocityY = 10;}
+            if (_ballY > _screenHeight) {
+                _ballVelocityY = 10;
+            } else {
+                _ballVelocityY = -10;
+            }}
+
 
         //Collisions with the sides
         if(_ballX > _screenWidth || _ballX < 0)

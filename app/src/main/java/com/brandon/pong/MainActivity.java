@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_DOWN:
                         if (mHandler != null) return true;
                         mHandler = new Handler();
-                        mHandler.postDelayed(mAction, 250);
+                        mHandler.postDelayed(mAction, 10);
                         break;
                     case MotionEvent.ACTION_UP:
                         if (mHandler == null) return true;
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
             Runnable mAction = new Runnable() {
                 @Override public void run() {
                     GameState.mKeyPressed(false);
-                    mHandler.postDelayed(this, 50);
+                    mHandler.postDelayed(this, 20);
                 }
             };
         });
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_DOWN:
                         if (mHandler != null) return true;
                         mHandler = new Handler();
-                        mHandler.postDelayed(mAction, 250);
+                        mHandler.postDelayed(mAction, 10);
                         break;
                     case MotionEvent.ACTION_UP:
                         if (mHandler == null) return true;
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
             Runnable mAction = new Runnable() {
                 @Override public void run() {
                     GameState.mKeyPressed(true);
-                    mHandler.postDelayed(this, 50);
+                    mHandler.postDelayed(this, 20);
                 }
             };
         });
