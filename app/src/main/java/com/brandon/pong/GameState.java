@@ -29,7 +29,9 @@ public class GameState {
     double _ballVelocityX;
     double _ballVelocityY;
 
+    //constants
     final static double multiplier = 1.05;
+    final static int batBuffer = 10;
 
     //The bats
     final static int _batLength = 300;
@@ -94,14 +96,14 @@ public class GameState {
         if(_ballX+_ballSize > _screenWidth || _ballX < 0)
             _ballVelocityX *= -1;
 
-        //Collisions with the bats
-        if(_ballX > _topBatX && _ballX+_ballSize < _topBatX+_batLength && _ballY-_ballSize < _topBatY){
+        //Collisions with the bottom bat
+        if(_ballX > _topBatX && _ballX+_ballSize < _topBatX+_batLength && _ballY-_ballSize < _topBatY && _ballY-_ballSize > _topBatY-batBuffer){
             _ballVelocityX = _ballVelocityX*multiplier;
             _ballVelocityY = _ballVelocityY*-1*multiplier;
         }
 
-        //Collisions with the bats
-        if(_ballX > _bottomBatX && _ballX+_ballSize < _bottomBatX+_batLength && _ballY+_ballSize > _bottomBatY) {
+        //Collisions with the top bat
+        if(_ballX > _bottomBatX && _ballX+_ballSize < _bottomBatX+_batLength && _ballY+_ballSize > _bottomBatY && _ballY+_ballSize < _bottomBatY+batBuffer) {
             _ballVelocityX = _ballVelocityX*multiplier;
             _ballVelocityY = _ballVelocityY*-1*multiplier;
         }
