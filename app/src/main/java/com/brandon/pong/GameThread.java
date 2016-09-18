@@ -6,7 +6,7 @@ import android.graphics.Paint;
 import android.os.Handler;
 import android.view.SurfaceHolder;
 
-/***
+/****
  * Created by Brandon on 9/16/16.
  */
 public class GameThread extends Thread {
