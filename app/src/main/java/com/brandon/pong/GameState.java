@@ -48,6 +48,7 @@ public class GameState {
     static int _bottomBatY;
     final static int _batSpeed = 20;
     static boolean batEnabled;
+    final static int batWallBuffer = 50;
 
     //Origin
     static int originX;
@@ -63,12 +64,10 @@ public class GameState {
         _screenWidth = size.x;
         originX = _screenWidth/2;
 
-        float density = context.getResources().getDisplayMetrics().density;
-        float px = 500 * density;
-        _screenHeight = size.y - 200;
-        originY = _screenHeight/2;
-        _topBatY = 20;
-        _bottomBatY = _screenHeight-20-_batHeight;
+        _screenHeight = MainActivity.height;
+        originY = _screenHeight/2-_ballSize/2;
+        _topBatY = batWallBuffer;
+        _bottomBatY = _screenHeight-batWallBuffer-_batHeight;
         _topBatX = (_screenWidth/2) - (_batLength / 2);
         _bottomBatX = (_screenWidth/2) - (_batLength / 2);
 
@@ -81,7 +80,7 @@ public class GameState {
         _ballVelocityX = getBallVelX();
         _ballVelocityY = 10;
 
-        resetBuffer1 = 0;
+        resetBuffer1 = 1;
         batDifference = 0;
         batEnabled = true;
     }
@@ -187,6 +186,10 @@ public class GameState {
                     _topBatY + _batHeight), paint); //top bat
             canvas.drawRect(new Rect(_bottomBatX, _bottomBatY, _bottomBatX + _batLength,
                     _bottomBatY + _batHeight), paint); //bottom bat
+
+            paint.setARGB(200,200,200,0);
+            canvas.drawRect(new Rect(0, _screenHeight/2+10, _screenWidth,
+                    _screenHeight/2-10), paint);
 
         } catch(NullPointerException e){
 
