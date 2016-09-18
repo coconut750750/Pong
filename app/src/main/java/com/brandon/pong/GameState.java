@@ -142,11 +142,12 @@ public class GameState {
         }
 
         if(hit){
+            _ballVelocityY = _ballVelocityY*-1;
             if(absBallVelY*multiplier < (double)maxBallSpeed) {
                 _ballVelocityX = _ballVelocityX * multiplier;
-                _ballVelocityY = _ballVelocityY * -1 * multiplier;
+                _ballVelocityY = _ballVelocityY * multiplier;
             } else {
-                _ballVelocityY = _ballVelocityY*-1;
+                
             }
         }
     }
