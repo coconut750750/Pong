@@ -31,8 +31,7 @@ public class GameState {
 
     //constants
     final static double multiplier = 1.05;
-    final static int batBuffer = 25;
-    final static int maxBallSpeed = 20;
+    final static int maxBallSpeed = 15;
     final static int resetBuffer = 50;
     static int resetBuffer1;
     static int ballDifferenceX;
@@ -129,19 +128,25 @@ public class GameState {
         if(_ballX+_ballSize > _screenWidth || _ballX < 0)
             _ballVelocityX *= -1;
 
+        double absBallVelY = Math.abs(_ballVelocityY);
+        int afterMult = (int)Math.ceil(absBallVelY*multiplier);
+
         //Collisions with the bottom bat
-        if(_ballX+_ballSize > _topBatX && _ballX < _topBatX+_batLength && _ballY-_ballSize < _topBatY && _ballY-_ballSize > _topBatY-batBuffer){
-            if(Math.abs(_ballVelocityY*multiplier) < maxBallSpeed){
-                _ballVelocityX = _ballVelocityX*multiplier;
-                _ballVelocityY = _ballVelocityY*-1*multiplier;
-            }
+        boolean hit = false;
+        if(_ballX+_ballSize >= _topBatX && _ballX <= _topBatX+_batLength && _ballY-_ballSize < _topBatY && _ballY-_ballSize > _topBatY-afterMult){
+            hit = true;
+        }
+        //Collisions with the top bat
+        if(_ballX+_ballSize >= _bottomBatX && _ballX <= _bottomBatX+_batLength && _ballY+_ballSize > _bottomBatY && _ballY+_ballSize < _bottomBatY+afterMult) {
+            hit = true;
         }
 
-        //Collisions with the top bat
-        if(_ballX+_ballSize > _bottomBatX && _ballX < _bottomBatX+_batLength && _ballY+_ballSize > _bottomBatY && _ballY+_ballSize < _bottomBatY+batBuffer) {
-            if(Math.abs(_ballVelocityY*multiplier) < maxBallSpeed) {
+        if(hit){
+            if(absBallVelY*multiplier < (double)maxBallSpeed) {
                 _ballVelocityX = _ballVelocityX * multiplier;
                 _ballVelocityY = _ballVelocityY * -1 * multiplier;
+            } else {
+                _ballVelocityY = _ballVelocityY*-1;
             }
         }
     }
