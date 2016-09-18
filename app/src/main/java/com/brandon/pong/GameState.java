@@ -77,7 +77,8 @@ public class GameState {
         batOrigin = (_screenWidth/2) - (_batLength / 2);
 
         _ballVelocityX = getBallVelX();
-        _ballVelocityY = 10;
+        _ballVelocityY = Math.sqrt(100-_ballVelocityX*_ballVelocityX);
+
 
         resetBuffer1 = 1;
         batDifference = 0;
@@ -106,10 +107,10 @@ public class GameState {
         if(_ballY+_ballSize > _screenHeight || _ballY < 0) {
             _ballVelocityX = getBallVelX();
 
+            _ballVelocityY = Math.sqrt(100-_ballVelocityX*_ballVelocityX);
             if (_ballY+_ballSize > _screenHeight) {
-                _ballVelocityY = 10;
             } else {
-                _ballVelocityY = -10;
+                _ballVelocityY *= -1;
             }
             //reset ball
             _ballX = originX;
@@ -129,32 +130,45 @@ public class GameState {
             _ballVelocityX *= -1;
 
         double absBallVelY = Math.abs(_ballVelocityY);
-        int afterMult = (int)Math.ceil(absBallVelY*multiplier);
+        int afterMult = (int)Math.ceil(absBallVelY*multiplier)+2;
 
         //Collisions with the bottom bat
-        boolean hit = false;
+        boolean hitTop = false;
+        boolean hitBot = false;
         double xAdd = 0;
         int centerBall = _ballX+_ballSize/2;
         int centerBat = 0;
+        double batBuffer = _ballVelocityX;
         //maximum x add = 3;
-        if(_ballX+_ballSize >= _topBatX && _ballX <= _topBatX+_batLength && _ballY-_ballSize < _topBatY && _ballY-_ballSize > _topBatY-afterMult){
-            hit = true;
+        if(_ballX+_ballSize >= _topBatX-batBuffer && _ballX <= _topBatX+_batLength+batBuffer && _ballY < _topBatY+_batHeight && _ballY > _topBatY+_batHeight-afterMult){
+            hitTop = true;
             centerBat = _topBatX+_batLength/2;
         }
         //Collisions with the top bat
-        if(_ballX+_ballSize >= _bottomBatX && _ballX <= _bottomBatX+_batLength && _ballY+_ballSize > _bottomBatY && _ballY+_ballSize < _bottomBatY+afterMult) {
-            hit = true;
+        if(_ballX+_ballSize >= _bottomBatX-batBuffer && _ballX <= _bottomBatX+_batLength+batBuffer && _ballY+_ballSize > _bottomBatY && _ballY+_ballSize < _bottomBatY+afterMult) {
+            hitBot = true;
             centerBat = _bottomBatX+_batLength/2;
         }
 
-        if(hit){
+        if(hitTop || hitBot){
             double absoluteDif = centerBall - centerBat;
             double percentDef = absoluteDif/(_batLength/2.0);
             xAdd += percentDef*3;
-            _ballVelocityX += xAdd;
-            Log.d("xadd",""+xAdd+" "+percentDef);
-            _ballVelocityY = _ballVelocityY*-1;
-            if(absBallVelY*multiplier < (double)maxBallSpeed) {
+
+            double _ballVelocity = Math.sqrt(_ballVelocityX*_ballVelocityX+_ballVelocityY*_ballVelocityY);
+
+            double angle = Math.acos((_ballVelocityX+xAdd)/_ballVelocity);
+            double angleMin = 30.0*Math.PI/180;
+            double angleMax = 150.0*Math.PI/180;
+            if(angle>angleMin && angle < angleMax){
+                _ballVelocityX += xAdd;
+            }
+            _ballVelocityY = Math.sqrt(_ballVelocity*_ballVelocity-_ballVelocityX*_ballVelocityX);
+            if(hitBot){
+                _ballVelocityY = _ballVelocityY*-1;
+            }
+            Log.d("vely",""+_ballVelocityY);
+            if(_ballVelocity*multiplier < (double)maxBallSpeed) {
                 _ballVelocityX = _ballVelocityX * multiplier;
                 _ballVelocityY = _ballVelocityY * multiplier;
             } else {
@@ -216,7 +230,7 @@ public class GameState {
     public static double getBallVelX(){
         double velX;
         Random r = new Random();
-        velX = r.nextInt(13 - 5) + 5; //range 5-12
+        velX = r.nextInt(9 - 5) + 5; //range 5-8
 
         r = new Random();
         int i = r.nextInt(3 - 1) + 1;
