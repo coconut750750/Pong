@@ -131,7 +131,7 @@ public class GameState {
 
         //Collisions with the bottom bat
         if(_ballX > _topBatX && _ballX+_ballSize < _topBatX+_batLength && _ballY-_ballSize < _topBatY && _ballY-_ballSize > _topBatY-batBuffer){
-            if(_ballVelocityX < maxBallSpeed){
+            if(Math.abs(_ballVelocityY) < maxBallSpeed){
                 _ballVelocityX = _ballVelocityX*multiplier;
                 _ballVelocityY = _ballVelocityY*-1*multiplier;
             }
@@ -139,7 +139,7 @@ public class GameState {
 
         //Collisions with the top bat
         if(_ballX > _bottomBatX && _ballX+_ballSize < _bottomBatX+_batLength && _ballY+_ballSize > _bottomBatY && _ballY+_ballSize < _bottomBatY+batBuffer) {
-            if(_ballVelocityX < maxBallSpeed) {
+            if(Math.abs(_ballVelocityY) < maxBallSpeed) {
                 _ballVelocityX = _ballVelocityX * multiplier;
                 _ballVelocityY = _ballVelocityY * -1 * multiplier;
             }
