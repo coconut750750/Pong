@@ -62,7 +62,7 @@ public class GameState {
         Point size = new Point();
         display.getSize(size);
         _screenWidth = size.x;
-        originX = _screenWidth/2;
+        originX = _screenWidth/2-_ballSize/2;
 
         _screenHeight = MainActivity.height;
         originY = _screenHeight/2-_ballSize/2;
