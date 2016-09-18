@@ -133,15 +133,26 @@ public class GameState {
 
         //Collisions with the bottom bat
         boolean hit = false;
+        double xAdd = 0;
+        int centerBall = _ballX+_ballSize/2;
+        int centerBat = 0;
+        //maximum x add = 3;
         if(_ballX+_ballSize >= _topBatX && _ballX <= _topBatX+_batLength && _ballY-_ballSize < _topBatY && _ballY-_ballSize > _topBatY-afterMult){
             hit = true;
+            centerBat = _topBatX+_batLength/2;
         }
         //Collisions with the top bat
         if(_ballX+_ballSize >= _bottomBatX && _ballX <= _bottomBatX+_batLength && _ballY+_ballSize > _bottomBatY && _ballY+_ballSize < _bottomBatY+afterMult) {
             hit = true;
+            centerBat = _bottomBatX+_batLength/2;
         }
 
         if(hit){
+            double absoluteDif = centerBall - centerBat;
+            double percentDef = absoluteDif/(_batLength/2.0);
+            xAdd += percentDef*3;
+            _ballVelocityX += xAdd;
+            Log.d("xadd",""+xAdd+" "+percentDef);
             _ballVelocityY = _ballVelocityY*-1;
             if(absBallVelY*multiplier < (double)maxBallSpeed) {
                 _ballVelocityX = _ballVelocityX * multiplier;
@@ -205,7 +216,7 @@ public class GameState {
     public static double getBallVelX(){
         double velX;
         Random r = new Random();
-        velX = r.nextInt(13 - 5) + 5;
+        velX = r.nextInt(13 - 5) + 5; //range 5-12
 
         r = new Random();
         int i = r.nextInt(3 - 1) + 1;
