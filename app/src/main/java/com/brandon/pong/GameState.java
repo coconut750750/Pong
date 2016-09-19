@@ -167,7 +167,6 @@ public class GameState {
             if(hitBot){
                 _ballVelocityY = _ballVelocityY*-1;
             }
-            Log.d("vely",""+_ballVelocityY);
             if(_ballVelocity*multiplier < (double)maxBallSpeed) {
                 _ballVelocityX = _ballVelocityX * multiplier;
                 _ballVelocityY = _ballVelocityY * multiplier;
