@@ -13,7 +13,7 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.Button;
 
-// test from alex 
+// test from alexx
 
 public class MainActivity extends AppCompatActivity {
 
