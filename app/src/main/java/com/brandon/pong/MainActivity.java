@@ -41,9 +41,10 @@ public class MainActivity extends AppCompatActivity {
 
         button.setOnTouchListener(new View.OnTouchListener() {
             private Handler mHandler;
-            int xBefore = width/2;
+            int xBefore = 0;
             int x = 0;
             int positionBat;
+            final int delay = 1;
 
             @Override public boolean onTouch(View v, MotionEvent event) {
 
@@ -55,10 +56,11 @@ public class MainActivity extends AppCompatActivity {
                         if (mHandler != null) return true;
                         mHandler = new Handler();
                         if (x > positionBat) {
-                            mHandler.postDelayed(actionRight, 0);
+                            mHandler.postDelayed(actionRight, delay);
                         } else {
-                            mHandler.postDelayed(actionLeft, 0);
+                            mHandler.postDelayed(actionLeft, delay);
                         }
+                        xBefore = x;
 
                         break;
                     case MotionEvent.ACTION_UP:
@@ -68,12 +70,12 @@ public class MainActivity extends AppCompatActivity {
                         mHandler = null;
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        if (x > positionBat) {
+                        if (x > positionBat && xBefore <= positionBat) {
                             mHandler.removeCallbacks(actionLeft);
-                            mHandler.postDelayed(actionRight, 20);
-                        } else if (x < positionBat) {
+                            mHandler.postDelayed(actionRight, delay);
+                        } else if (x < positionBat && xBefore >= positionBat) {
                             mHandler.removeCallbacks(actionRight);
-                            mHandler.postDelayed(actionLeft, 20);
+                            mHandler.postDelayed(actionLeft, delay);
                         }
                         xBefore = x;
                         break;
@@ -85,14 +87,14 @@ public class MainActivity extends AppCompatActivity {
             Runnable actionRight = new Runnable() {
                 @Override public void run() {
                     GameState.mKeyPressed(false, x);
-                    mHandler.postDelayed(this, 20);
+                    mHandler.postDelayed(this, delay);
 
                 }
             };
             Runnable actionLeft = new Runnable() {
                 @Override public void run() {
                     GameState.mKeyPressed(true, x);
-                    mHandler.postDelayed(this, 20);
+                    mHandler.postDelayed(this, delay);
 
                 }
             };

@@ -45,7 +45,7 @@ public class GameState {
     static int _topBatY;
     static int _bottomBatX;
     static int _bottomBatY;
-    final static int _batSpeed = 20;
+    final static int _batSpeed = 1;
     static boolean batEnabled;
     final static int batWallBuffer = 50;
 
