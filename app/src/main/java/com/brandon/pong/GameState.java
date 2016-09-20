@@ -170,26 +170,24 @@ public class GameState {
             if(_ballVelocity*multiplier < (double)maxBallSpeed) {
                 _ballVelocityX = _ballVelocityX * multiplier;
                 _ballVelocityY = _ballVelocityY * multiplier;
-            } else {
-                
             }
         }
     }
 
-    public static void mKeyPressed(boolean isLeft)
+    public static void mKeyPressed(boolean isLeft, int touchPos)
     {
         if(!batEnabled){
             return;
         }
         if(isLeft) //left
         {
-            if(_topBatX > 0) {
+            if(_topBatX > 0 && _topBatX+_batLength/2>touchPos) {
                 _topBatX -= _batSpeed;
                 _bottomBatX -= _batSpeed;
             }
         }
 
-        else //right
+        else if(_topBatX+_batLength/2<touchPos) //right
         {
             if(_topBatX+_batLength < _screenWidth) {
                 _topBatX += _batSpeed;

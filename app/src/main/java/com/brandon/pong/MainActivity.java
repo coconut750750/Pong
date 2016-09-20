@@ -13,8 +13,6 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.Button;
 
-// test from ryan
-
 public class MainActivity extends AppCompatActivity {
 
     static Button button;
@@ -44,15 +42,19 @@ public class MainActivity extends AppCompatActivity {
         button.setOnTouchListener(new View.OnTouchListener() {
             private Handler mHandler;
             int xBefore = width/2;
+            int x = 0;
+            int positionBat;
 
             @Override public boolean onTouch(View v, MotionEvent event) {
 
-                int x = (int) event.getX();
+                x = (int) event.getX();
+                positionBat = GameState._bottomBatX+GameState._batLength/2;
+
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         if (mHandler != null) return true;
                         mHandler = new Handler();
-                        if (x > width / 2) {
+                        if (x > positionBat) {
                             mHandler.postDelayed(actionRight, 0);
                         } else {
                             mHandler.postDelayed(actionLeft, 0);
@@ -66,10 +68,10 @@ public class MainActivity extends AppCompatActivity {
                         mHandler = null;
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        if (x > width / 2 && xBefore < width / 2) {
+                        if (x > positionBat) {
                             mHandler.removeCallbacks(actionLeft);
                             mHandler.postDelayed(actionRight, 20);
-                        } else if (x < width / 2 && xBefore > width / 2) {
+                        } else if (x < positionBat) {
                             mHandler.removeCallbacks(actionRight);
                             mHandler.postDelayed(actionLeft, 20);
                         }
@@ -82,14 +84,14 @@ public class MainActivity extends AppCompatActivity {
 
             Runnable actionRight = new Runnable() {
                 @Override public void run() {
-                    GameState.mKeyPressed(false);
+                    GameState.mKeyPressed(false, x);
                     mHandler.postDelayed(this, 20);
 
                 }
             };
             Runnable actionLeft = new Runnable() {
                 @Override public void run() {
-                    GameState.mKeyPressed(true);
+                    GameState.mKeyPressed(true, x);
                     mHandler.postDelayed(this, 20);
 
                 }
