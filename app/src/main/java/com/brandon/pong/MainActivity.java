@@ -44,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
             int xBefore = 0;
             int x = 0;
             int positionBat;
-            final int delay = 1;
+            final int delay = 2;
+            boolean isLeft;
 
             @Override public boolean onTouch(View v, MotionEvent event) {
 
@@ -56,44 +57,36 @@ public class MainActivity extends AppCompatActivity {
                         if (mHandler != null) return true;
                         mHandler = new Handler();
                         if (x > positionBat) {
-                            mHandler.postDelayed(actionRight, delay);
+                            isLeft = false;
                         } else {
-                            mHandler.postDelayed(actionLeft, delay);
+                            isLeft = true;
                         }
+                        mHandler.postDelayed(action, delay);
                         xBefore = x;
 
                         break;
                     case MotionEvent.ACTION_UP:
                         if (mHandler == null) return true;
-                        mHandler.removeCallbacks(actionRight);
-                        mHandler.removeCallbacks(actionLeft);
+                        mHandler.removeCallbacks(action);
                         mHandler = null;
                         break;
                     case MotionEvent.ACTION_MOVE:
                         if (x > positionBat && xBefore <= positionBat) {
-                            mHandler.removeCallbacks(actionLeft);
-                            mHandler.postDelayed(actionRight, delay);
+                            isLeft = false;
                         } else if (x < positionBat && xBefore >= positionBat) {
-                            mHandler.removeCallbacks(actionRight);
-                            mHandler.postDelayed(actionLeft, delay);
+                            isLeft = true;
                         }
                         xBefore = x;
+
                         break;
 
                 }
                 return false;
             }
-
-            Runnable actionRight = new Runnable() {
+            Runnable action = new Runnable() {
                 @Override public void run() {
-                    GameState.mKeyPressed(false, x);
-                    mHandler.postDelayed(this, delay);
 
-                }
-            };
-            Runnable actionLeft = new Runnable() {
-                @Override public void run() {
-                    GameState.mKeyPressed(true, x);
+                    GameState.mKeyPressed(isLeft, x);
                     mHandler.postDelayed(this, delay);
 
                 }
