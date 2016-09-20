@@ -13,6 +13,8 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.Button;
 
+// test from brandon
+
 public class MainActivity extends AppCompatActivity {
 
     static Button button;
