@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
             int xBefore = 0;
             int x = 0;
             int positionBat;
-            final int delay = 2;
+            final int delay = 1;
             boolean isLeft;
 
             @Override public boolean onTouch(View v, MotionEvent event) {
