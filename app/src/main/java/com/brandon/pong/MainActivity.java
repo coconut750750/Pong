@@ -19,9 +19,19 @@ public class MainActivity extends AppCompatActivity {
     static GameView gameView;
     static int height;
 
+    final static String BALLX = "BALLX";
+    final static String BALLY = "BALLY";
+    final static String BALLVX = "BALLVX";
+    final static String BALLVY = "BALLVY";
+    final static String BATX = "BATX";
+    final static String RESETBUFFER = "RESETBUFFER";
+
+    static Bundle dataBundle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         button = (Button)findViewById(R.id.button);
@@ -33,65 +43,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        final int width = size.x;
-
-        button.setOnTouchListener(new View.OnTouchListener() {
-            private Handler mHandler;
-            int xBefore = 0;
-            int x = 0;
-            int positionBat;
-            final int delay = 1;
-            boolean isLeft;
-
-            @Override public boolean onTouch(View v, MotionEvent event) {
-
-                x = (int) event.getX();
-                positionBat = GameState._bottomBatX+GameState._batLength/2;
-
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        if (mHandler != null) return true;
-                        mHandler = new Handler();
-                        if (x > positionBat) {
-                            isLeft = false;
-                        } else {
-                            isLeft = true;
-                        }
-                        mHandler.postDelayed(action, delay);
-                        xBefore = x;
-
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (mHandler == null) return true;
-                        mHandler.removeCallbacks(action);
-                        mHandler = null;
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        if (x > positionBat && xBefore <= positionBat) {
-                            isLeft = false;
-                        } else if (x < positionBat && xBefore >= positionBat) {
-                            isLeft = true;
-                        }
-                        xBefore = x;
-
-                        break;
-
-                }
-                return false;
-            }
-            Runnable action = new Runnable() {
-                @Override public void run() {
-
-                    GameState.mKeyPressed(isLeft, x);
-                    mHandler.postDelayed(this, delay);
-
-                }
-            };
-        });
+        button.setOnTouchListener(new GameTouchListener());
     }
 
+    public static void saveData() {
+        dataBundle = new Bundle();
+        dataBundle.putInt(BALLX, GameState._ballX);
+        dataBundle.putInt(BALLY, GameState._ballY);
+        dataBundle.putDouble(BALLVX, GameState._ballVelocityX);
+        dataBundle.putDouble(BALLVY, GameState._ballVelocityY);
+        dataBundle.putInt(BATX, GameState._bottomBatX);
+        dataBundle.putInt(RESETBUFFER, GameState.resetBuffer1);
+    }
+
+    public static void getData(){
+        if(dataBundle != null){
+            GameState._ballX = dataBundle.getInt(BALLX);
+            GameState._ballY = dataBundle.getInt(BALLY);
+            GameState._ballVelocityX = dataBundle.getDouble(BALLVX);
+            GameState._ballVelocityY = dataBundle.getDouble(BALLVY);
+            GameState._bottomBatX = dataBundle.getInt(BATX);
+            GameState._topBatX = dataBundle.getInt(BATX);
+            GameState.resetBuffer1 = dataBundle.getInt(RESETBUFFER);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
 }

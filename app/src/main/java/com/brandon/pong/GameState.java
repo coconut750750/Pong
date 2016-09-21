@@ -23,15 +23,15 @@ public class GameState {
 
     //The ball
     final int _ballSize = 50;
-    int _ballX;
-    int _ballY;
+    static int _ballX;
+    static int _ballY;
 
-    double _ballVelocityX;
-    double _ballVelocityY;
+    static double _ballVelocityX;
+    static double _ballVelocityY;
 
     //constants
     final static double multiplier = 1.05;
-    final static int maxBallSpeed = 15;
+    final static int maxBallSpeed = 30;
     final static int resetBuffer = 50;
     static int resetBuffer1;
     static int ballDifferenceX;
@@ -118,7 +118,7 @@ public class GameState {
 
             //reset bat
             resetBuffer1++;
-            batDifference = _topBatX-batOrigin;
+            batDifference = _bottomBatX-batOrigin;
             ballDifferenceX = _ballX-originX;
             ballDifferenceY = _ballY-originY;
             batEnabled = false;
@@ -181,17 +181,17 @@ public class GameState {
         }
         if(isLeft) //left
         {
-            if(_topBatX > 0 && _topBatX+_batLength/2>touchPos) {
-                _topBatX -= _batSpeed;
+            if(_bottomBatX > 0 && _bottomBatX+_batLength/2>touchPos) {
                 _bottomBatX -= _batSpeed;
+                _topBatX -= _batSpeed;
             }
         }
 
-        else if(_topBatX+_batLength/2<touchPos) //right
+        else if(_bottomBatX+_batLength/2<touchPos) //right
         {
-            if(_topBatX+_batLength < _screenWidth) {
-                _topBatX += _batSpeed;
+            if(_bottomBatX+_batLength < _screenWidth) {
                 _bottomBatX += _batSpeed;
+                _topBatX += _batSpeed;
             }
         }
     }

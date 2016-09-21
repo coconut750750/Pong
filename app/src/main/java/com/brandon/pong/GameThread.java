@@ -9,12 +9,15 @@ import android.view.SurfaceHolder;
 /***
  * Created by Brandon on 9/16/16.
  */
-public class GameThread extends Thread {
+public class GameThread extends Thread implements Runnable{
 
     /** Handle to the surface manager object we interact with */
     private SurfaceHolder _surfaceHolder;
     private Paint _paint;
     private GameState _state;
+
+    private boolean mPaused;
+    private boolean mFinished;
 
     public GameThread(SurfaceHolder surfaceHolder, Context context, Handler handler)
     {
@@ -35,6 +38,30 @@ public class GameThread extends Thread {
             } catch(IllegalStateException e){
                 break;
             }
+
+            synchronized (this) {
+                while (mPaused) {
+                    try {
+                        this.wait();
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+
+
+        }
+    }
+
+    public void onPause() {
+        synchronized (this) {
+            mPaused = true;
+        }
+    }
+
+    public void onResume() {
+        synchronized (this) {
+            mPaused = false;
+            this.notifyAll();
         }
     }
 

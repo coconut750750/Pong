@@ -3,6 +3,7 @@ package com.brandon.pong;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -31,7 +32,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
         setFocusable(true);
 
         //and instantiate the thread
-        _thread = new GameThread(holder, context, new Handler());
+        //_thread = new GameThread(holder, context, new Handler());
     }
 
     @Override
@@ -50,13 +51,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         _thread = new GameThread(holder, context, new Handler());
+        MainActivity.getData();
         _thread.start();
+        _thread.onResume();
         holder.addCallback(this);
     }
 
     //Implemented as part of the SurfaceHolder.Callback interface
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        _thread.stop();
+        _thread.onPause();
+        MainActivity.saveData();
     }
 }
