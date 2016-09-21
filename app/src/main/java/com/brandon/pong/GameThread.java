@@ -17,7 +17,6 @@ public class GameThread extends Thread implements Runnable{
     private GameState _state;
 
     private boolean mPaused;
-    private boolean mFinished;
 
     public GameThread(SurfaceHolder surfaceHolder, Context context, Handler handler)
     {
@@ -63,10 +62,5 @@ public class GameThread extends Thread implements Runnable{
             mPaused = false;
             this.notifyAll();
         }
-    }
-
-    public GameState getGameState()
-    {
-        return _state;
     }
 }

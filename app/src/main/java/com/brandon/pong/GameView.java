@@ -1,17 +1,11 @@
 package com.brandon.pong;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
 
 /***
  * Created by Brandon on 9/16/16.

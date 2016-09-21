@@ -5,9 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.Display;
-import android.view.KeyEvent;
 import android.view.WindowManager;
 
 import java.util.Random;
