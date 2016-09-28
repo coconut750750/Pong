@@ -5,9 +5,15 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 /***
@@ -52,6 +58,12 @@ public class GameState {
     static int originY;
     static int batOrigin;
 
+    //Score
+    static int scoreBot;
+    static int scoreTop;
+    final static String[] keys = new String[]{"MID","TOP","BOT","TOPLEFT","TOPRIGHT","BOTLEFT","BOTRIGHT"};
+    final static HashMap<Integer, List<Integer>> parseScoreData = new HashMap<>();
+
     public GameState(Context context)
     {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -81,19 +93,33 @@ public class GameState {
         resetBuffer1 = 1;
         batDifference = 0;
         batEnabled = true;
+
+        scoreBot = 0;
+        scoreTop = 0;
+
+        parseScoreData.put(0, new ArrayList<>(Arrays.asList(1,2,3,4,5,6)));
+        parseScoreData.put(1, new ArrayList<>(Arrays.asList(4,6)));
+        parseScoreData.put(2, new ArrayList<>(Arrays.asList(0,1,2,4,5)));
+        parseScoreData.put(3, new ArrayList<>(Arrays.asList(0,1,2,4,6)));
+        parseScoreData.put(4, new ArrayList<>(Arrays.asList(0,3,4,6)));
+        parseScoreData.put(5, new ArrayList<>(Arrays.asList(0,1,2,3,6)));
+        parseScoreData.put(6, new ArrayList<>(Arrays.asList(0,1,2,3,5,6)));
+        parseScoreData.put(7, new ArrayList<>(Arrays.asList(1,4,6)));
+        parseScoreData.put(8, new ArrayList<>(Arrays.asList(0,1,2,3,4,5,6)));
+        parseScoreData.put(9, new ArrayList<>(Arrays.asList(0,1,2,3,4,6)));
     }
 
     //The update method
     public void update() {
 
-        if(resetBuffer1!= 0 && resetBuffer1!=resetBuffer){
+        if(resetBuffer1!= 0 && resetBuffer1!=resetBuffer+5){
             _bottomBatX -= batDifference/resetBuffer;
             _topBatX -= batDifference/resetBuffer;
             //_ballX -= ballDifferenceX/resetBuffer;
             //_ballY -= ballDifferenceY/resetBuffer;
             resetBuffer1++;
             return;
-        } else if (resetBuffer1 == resetBuffer){
+        } else if (resetBuffer1 == resetBuffer+5){
             resetBuffer1 = 0;
             batEnabled = true;
         }
@@ -103,6 +129,16 @@ public class GameState {
 
         //DEATH!
         if(_ballY+_ballSize > _screenHeight || _ballY < 0) {
+            if(_ballY+_ballSize > _screenHeight) {
+                scoreTop += 1;
+            } else{
+                scoreBot += 1;
+            }
+            if(scoreTop > 9 || scoreBot > 9){
+                scoreTop = 0;
+                scoreBot = 0;
+            }
+
             _ballVelocityX = getBallVelX();
 
             _ballVelocityY = Math.sqrt(100-_ballVelocityX*_ballVelocityX);
@@ -199,23 +235,57 @@ public class GameState {
         try{
             //Clear the screen
             canvas.drawRGB(20, 20, 20);
-
-            //set the colour
             paint.setARGB(200, 0, 200, 0);
 
             //draw the ball
             canvas.drawRect(new Rect(_ballX,_ballY,_ballX + _ballSize,_ballY + _ballSize),
                     paint);
-
             //draw the bats
-            canvas.drawRect(new Rect(_topBatX, _topBatY, _topBatX + _batLength,
-                    _topBatY + _batHeight), paint); //top bat
-            canvas.drawRect(new Rect(_bottomBatX, _bottomBatY, _bottomBatX + _batLength,
-                    _bottomBatY + _batHeight), paint); //bottom bat
+            canvas.drawRect(new Rect(_topBatX, _topBatY, _topBatX + _batLength, _topBatY + _batHeight), paint); //top bat
+            canvas.drawRect(new Rect(_bottomBatX, _bottomBatY, _bottomBatX + _batLength, _bottomBatY + _batHeight), paint); //bottom bat
 
+            //draw middle line
             paint.setARGB(200,200,200,0);
-            canvas.drawRect(new Rect(0, _screenHeight/2+10, _screenWidth,
-                    _screenHeight/2-10), paint);
+            canvas.drawRect(new Rect(0, _screenHeight/2+10, _screenWidth, _screenHeight/2-10), paint);
+
+            Paint white = new Paint();
+            white.setARGB(255,200,200,200);
+            Paint black = new Paint();
+            black.setARGB(255,20,20,20);
+
+            int rectLen = _screenWidth/12;
+            int rectWid = rectLen/4;
+            int SH4 = _screenHeight/4;
+
+            HashMap<String, Rect> rectangles = new HashMap<>();
+            rectangles.put(keys[0], new Rect(11*rectLen/2,SH4-rectWid/2, 13*rectLen/2, SH4+rectWid/2));
+            rectangles.put(keys[1], new Rect(11*rectLen/2,SH4-3*rectWid/2-rectLen, 13*rectLen/2, SH4-rectWid/2-rectLen));
+            rectangles.put(keys[2], new Rect(11*rectLen/2,SH4+rectWid/2+rectLen, 13*rectLen/2, SH4+3*rectWid/2+rectLen));
+            rectangles.put(keys[3], new Rect(11*rectLen/2-rectWid,SH4-rectWid/2-rectLen, 11*rectLen/2, SH4-rectWid/2));
+            rectangles.put(keys[4], new Rect(13*rectLen/2+rectWid,SH4-rectWid/2-rectLen, 13*rectLen/2, SH4-rectWid/2));
+            rectangles.put(keys[5], new Rect(11*rectLen/2-rectWid,SH4+rectWid/2+rectLen, 11*rectLen/2, SH4+rectWid/2));
+            rectangles.put(keys[6], new Rect(13*rectLen/2+rectWid,SH4+rectWid/2+rectLen, 13*rectLen/2, SH4+rectWid/2));
+
+            boolean isTop = true;
+            for(int i = 0; i <2*keys.length; i++){
+                int j = i%keys.length;
+                List<Integer> data;
+                if(isTop){
+                    data = parseScoreData.get(scoreTop%10);
+                } else {
+                    data = parseScoreData.get(scoreBot%10);
+                }
+
+                if(data.contains(j)){
+                    canvas.drawRect(rectangles.get(keys[j]), white);
+                } else {
+                    canvas.drawRect(rectangles.get(keys[j]), black);
+                }
+                rectangles.get(keys[j]).offset(0,2*SH4);
+                if (i == keys.length-1){
+                    isTop = false;
+                }
+            }
 
         } catch(NullPointerException e){
 
