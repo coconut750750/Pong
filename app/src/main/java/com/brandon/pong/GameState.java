@@ -235,11 +235,13 @@ public class GameState {
         try{
             //Clear the screen
             canvas.drawRGB(20, 20, 20);
+            //draw points
+            drawPoints(canvas);
+
             paint.setARGB(200, 0, 200, 0);
 
             //draw the ball
-            canvas.drawRect(new Rect(_ballX,_ballY,_ballX + _ballSize,_ballY + _ballSize),
-                    paint);
+            canvas.drawRect(new Rect(_ballX,_ballY,_ballX + _ballSize,_ballY + _ballSize), paint);
             //draw the bats
             canvas.drawRect(new Rect(_topBatX, _topBatY, _topBatX + _batLength, _topBatY + _batHeight), paint); //top bat
             canvas.drawRect(new Rect(_bottomBatX, _bottomBatY, _bottomBatX + _batLength, _bottomBatY + _batHeight), paint); //bottom bat
@@ -248,44 +250,7 @@ public class GameState {
             paint.setARGB(200,200,200,0);
             canvas.drawRect(new Rect(0, _screenHeight/2+10, _screenWidth, _screenHeight/2-10), paint);
 
-            Paint white = new Paint();
-            white.setARGB(255,200,200,200);
-            Paint black = new Paint();
-            black.setARGB(255,20,20,20);
 
-            int rectLen = _screenWidth/12;
-            int rectWid = rectLen/4;
-            int SH4 = _screenHeight/4;
-
-            HashMap<String, Rect> rectangles = new HashMap<>();
-            rectangles.put(keys[0], new Rect(11*rectLen/2,SH4-rectWid/2, 13*rectLen/2, SH4+rectWid/2));
-            rectangles.put(keys[1], new Rect(11*rectLen/2,SH4-3*rectWid/2-rectLen, 13*rectLen/2, SH4-rectWid/2-rectLen));
-            rectangles.put(keys[2], new Rect(11*rectLen/2,SH4+rectWid/2+rectLen, 13*rectLen/2, SH4+3*rectWid/2+rectLen));
-            rectangles.put(keys[3], new Rect(11*rectLen/2-rectWid,SH4-rectWid/2-rectLen, 11*rectLen/2, SH4-rectWid/2));
-            rectangles.put(keys[4], new Rect(13*rectLen/2+rectWid,SH4-rectWid/2-rectLen, 13*rectLen/2, SH4-rectWid/2));
-            rectangles.put(keys[5], new Rect(11*rectLen/2-rectWid,SH4+rectWid/2+rectLen, 11*rectLen/2, SH4+rectWid/2));
-            rectangles.put(keys[6], new Rect(13*rectLen/2+rectWid,SH4+rectWid/2+rectLen, 13*rectLen/2, SH4+rectWid/2));
-
-            boolean isTop = true;
-            for(int i = 0; i <2*keys.length; i++){
-                int j = i%keys.length;
-                List<Integer> data;
-                if(isTop){
-                    data = parseScoreData.get(scoreTop%10);
-                } else {
-                    data = parseScoreData.get(scoreBot%10);
-                }
-
-                if(data.contains(j)){
-                    canvas.drawRect(rectangles.get(keys[j]), white);
-                } else {
-                    canvas.drawRect(rectangles.get(keys[j]), black);
-                }
-                rectangles.get(keys[j]).offset(0,2*SH4);
-                if (i == keys.length-1){
-                    isTop = false;
-                }
-            }
 
         } catch(NullPointerException e){
 
@@ -303,5 +268,46 @@ public class GameState {
             velX = -1*velX;
         }
         return velX;
+    }
+
+    public void drawPoints(Canvas canvas){
+        Paint white = new Paint();
+        white.setARGB(255,200,200,200);
+        Paint black = new Paint();
+        black.setARGB(255,20,20,20);
+
+        int rectLen = _screenWidth/12;
+        int rectWid = rectLen/4;
+        int SH4 = _screenHeight/4;
+
+        HashMap<String, Rect> rectangles = new HashMap<>();
+        rectangles.put(keys[0], new Rect(11*rectLen/2,SH4-rectWid/2, 13*rectLen/2, SH4+rectWid/2));
+        rectangles.put(keys[1], new Rect(11*rectLen/2,SH4-3*rectWid/2-rectLen, 13*rectLen/2, SH4-rectWid/2-rectLen));
+        rectangles.put(keys[2], new Rect(11*rectLen/2,SH4+rectWid/2+rectLen, 13*rectLen/2, SH4+3*rectWid/2+rectLen));
+        rectangles.put(keys[3], new Rect(11*rectLen/2-rectWid,SH4-rectWid/2-rectLen, 11*rectLen/2, SH4-rectWid/2));
+        rectangles.put(keys[4], new Rect(13*rectLen/2+rectWid,SH4-rectWid/2-rectLen, 13*rectLen/2, SH4-rectWid/2));
+        rectangles.put(keys[5], new Rect(11*rectLen/2-rectWid,SH4+rectWid/2+rectLen, 11*rectLen/2, SH4+rectWid/2));
+        rectangles.put(keys[6], new Rect(13*rectLen/2+rectWid,SH4+rectWid/2+rectLen, 13*rectLen/2, SH4+rectWid/2));
+
+        boolean isTop = true;
+        for(int i = 0; i <2*keys.length; i++){
+            int j = i%keys.length;
+            List<Integer> data;
+            if(isTop){
+                data = parseScoreData.get(scoreTop%10);
+            } else {
+                data = parseScoreData.get(scoreBot%10);
+            }
+
+            if(data.contains(j)){
+                canvas.drawRect(rectangles.get(keys[j]), white);
+            } else {
+                canvas.drawRect(rectangles.get(keys[j]), black);
+            }
+            rectangles.get(keys[j]).offset(0,2*SH4);
+            if (i == keys.length-1){
+                isTop = false;
+            }
+        }
     }
 }
