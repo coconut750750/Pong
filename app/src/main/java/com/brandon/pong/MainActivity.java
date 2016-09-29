@@ -8,8 +8,8 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    static Button button;
-    static GameView gameView;
+    Button button;
+    GameView gameView;
     static int height;
 
     final static String BALLX = "BALLX";
@@ -61,9 +61,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-    }
 }

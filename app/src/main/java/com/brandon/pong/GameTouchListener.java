@@ -13,7 +13,7 @@ public class GameTouchListener implements View.OnTouchListener {
     private int x = 0;
     private int positionBat;
     final private int delay = 1;
-    private boolean isLeft;
+    //private boolean isLeft;
 
     @Override public boolean onTouch(View v, MotionEvent event) {
 
@@ -24,7 +24,7 @@ public class GameTouchListener implements View.OnTouchListener {
             case MotionEvent.ACTION_DOWN:
                 if (mHandler != null) return true;
                 mHandler = new Handler();
-                isLeft = x <= positionBat;
+                //isLeft = x <= positionBat;
                 mHandler.postDelayed(action, delay);
 
                 break;
@@ -34,7 +34,7 @@ public class GameTouchListener implements View.OnTouchListener {
                 mHandler = null;
                 break;
             case MotionEvent.ACTION_MOVE:
-                isLeft = x <= positionBat;
+                //isLeft = x <= positionBat;
                 break;
 
         }
@@ -43,7 +43,8 @@ public class GameTouchListener implements View.OnTouchListener {
     private Runnable action = new Runnable() {
         @Override public void run() {
 
-            GameState.mKeyPressed(isLeft, x);
+            //GameState.mKeyPressed(isLeft, x);
+            GameState.mKeyPressed(x);
             mHandler.postDelayed(this, delay);
 
         }

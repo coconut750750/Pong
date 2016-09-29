@@ -5,10 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
-import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,11 +20,11 @@ import java.util.Random;
 public class GameState {
 
     //screen width and height
-    static int _screenWidth;
-    static int _screenHeight;
+    private static int _screenWidth;
+    private static int _screenHeight;
 
     //The ball
-    final int _ballSize = 50;
+    private final int _ballSize = 50;
     static int _ballX;
     static int _ballY;
 
@@ -34,35 +32,39 @@ public class GameState {
     static double _ballVelocityY;
 
     //constants
-    final static double multiplier = 1.05;
-    final static int maxBallSpeed = 30;
-    final static int resetBuffer = 50;
+    private final static double multiplier = 1.05;
+    private final static int maxBallSpeed = 30;
+    private final static int resetBuffer = 50;
     static int resetBuffer1;
-    static int ballDifferenceX;
-    static int ballDifferenceY;
-    static int batDifference;
+    private static int batDifference;
+    private final static double angleMin = 30.0*Math.PI/180;
+    private final static double angleMax = Math.PI - angleMin;
 
     //The bats
     final static int _batLength = 300;
-    final static int _batHeight = 50;
+    private final static int _batHeight = 50;
     static int _topBatX;
-    static int _topBatY;
+    private static int _topBatY;
     static int _bottomBatX;
-    static int _bottomBatY;
-    final static int _batSpeed = 2;
-    static boolean batEnabled;
-    final static int batWallBuffer = 50;
+    private static int _bottomBatY;
+    private final static int _batSpeed = 2;
+    private static boolean batEnabled;
+    private final static int batWallBuffer = 50;
 
     //Origin
-    static int originX;
-    static int originY;
-    static int batOrigin;
+    private static int originX;
+    private static int originY;
+    private static int batOrigin;
 
     //Score
-    static int scoreBot;
-    static int scoreTop;
-    final static String[] keys = new String[]{"MID","TOP","BOT","TOPLEFT","TOPRIGHT","BOTLEFT","BOTRIGHT"};
-    final static HashMap<Integer, List<Integer>> parseScoreData = new HashMap<>();
+    private static int scoreBot;
+    private static int scoreTop;
+    private final static String[] keys = new String[]{"MID","TOP","BOT","TOPLEFT","TOPRIGHT","BOTLEFT","BOTRIGHT"};
+    private final static HashMap<Integer, List<Integer>> parseScoreData = new HashMap<>();
+    private static HashMap<String, Rect> rectangles = new HashMap<>();
+
+    //Paint
+    private static Paint white;
 
     public GameState(Context context)
     {
@@ -77,18 +79,17 @@ public class GameState {
         originY = _screenHeight/2-_ballSize/2;
         _topBatY = batWallBuffer;
         _bottomBatY = _screenHeight-batWallBuffer-_batHeight;
-        _topBatX = (_screenWidth/2) - (_batLength / 2);
-        _bottomBatX = (_screenWidth/2) - (_batLength / 2);
+
 
         _ballX = originX;
         _ballY = originY;
-        ballDifferenceX = 0;
-        ballDifferenceY = 0;
+
         batOrigin = (_screenWidth/2) - (_batLength / 2);
+        _topBatX = batOrigin;
+        _bottomBatX = batOrigin;
 
         _ballVelocityX = getBallVelX();
         _ballVelocityY = Math.sqrt(100-_ballVelocityX*_ballVelocityX);
-
 
         resetBuffer1 = 1;
         batDifference = 0;
@@ -107,21 +108,33 @@ public class GameState {
         parseScoreData.put(7, new ArrayList<>(Arrays.asList(1,4,6)));
         parseScoreData.put(8, new ArrayList<>(Arrays.asList(0,1,2,3,4,5,6)));
         parseScoreData.put(9, new ArrayList<>(Arrays.asList(0,1,2,3,4,6)));
+        int rectLen = _screenWidth/12;
+        int rectWid = rectLen/4;
+        int SH4 = _screenHeight/4;
+        rectangles.put(keys[0], new Rect(11*rectLen/2,SH4-rectWid/2, 13*rectLen/2, SH4+rectWid/2));
+        rectangles.put(keys[1], new Rect(11*rectLen/2,SH4-3*rectWid/2-rectLen, 13*rectLen/2, SH4-rectWid/2-rectLen));
+        rectangles.put(keys[2], new Rect(11*rectLen/2,SH4+rectWid/2+rectLen, 13*rectLen/2, SH4+3*rectWid/2+rectLen));
+        rectangles.put(keys[3], new Rect(11*rectLen/2-rectWid,SH4-rectWid/2-rectLen, 11*rectLen/2, SH4-rectWid/2));
+        rectangles.put(keys[4], new Rect(13*rectLen/2+rectWid,SH4-rectWid/2-rectLen, 13*rectLen/2, SH4-rectWid/2));
+        rectangles.put(keys[5], new Rect(11*rectLen/2-rectWid,SH4+rectWid/2+rectLen, 11*rectLen/2, SH4+rectWid/2));
+        rectangles.put(keys[6], new Rect(13*rectLen/2+rectWid,SH4+rectWid/2+rectLen, 13*rectLen/2, SH4+rectWid/2));
+        white = new Paint();
+        white.setARGB(255,200,200,200);
     }
 
     //The update method
     public void update() {
 
-        if(resetBuffer1!= 0 && resetBuffer1!=resetBuffer+5){
+        if(resetBuffer1!= 0 && resetBuffer1!=resetBuffer){
             _bottomBatX -= batDifference/resetBuffer;
             _topBatX -= batDifference/resetBuffer;
-            //_ballX -= ballDifferenceX/resetBuffer;
-            //_ballY -= ballDifferenceY/resetBuffer;
             resetBuffer1++;
             return;
-        } else if (resetBuffer1 == resetBuffer+5){
+        } else if (resetBuffer1 == resetBuffer){
             resetBuffer1 = 0;
             batEnabled = true;
+            _topBatX = batOrigin;
+            _bottomBatX = batOrigin;
         }
 
         _ballX += _ballVelocityX;
@@ -129,9 +142,13 @@ public class GameState {
 
         //DEATH!
         if(_ballY+_ballSize > _screenHeight || _ballY < 0) {
-            if(_ballY+_ballSize > _screenHeight) {
+            _ballVelocityX = getBallVelX();
+            _ballVelocityY = Math.sqrt(100-_ballVelocityX*_ballVelocityX);
+
+            if (_ballY+_ballSize > _screenHeight) {
                 scoreTop += 1;
-            } else{
+            } else {
+                _ballVelocityY *= -1;
                 scoreBot += 1;
             }
             if(scoreTop > 9 || scoreBot > 9){
@@ -139,13 +156,6 @@ public class GameState {
                 scoreBot = 0;
             }
 
-            _ballVelocityX = getBallVelX();
-
-            _ballVelocityY = Math.sqrt(100-_ballVelocityX*_ballVelocityX);
-            if (_ballY+_ballSize > _screenHeight) {
-            } else {
-                _ballVelocityY *= -1;
-            }
             //reset ball
             _ballX = originX;
             _ballY = originY;
@@ -153,8 +163,6 @@ public class GameState {
             //reset bat
             resetBuffer1++;
             batDifference = _bottomBatX-batOrigin;
-            ballDifferenceX = _ballX-originX;
-            ballDifferenceY = _ballY-originY;
             batEnabled = false;
         }
 
@@ -163,70 +171,52 @@ public class GameState {
         if(_ballX+_ballSize > _screenWidth || _ballX < 0)
             _ballVelocityX *= -1;
 
-        double absBallVelY = Math.abs(_ballVelocityY);
-        int afterMult = (int)Math.ceil(absBallVelY*multiplier)+2;
+        int afterMult = (int)Math.ceil(Math.abs(_ballVelocityY)*multiplier)+2;
 
-        //Collisions with the bottom bat
-        boolean hitTop = false;
-        boolean hitBot = false;
-        double xAdd = 0;
-        int centerBall = _ballX+_ballSize/2;
-        int centerBat = 0;
-        double batBuffer = _ballVelocityX;
         //maximum x add = 3;
-        if(_ballX+_ballSize >= _topBatX-batBuffer && _ballX <= _topBatX+_batLength+batBuffer && _ballY < _topBatY+_batHeight && _ballY > _topBatY+_batHeight-afterMult){
-            hitTop = true;
-            centerBat = _topBatX+_batLength/2;
-        }
-        //Collisions with the top bat
-        if(_ballX+_ballSize >= _bottomBatX-batBuffer && _ballX <= _bottomBatX+_batLength+batBuffer && _ballY+_ballSize > _bottomBatY && _ballY+_ballSize < _bottomBatY+afterMult) {
-            hitBot = true;
-            centerBat = _bottomBatX+_batLength/2;
-        }
+        if(_ballX+_ballSize >= _topBatX-_ballVelocityX && _ballX <= _topBatX+_batLength+_ballVelocityX){
+            boolean hitTop = _ballY < _topBatY+_batHeight && _ballY > _topBatY+_batHeight-afterMult;
+            boolean hitBot = _ballY+_ballSize > _bottomBatY && _ballY+_ballSize < _bottomBatY+afterMult;
+            if(hitTop || hitBot){
+                int centerBall = _ballX+_ballSize/2;
 
-        if(hitTop || hitBot){
-            double absoluteDif = centerBall - centerBat;
-            double percentDef = absoluteDif/(_batLength/2.0);
-            xAdd += percentDef*3;
+                double tempVelX = _ballVelocityX+6*(centerBall-_bottomBatX)/_batLength - 3; //add percentage ball is off from bat center * 3
 
-            double _ballVelocity = Math.sqrt(_ballVelocityX*_ballVelocityX+_ballVelocityY*_ballVelocityY);
+                double _ballVelocity = Math.sqrt(_ballVelocityX*_ballVelocityX+_ballVelocityY*_ballVelocityY);
+                double angle = Math.acos((tempVelX)/_ballVelocity);
 
-            double angle = Math.acos((_ballVelocityX+xAdd)/_ballVelocity);
-            double angleMin = 30.0*Math.PI/180;
-            double angleMax = 150.0*Math.PI/180;
-            if(angle>angleMin && angle < angleMax){
-                _ballVelocityX += xAdd;
-            }
-            _ballVelocityY = Math.sqrt(_ballVelocity*_ballVelocity-_ballVelocityX*_ballVelocityX);
-            if(hitBot){
-                _ballVelocityY = _ballVelocityY*-1;
-            }
-            if(_ballVelocity*multiplier < (double)maxBallSpeed) {
-                _ballVelocityX = _ballVelocityX * multiplier;
-                _ballVelocityY = _ballVelocityY * multiplier;
+                if(angle>angleMin && angle <angleMax){
+                    _ballVelocityX = tempVelX;
+                    _ballVelocityY = Math.sqrt(_ballVelocity*_ballVelocity-_ballVelocityX*_ballVelocityX);
+                }
+
+                if(hitBot){
+                    _ballVelocityY = _ballVelocityY*-1;
+                }
+                if(_ballVelocity*multiplier < (double)maxBallSpeed) {
+                    _ballVelocityX = _ballVelocityX * multiplier;
+                    _ballVelocityY = _ballVelocityY * multiplier;
+                }
             }
         }
     }
 
-    public static void mKeyPressed(boolean isLeft, int touchPos)
+    public static void mKeyPressed(int touchPos)
     {
-        if(!batEnabled){
+        if(!batEnabled || _bottomBatX+_batLength/2 == touchPos){
             return;
         }
-        if(isLeft) //left
+        else if(_bottomBatX+_batLength/2>touchPos && _bottomBatX>0) //left
         {
-            if(_bottomBatX > 0 && _bottomBatX+_batLength/2>touchPos) {
-                _bottomBatX -= _batSpeed;
-                _topBatX -= _batSpeed;
-            }
+            _bottomBatX -= _batSpeed;
+            _topBatX -= _batSpeed;
         }
 
-        else if(_bottomBatX+_batLength/2<touchPos) //right
+        else if (_bottomBatX+_batLength<_screenWidth) //right
         {
-            if(_bottomBatX+_batLength < _screenWidth) {
-                _bottomBatX += _batSpeed;
-                _topBatX += _batSpeed;
-            }
+            _bottomBatX += _batSpeed;
+            _topBatX += _batSpeed;
+
         }
     }
 
@@ -257,57 +247,30 @@ public class GameState {
         }
     }
 
-    public static double getBallVelX(){
-        double velX;
-        Random r = new Random();
-        velX = r.nextInt(9 - 5) + 5; //range 5-8
+    private  static double getBallVelX(){
+        int[] possible = new int[]{-5,-6,-7,-8,5,6,7,8};
 
-        r = new Random();
-        int i = r.nextInt(3 - 1) + 1;
-        if(i == 1){
-            velX = -1*velX;
-        }
-        return velX;
+        int rnd = new Random().nextInt(possible.length);
+        return possible[rnd];
     }
 
-    public void drawPoints(Canvas canvas){
-        Paint white = new Paint();
-        white.setARGB(255,200,200,200);
-        Paint black = new Paint();
-        black.setARGB(255,20,20,20);
+    private  void drawPoints(Canvas canvas){
 
-        int rectLen = _screenWidth/12;
-        int rectWid = rectLen/4;
-        int SH4 = _screenHeight/4;
+        List<Integer> topData = parseScoreData.get(scoreTop);
+        List<Integer> botData = parseScoreData.get(scoreBot);
 
-        HashMap<String, Rect> rectangles = new HashMap<>();
-        rectangles.put(keys[0], new Rect(11*rectLen/2,SH4-rectWid/2, 13*rectLen/2, SH4+rectWid/2));
-        rectangles.put(keys[1], new Rect(11*rectLen/2,SH4-3*rectWid/2-rectLen, 13*rectLen/2, SH4-rectWid/2-rectLen));
-        rectangles.put(keys[2], new Rect(11*rectLen/2,SH4+rectWid/2+rectLen, 13*rectLen/2, SH4+3*rectWid/2+rectLen));
-        rectangles.put(keys[3], new Rect(11*rectLen/2-rectWid,SH4-rectWid/2-rectLen, 11*rectLen/2, SH4-rectWid/2));
-        rectangles.put(keys[4], new Rect(13*rectLen/2+rectWid,SH4-rectWid/2-rectLen, 13*rectLen/2, SH4-rectWid/2));
-        rectangles.put(keys[5], new Rect(11*rectLen/2-rectWid,SH4+rectWid/2+rectLen, 11*rectLen/2, SH4+rectWid/2));
-        rectangles.put(keys[6], new Rect(13*rectLen/2+rectWid,SH4+rectWid/2+rectLen, 13*rectLen/2, SH4+rectWid/2));
-
-        boolean isTop = true;
-        for(int i = 0; i <2*keys.length; i++){
+        for(int i = 0; i <keys.length; i++){
             int j = i%keys.length;
-            List<Integer> data;
-            if(isTop){
-                data = parseScoreData.get(scoreTop%10);
-            } else {
-                data = parseScoreData.get(scoreBot%10);
+            Rect rect = rectangles.get(keys[j]);
+            if(topData.contains(j)){
+                canvas.drawRect(rect, white);
             }
+            rect.offset(0,_screenHeight/2);
+            if(botData.contains(j)){
+                canvas.drawRect(rect, white);
+            }
+            rect.offset(0,-1*_screenHeight/2);
 
-            if(data.contains(j)){
-                canvas.drawRect(rectangles.get(keys[j]), white);
-            } else {
-                canvas.drawRect(rectangles.get(keys[j]), black);
-            }
-            rectangles.get(keys[j]).offset(0,2*SH4);
-            if (i == keys.length-1){
-                isTop = false;
-            }
         }
     }
 }

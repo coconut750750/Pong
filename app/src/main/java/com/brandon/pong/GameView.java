@@ -13,7 +13,6 @@ import android.view.SurfaceView;
 public class GameView extends SurfaceView implements SurfaceHolder.Callback
 {
     private GameThread _thread;
-    private SurfaceHolder holder;
     private Context context;
 
     public GameView(Context context, AttributeSet attrs) {
@@ -21,7 +20,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
         this.context = context;
 
         //So we can listen for events...
-        holder = getHolder();
+        SurfaceHolder holder = getHolder();
         holder.addCallback(this);
         setFocusable(true);
 
