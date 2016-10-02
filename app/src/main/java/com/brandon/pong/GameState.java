@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -36,7 +37,8 @@ public class GameState {
     private final static int maxBallSpeed = 30;
     private final static int resetBuffer = 50;
     static int resetBuffer1;
-    private static int batDifference;
+    private static int batDifferenceBot;
+    private static int batDifferenceTop;
     private final static double angleMin = 30.0*Math.PI/180;
     private final static double angleMax = Math.PI - angleMin;
 
@@ -92,7 +94,8 @@ public class GameState {
         _ballVelocityY = Math.sqrt(100-_ballVelocityX*_ballVelocityX);
 
         resetBuffer1 = 1;
-        batDifference = 0;
+        batDifferenceBot = 0;
+        batDifferenceTop = 0;
         batEnabled = true;
 
         scoreBot = 0;
@@ -126,8 +129,8 @@ public class GameState {
     public void update() {
 
         if(resetBuffer1!= 0 && resetBuffer1!=resetBuffer){
-            _bottomBatX -= batDifference/resetBuffer;
-            _topBatX -= batDifference/resetBuffer;
+            _bottomBatX -= batDifferenceBot/resetBuffer;
+            _topBatX -= batDifferenceTop/resetBuffer;
             resetBuffer1++;
             return;
         } else if (resetBuffer1 == resetBuffer){
@@ -162,7 +165,8 @@ public class GameState {
 
             //reset bat
             resetBuffer1++;
-            batDifference = _bottomBatX-batOrigin;
+            batDifferenceBot= _bottomBatX-batOrigin;
+            batDifferenceTop= _topBatX-batOrigin;
             batEnabled = false;
         }
 
@@ -173,51 +177,73 @@ public class GameState {
 
         int afterMult = (int)Math.ceil(Math.abs(_ballVelocityY)*multiplier)+2;
 
-        //maximum x add = 3;
-        if(_ballX+_ballSize >= _topBatX-_ballVelocityX && _ballX <= _topBatX+_batLength+_ballVelocityX){
+        double batBuffer = Math.abs(_ballVelocityX);
+
+        if(_ballX+_ballSize >= _topBatX-batBuffer && _ballX <= _topBatX+_batLength+batBuffer){
             boolean hitTop = _ballY < _topBatY+_batHeight && _ballY > _topBatY+_batHeight-afterMult;
+            if(hitTop){
+                bounce(true);
+            }
+        }
+        if (_ballX+_ballSize >= _bottomBatX-batBuffer && _ballX <= _bottomBatX+_batLength+batBuffer){
             boolean hitBot = _ballY+_ballSize > _bottomBatY && _ballY+_ballSize < _bottomBatY+afterMult;
-            if(hitTop || hitBot){
-                int centerBall = _ballX+_ballSize/2;
-
-                double tempVelX = _ballVelocityX+6*(centerBall-_bottomBatX)/_batLength - 3; //add percentage ball is off from bat center * 3
-
-                double _ballVelocity = Math.sqrt(_ballVelocityX*_ballVelocityX+_ballVelocityY*_ballVelocityY);
-                double angle = Math.acos((tempVelX)/_ballVelocity);
-
-                if(angle>angleMin && angle <angleMax){
-                    _ballVelocityX = tempVelX;
-                    _ballVelocityY = Math.sqrt(_ballVelocity*_ballVelocity-_ballVelocityX*_ballVelocityX);
-                }
-
-                if(hitBot){
-                    _ballVelocityY = _ballVelocityY*-1;
-                }
-                if(_ballVelocity*multiplier < (double)maxBallSpeed) {
-                    _ballVelocityX = _ballVelocityX * multiplier;
-                    _ballVelocityY = _ballVelocityY * multiplier;
-                }
+            if(hitBot){
+                bounce(false);
             }
         }
     }
 
-    public static void mKeyPressed(int touchPos)
+    public void bounce(boolean hitTop){
+        int centerBall = _ballX+_ballSize/2;
+
+        double tempVelX = _ballVelocityX+6*(centerBall-_topBatX)/_batLength - 3;
+        if(!hitTop){
+            tempVelX = _ballVelocityX+6*(centerBall-_bottomBatX)/_batLength - 3; //add percentage ball is off from bat center * 3
+        }
+
+        double _ballVelocity = Math.sqrt(_ballVelocityX*_ballVelocityX+_ballVelocityY*_ballVelocityY);
+        double angle = Math.acos((tempVelX)/_ballVelocity);
+
+        if(angle>angleMin && angle <angleMax){
+            _ballVelocityX = tempVelX;
+            _ballVelocityY = Math.sqrt(_ballVelocity*_ballVelocity-_ballVelocityX*_ballVelocityX);
+        }
+
+        _ballVelocityY = Math.abs(_ballVelocityY);
+        if(!hitTop) {
+            _ballVelocityY = _ballVelocityY * -1;
+        }
+
+        if(_ballVelocity*multiplier < (double)maxBallSpeed) {
+            _ballVelocityX = _ballVelocityX * multiplier;
+            _ballVelocityY = _ballVelocityY * multiplier;
+        }
+    }
+
+    public static void mKeyPressed(int touchPos, int bat)
     {
-        if(!batEnabled || _bottomBatX+_batLength/2 == touchPos){
-            return;
-        }
-        else if(_bottomBatX+_batLength/2>touchPos && _bottomBatX>0) //left
-        {
-            _bottomBatX -= _batSpeed;
-            _topBatX -= _batSpeed;
+        if(bat == 0){
+            _topBatX = move(touchPos, _topBatX);
+        } else{
+            _bottomBatX = move(touchPos, _bottomBatX);
         }
 
-        else if (_bottomBatX+_batLength<_screenWidth) //right
-        {
-            _bottomBatX += _batSpeed;
-            _topBatX += _batSpeed;
+    }
 
+    public static int move(int touchPos, int batX){
+        if(!batEnabled || batX+_batLength/2 == touchPos){
+            return batX;
         }
+        else if(batX+_batLength/2>touchPos && batX>0) //left
+        {
+            batX -= _batSpeed;
+        }
+
+        else if (batX+_batLength<_screenWidth) //right
+        {
+            batX += _batSpeed;
+        }
+        return batX;
     }
 
     //the draw method
@@ -228,6 +254,10 @@ public class GameState {
             //draw points
             drawPoints(canvas);
 
+            //draw middle line
+            paint.setARGB(200,200,200,0);
+            canvas.drawRect(new Rect(0, _screenHeight/2+10, _screenWidth, _screenHeight/2-10), paint);
+
             paint.setARGB(200, 0, 200, 0);
 
             //draw the ball
@@ -235,13 +265,6 @@ public class GameState {
             //draw the bats
             canvas.drawRect(new Rect(_topBatX, _topBatY, _topBatX + _batLength, _topBatY + _batHeight), paint); //top bat
             canvas.drawRect(new Rect(_bottomBatX, _bottomBatY, _bottomBatX + _batLength, _bottomBatY + _batHeight), paint); //bottom bat
-
-            //draw middle line
-            paint.setARGB(200,200,200,0);
-            canvas.drawRect(new Rect(0, _screenHeight/2+10, _screenWidth, _screenHeight/2-10), paint);
-
-
-
         } catch(NullPointerException e){
 
         }

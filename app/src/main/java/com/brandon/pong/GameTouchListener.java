@@ -13,7 +13,12 @@ public class GameTouchListener implements View.OnTouchListener {
     private int x = 0;
     private int positionBat;
     final private int delay = 1;
+    private int bat;
     //private boolean isLeft;
+
+    public GameTouchListener(int bat){
+        this.bat = bat;
+    }
 
     @Override public boolean onTouch(View v, MotionEvent event) {
 
@@ -44,7 +49,7 @@ public class GameTouchListener implements View.OnTouchListener {
         @Override public void run() {
 
             //GameState.mKeyPressed(isLeft, x);
-            GameState.mKeyPressed(x);
+            GameState.mKeyPressed(x, bat);
             mHandler.postDelayed(this, delay);
 
         }

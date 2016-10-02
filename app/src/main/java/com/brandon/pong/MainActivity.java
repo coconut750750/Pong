@@ -8,7 +8,8 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button button;
+    Button buttonBot;
+    Button buttonTop;
     GameView gameView;
     static int height;
 
@@ -27,7 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        button = (Button)findViewById(R.id.button);
+        buttonBot = (Button)findViewById(R.id.buttonBot);
+        buttonTop = (Button)findViewById(R.id.buttonTop);
         gameView = (GameView)findViewById(R.id.gameView);
 
         gameView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -36,7 +38,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        button.setOnTouchListener(new GameTouchListener());
+        buttonBot.setOnTouchListener(new GameTouchListener(1));
+        buttonTop.setOnTouchListener(new GameTouchListener(0));
     }
 
     public static void saveData() {
