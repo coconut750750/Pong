@@ -1,5 +1,6 @@
 package com.brandon.pong;
 
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
@@ -54,6 +55,8 @@ public class BluetoothFragment extends Fragment {
 
     BroadcastReceiver discoveryResult;
 
+    public static ProgressDialog progressDialog;
+
 
     public BluetoothFragment() {
         // Required empty public constructor
@@ -63,6 +66,8 @@ public class BluetoothFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        progressDialog = new ProgressDialog(getContext(), R.style.AppTheme_Dark_Dialog);
+        progressDialog.setIndeterminate(true);
     }
 
     @Override
@@ -101,11 +106,13 @@ public class BluetoothFragment extends Fragment {
                     }
                     @Override
                     protected void onPostExecute(Void result) {
-
                         startGame(2);
+                        progressDialog.dismiss();
                     }
                 };
                 connectTask.execute(index);
+                progressDialog.show();
+                progressDialog.setMessage("Connecting...");
             }
         });
 

@@ -111,6 +111,7 @@ public class GameState {
         } else {
             _ballVelocityY = 0;
             _ballVelocityX = 0;
+            ballIsVisible = false;
         }
 
         resetBuffer1 = 1;
