@@ -21,8 +21,8 @@ import java.util.Random;
 public class GameState {
 
     //screen width and height
-    public static int _screenWidth;
-    public static int _screenHeight;
+    private static int _screenWidth;
+    private static int _screenHeight;
 
     //The ball
     private final int _ballSize = 50;
@@ -54,13 +54,13 @@ public class GameState {
     private final static int batWallBuffer = 50;
 
     //Origin
-    public static int originX;
-    public static int originY;
+    private static int originX;
+    private static int originY;
     private static int batOrigin;
 
     //Score
-    public static int scoreBot;
-    public static int scoreTop;
+    private static int scoreBot;
+    private static int scoreTop;
     private final static String[] keys = new String[]{"MID","TOP","BOT","TOPLEFT","TOPRIGHT","BOTLEFT","BOTRIGHT"};
     private final static HashMap<Integer, List<Integer>> parseScoreData = new HashMap<>();
     private static HashMap<String, Rect> rectangles = new HashMap<>();
@@ -71,6 +71,7 @@ public class GameState {
     private static boolean isPaused;
     private static boolean isDouble;
     private static int playerNum;
+    private static boolean ballIsVisible;
 
     public GameState(Context context)
     {
@@ -84,6 +85,7 @@ public class GameState {
         _screenHeight = MainActivity.height;
 
         playerNum = MainActivity.playerNum;
+        ballIsVisible = true;
 
         if(!isDouble) {
             originX = _screenWidth / 2 - _ballSize / 2;
@@ -200,9 +202,8 @@ public class GameState {
             MainActivity.sendPos(xPercent, _ballVelocityX/_screenWidth, _ballVelocityY/_screenHeight);
             _ballVelocityY = 0;
             _ballVelocityX = 0;
+            ballIsVisible = false;
         }
-
-
 
         //Collisions with the sides
         if(_ballX+_ballSize > _screenWidth || _ballX < 0)
@@ -303,7 +304,9 @@ public class GameState {
             paint.setARGB(200, 0, 200, 0);
 
             //draw the ball
-            canvas.drawRect(new Rect(_ballX,_ballY,_ballX + _ballSize,_ballY + _ballSize), paint);
+            if(ballIsVisible) {
+                canvas.drawRect(new Rect(_ballX, _ballY, _ballX + _ballSize, _ballY + _ballSize), paint);
+            }
             //draw the bats
             if(!isDouble){
                 canvas.drawRect(new Rect(_topBatX, _topBatY, _topBatX + _batLength, _topBatY + _batHeight), paint); //top bat
@@ -351,5 +354,18 @@ public class GameState {
 
     public static void toggleGameState(){
         isPaused = !isPaused;
+    }
+
+    public static void setBallData(double ballXPercent, double ballVelX, double ballVelY){
+        _ballX = (int)(ballXPercent*_screenWidth);
+        _ballY = originY;
+        _ballVelocityX = ballVelX*_screenWidth;
+        _ballVelocityY = ballVelY*_screenHeight;
+        ballIsVisible = true;
+
+    }
+    public static void setScore(int scoreT, int scoreB){
+        scoreTop = scoreT;
+        scoreBot = scoreB;
     }
 }

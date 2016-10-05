@@ -36,7 +36,6 @@ public class BluetoothSocketListener implements Runnable {
                         bytesRead = instream.read(buffer);
                     }
                     message = message + new String(buffer, 0, bytesRead -1);
-                    Log.d("message",""+message);
                     String[] data = message.split(MainActivity.SEPARATOR);
                     final String type = data[0].trim();
 
@@ -53,10 +52,7 @@ public class BluetoothSocketListener implements Runnable {
                         r = new Runnable() {
                             @Override
                             public void run() {
-                                GameState._ballX = (int)(xPercent*GameState._screenWidth);
-                                GameState._ballY = GameState.originY;
-                                GameState._ballVelocityX = ballVelX*GameState._screenWidth;
-                                GameState._ballVelocityY = ballVelY*GameState._screenHeight;
+                                GameState.setBallData(xPercent, ballVelX, ballVelY);
                             }
                         };
                     } else if (type.equals(MainActivity.SCORE)) {
@@ -65,8 +61,7 @@ public class BluetoothSocketListener implements Runnable {
                         r = new Runnable() {
                             @Override
                             public void run() {
-                                GameState.scoreBot = score1;
-                                GameState.scoreTop = score2;
+                                GameState.setScore(score2, score1);
                             }
                         };
                     }
