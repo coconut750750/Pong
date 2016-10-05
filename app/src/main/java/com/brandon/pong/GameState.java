@@ -21,8 +21,8 @@ import java.util.Random;
 public class GameState {
 
     //screen width and height
-    private static int _screenWidth;
-    private static int _screenHeight;
+    public static int _screenWidth;
+    public static int _screenHeight;
 
     //The ball
     private final int _ballSize = 50;
@@ -54,13 +54,13 @@ public class GameState {
     private final static int batWallBuffer = 50;
 
     //Origin
-    private static int originX;
-    private static int originY;
+    public static int originX;
+    public static int originY;
     private static int batOrigin;
 
     //Score
-    private static int scoreBot;
-    private static int scoreTop;
+    public static int scoreBot;
+    public static int scoreTop;
     private final static String[] keys = new String[]{"MID","TOP","BOT","TOPLEFT","TOPRIGHT","BOTLEFT","BOTRIGHT"};
     private final static HashMap<Integer, List<Integer>> parseScoreData = new HashMap<>();
     private static HashMap<String, Rect> rectangles = new HashMap<>();
@@ -68,20 +68,33 @@ public class GameState {
     //Paint
     private static Paint white;
 
+    private static boolean isPaused;
+    private static boolean isDouble;
+    private static int playerNum;
+
     public GameState(Context context)
     {
+        isDouble = MainActivity.isDouble;
+
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         _screenWidth = size.x;
-        originX = _screenWidth/2-_ballSize/2;
-
         _screenHeight = MainActivity.height;
-        originY = _screenHeight/2-_ballSize/2;
+
+        playerNum = MainActivity.playerNum;
+
+        if(!isDouble) {
+            originX = _screenWidth / 2 - _ballSize / 2;
+            originY = _screenHeight / 2 - _ballSize / 2;
+        } else {
+            originX = _screenWidth / 2 - _ballSize / 2;
+            originY =  0 - _ballSize / 2;
+        }
+
         _topBatY = batWallBuffer;
         _bottomBatY = _screenHeight-batWallBuffer-_batHeight;
-
 
         _ballX = originX;
         _ballY = originY;
@@ -90,8 +103,13 @@ public class GameState {
         _topBatX = batOrigin;
         _bottomBatX = batOrigin;
 
-        _ballVelocityX = getBallVelX();
-        _ballVelocityY = Math.sqrt(100-_ballVelocityX*_ballVelocityX);
+        if(playerNum == 1 || !isDouble) {
+            _ballVelocityX = getBallVelX();
+            _ballVelocityY = Math.sqrt(100 - _ballVelocityX * _ballVelocityX);
+        } else {
+            _ballVelocityY = 0;
+            _ballVelocityX = 0;
+        }
 
         resetBuffer1 = 1;
         batDifferenceBot = 0;
@@ -100,6 +118,8 @@ public class GameState {
 
         scoreBot = 0;
         scoreTop = 0;
+
+        isPaused = false;
 
         parseScoreData.put(0, new ArrayList<>(Arrays.asList(1,2,3,4,5,6)));
         parseScoreData.put(1, new ArrayList<>(Arrays.asList(4,6)));
@@ -122,11 +142,15 @@ public class GameState {
         rectangles.put(keys[5], new Rect(11*rectLen/2-rectWid,SH4+rectWid/2+rectLen, 11*rectLen/2, SH4+rectWid/2));
         rectangles.put(keys[6], new Rect(13*rectLen/2+rectWid,SH4+rectWid/2+rectLen, 13*rectLen/2, SH4+rectWid/2));
         white = new Paint();
-        white.setARGB(255,200,200,200);
+        white.setARGB(200,220,220,220);
     }
 
     //The update method
     public void update() {
+
+        if (isPaused){
+            return;
+        }
 
         if(resetBuffer1!= 0 && resetBuffer1!=resetBuffer){
             _bottomBatX -= batDifferenceBot/resetBuffer;
@@ -144,17 +168,17 @@ public class GameState {
         _ballY += _ballVelocityY;
 
         //DEATH!
-        if(_ballY+_ballSize > _screenHeight || _ballY < 0) {
+        if (_ballY + _ballSize > _screenHeight || (_ballY < 0 && !isDouble)) {
             _ballVelocityX = getBallVelX();
-            _ballVelocityY = Math.sqrt(100-_ballVelocityX*_ballVelocityX);
+            _ballVelocityY = Math.sqrt(100 - _ballVelocityX * _ballVelocityX);
 
-            if (_ballY+_ballSize > _screenHeight) {
+            if (_ballY + _ballSize > _screenHeight) {
                 scoreTop += 1;
             } else {
                 _ballVelocityY *= -1;
                 scoreBot += 1;
             }
-            if(scoreTop > 9 || scoreBot > 9){
+            if (scoreTop > 9 || scoreBot > 9) {
                 scoreTop = 0;
                 scoreBot = 0;
             }
@@ -165,10 +189,19 @@ public class GameState {
 
             //reset bat
             resetBuffer1++;
-            batDifferenceBot= _bottomBatX-batOrigin;
-            batDifferenceTop= _topBatX-batOrigin;
+            batDifferenceBot = _bottomBatX - batOrigin;
+            batDifferenceTop = _topBatX - batOrigin;
             batEnabled = false;
+            if(isDouble){
+                MainActivity.sendScore(scoreBot, scoreTop);
+            }
+        } else if (_ballY < 0 && isDouble && _ballVelocityY < 0) {
+            double xPercent = _ballX/(double)_screenWidth;
+            MainActivity.sendPos(xPercent, _ballVelocityX/_screenWidth, _ballVelocityY/_screenHeight);
+            _ballVelocityY = 0;
+            _ballVelocityX = 0;
         }
+
 
 
         //Collisions with the sides
@@ -179,10 +212,12 @@ public class GameState {
 
         double batBuffer = Math.abs(_ballVelocityX);
 
-        if(_ballX+_ballSize >= _topBatX-batBuffer && _ballX <= _topBatX+_batLength+batBuffer){
-            boolean hitTop = _ballY < _topBatY+_batHeight && _ballY > _topBatY+_batHeight-afterMult;
-            if(hitTop){
-                bounce(true);
+        if(!isDouble) {
+            if (_ballX + _ballSize >= _topBatX - batBuffer && _ballX <= _topBatX + _batLength + batBuffer) {
+                boolean hitTop = _ballY < _topBatY + _batHeight && _ballY > _topBatY + _batHeight - afterMult;
+                if (hitTop) {
+                    bounce(true);
+                }
             }
         }
         if (_ballX+_ballSize >= _bottomBatX-batBuffer && _ballX <= _bottomBatX+_batLength+batBuffer){
@@ -222,6 +257,9 @@ public class GameState {
 
     public static void mKeyPressed(int touchPos, int bat)
     {
+        if (isPaused){
+            return;
+        }
         if(bat == 0){
             _topBatX = move(touchPos, _topBatX);
         } else{
@@ -256,15 +294,29 @@ public class GameState {
 
             //draw middle line
             paint.setARGB(200,200,200,0);
-            canvas.drawRect(new Rect(0, _screenHeight/2+10, _screenWidth, _screenHeight/2-10), paint);
+            if(!isDouble) {
+                canvas.drawRect(new Rect(0, _screenHeight / 2 + 10, _screenWidth, _screenHeight / 2 - 10), paint);
+            } else {
+                canvas.drawRect(new Rect(0, 10, _screenWidth, 0), paint);
+            }
 
             paint.setARGB(200, 0, 200, 0);
 
             //draw the ball
             canvas.drawRect(new Rect(_ballX,_ballY,_ballX + _ballSize,_ballY + _ballSize), paint);
             //draw the bats
-            canvas.drawRect(new Rect(_topBatX, _topBatY, _topBatX + _batLength, _topBatY + _batHeight), paint); //top bat
+            if(!isDouble){
+                canvas.drawRect(new Rect(_topBatX, _topBatY, _topBatX + _batLength, _topBatY + _batHeight), paint); //top bat
+            }
+
             canvas.drawRect(new Rect(_bottomBatX, _bottomBatY, _bottomBatX + _batLength, _bottomBatY + _batHeight), paint); //bottom bat
+            if (isPaused){
+                paint.setARGB(230, 230, 230, 230);
+                //draw pause sign
+                canvas.drawRect(new Rect(_screenWidth/18*5,_screenHeight/3,_screenWidth/18*7,_screenHeight/3*2), paint);
+                canvas.drawRect(new Rect(_screenWidth/18*11,_screenHeight/3,_screenWidth/18*13,_screenHeight/3*2), paint);
+                return;
+            }
         } catch(NullPointerException e){
 
         }
@@ -295,5 +347,9 @@ public class GameState {
             rect.offset(0,-1*_screenHeight/2);
 
         }
+    }
+
+    public static void toggleGameState(){
+        isPaused = !isPaused;
     }
 }

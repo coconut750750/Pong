@@ -1,7 +1,9 @@
 package com.brandon.pong;
 
+import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -11,39 +13,25 @@ import android.view.View;
 public class GameTouchListener implements View.OnTouchListener {
     private Handler mHandler;
     private int x = 0;
-    private int positionBat;
     final private int delay = 1;
     private int bat;
     //private boolean isLeft;
+    GestureDetector gestureDetector;
 
-    public GameTouchListener(int bat){
+    public GameTouchListener(Context context, int bat){
         this.bat = bat;
+        gestureDetector = new GestureDetector(context, new GestureListener());
     }
 
     @Override public boolean onTouch(View v, MotionEvent event) {
-
         x = (int) event.getX();
-        positionBat = GameState._bottomBatX+GameState._batLength/2;
 
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                if (mHandler != null) return true;
-                mHandler = new Handler();
-                //isLeft = x <= positionBat;
-                mHandler.postDelayed(action, delay);
-
-                break;
-            case MotionEvent.ACTION_UP:
-                if (mHandler == null) return true;
-                mHandler.removeCallbacks(action);
-                mHandler = null;
-                break;
-            case MotionEvent.ACTION_MOVE:
-                //isLeft = x <= positionBat;
-                break;
-
+        if (event.getAction() ==  MotionEvent.ACTION_UP) {
+            if (mHandler == null) return true;
+            mHandler.removeCallbacks(action);
+            mHandler = null;
         }
-        return false;
+        return gestureDetector.onTouchEvent(event);
     }
     private Runnable action = new Runnable() {
         @Override public void run() {
@@ -54,4 +42,24 @@ public class GameTouchListener implements View.OnTouchListener {
 
         }
     };
+
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            if (mHandler != null) return true;
+            mHandler = new Handler();
+            //isLeft = x <= positionBat;
+            mHandler.postDelayed(action, delay);
+            return false;
+        }
+
+        // event when double tap occurs
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            GameState.toggleGameState();
+
+            return true;
+        }
+    }
 }

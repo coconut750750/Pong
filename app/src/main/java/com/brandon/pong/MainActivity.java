@@ -1,10 +1,18 @@
 package com.brandon.pong;
 
 
+import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.Toast;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,14 +30,56 @@ public class MainActivity extends AppCompatActivity {
 
     static Bundle dataBundle;
 
+    final static String GAME_TYPE = "TYPE";
+    final static String SINGLE_PLAYER = "SINGLE";
+    final static String DOUBLE_PLAYER = "DOUBLE";
+
+    final static String PLAYER_NUM = "PNUM";
+    final static int PLAYER1 = 1;
+    final static int PLAYER2 = 2;
+
+    BluetoothSocketListener bsl;
+    public static BluetoothSocket bluetoothSocket;
+    public static Handler handler;
+
+    public static boolean isDouble;
+    public static int playerNum;
+    final static String SEPARATOR = "~";
+    final static String POSITION = "POS";
+    final static String SCORE = "SCORE";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        String type = intent.getStringExtra(GAME_TYPE);
 
-        setContentView(R.layout.activity_main);
+        bsl = null;
+        bluetoothSocket = null;
+        playerNum = 0;
+
+        isDouble = false;
+        if(type.equals(DOUBLE_PLAYER)){
+            isDouble = true;
+            bluetoothSocket = BluetoothFragment.socket;
+            handler = BluetoothFragment.handler;
+            BluetoothSocketListener bsl = new BluetoothSocketListener(bluetoothSocket, handler);
+            Thread messageListener = new Thread(bsl);
+            messageListener.start();
+            playerNum = intent.getIntExtra(PLAYER_NUM, 0);
+        }
+
+        if(!isDouble){
+            setContentView(R.layout.activity_main);
+            buttonTop = (Button)findViewById(R.id.buttonTop);
+            buttonTop.setOnTouchListener(new GameTouchListener(this, 0));
+        } else {
+            setContentView(R.layout.activity_main_double);
+        }
 
         buttonBot = (Button)findViewById(R.id.buttonBot);
-        buttonTop = (Button)findViewById(R.id.buttonTop);
+        buttonBot.setOnTouchListener(new GameTouchListener(this, 1));
+
         gameView = (GameView)findViewById(R.id.gameView);
 
         gameView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -37,9 +87,6 @@ public class MainActivity extends AppCompatActivity {
                 height = gameView.getHeight();
             }
         });
-
-        buttonBot.setOnTouchListener(new GameTouchListener(1));
-        buttonTop.setOnTouchListener(new GameTouchListener(0));
     }
 
     public static void saveData() {
@@ -61,6 +108,25 @@ public class MainActivity extends AppCompatActivity {
             GameState._bottomBatX = dataBundle.getInt(BATX);
             GameState._topBatX = dataBundle.getInt(BATX);
             GameState.resetBuffer1 = dataBundle.getInt(RESETBUFFER);
+        }
+    }
+
+    public static void sendPos(double xPercent, double ballVelX, double ballVelY) {
+        OutputStream outStream;
+        try {
+            outStream = bluetoothSocket.getOutputStream();
+            byte[] byteString = (POSITION+SEPARATOR+xPercent+SEPARATOR+ ballVelX + SEPARATOR+ ballVelY+SEPARATOR).getBytes();
+            outStream.write(byteString);
+        } catch (IOException e) {
+        }
+    }
+    public static void sendScore(int score1, int score2) {
+        OutputStream outStream;
+        try {
+            outStream = bluetoothSocket.getOutputStream();
+            byte[] byteString = (SCORE+SEPARATOR+score1+SEPARATOR+score2+SEPARATOR).getBytes();
+            outStream.write(byteString);
+        } catch (IOException e) {
         }
     }
 
