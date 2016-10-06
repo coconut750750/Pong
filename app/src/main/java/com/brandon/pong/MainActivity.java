@@ -27,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     final static String BALLVY = "BALLVY";
     final static String BATX = "BATX";
     final static String RESETBUFFER = "RESETBUFFER";
+    final static String SCORE_TOP = "SCORETOP";
+    final static String SCORE_BOT = "SCOREBOT";
 
     static Bundle dataBundle;
 
@@ -90,25 +92,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void saveData() {
-        dataBundle = new Bundle();
-        dataBundle.putInt(BALLX, GameState._ballX);
-        dataBundle.putInt(BALLY, GameState._ballY);
-        dataBundle.putDouble(BALLVX, GameState._ballVelocityX);
-        dataBundle.putDouble(BALLVY, GameState._ballVelocityY);
-        dataBundle.putInt(BATX, GameState._bottomBatX);
-        dataBundle.putInt(RESETBUFFER, GameState.resetBuffer1);
+        dataBundle = GameState.saveData();
     }
 
     public static void getData(){
-        if(dataBundle != null){
-            GameState._ballX = dataBundle.getInt(BALLX);
-            GameState._ballY = dataBundle.getInt(BALLY);
-            GameState._ballVelocityX = dataBundle.getDouble(BALLVX);
-            GameState._ballVelocityY = dataBundle.getDouble(BALLVY);
-            GameState._bottomBatX = dataBundle.getInt(BATX);
-            GameState._topBatX = dataBundle.getInt(BATX);
-            GameState.resetBuffer1 = dataBundle.getInt(RESETBUFFER);
-        }
+        GameState.getData(dataBundle);
     }
 
     public static void sendPos(double xPercent, double ballVelX, double ballVelY) {

@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
@@ -26,28 +27,28 @@ public class GameState {
 
     //The ball
     private static int _ballSize;
-    static int _ballX;
-    static int _ballY;
+    private static int _ballX;
+    private static int _ballY;
 
-    static double _ballVelocityX;
-    static double _ballVelocityY;
+    private static double _ballVelocityX;
+    private static double _ballVelocityY;
 
     //constants
     private final static double multiplier = 1.05;
     private final static int maxBallSpeed = 30;
     private final static int resetBuffer = 50;
-    static int resetBuffer1;
+    private static int resetBuffer1;
     private static int batDifferenceBot;
     private static int batDifferenceTop;
     private final static double angleMin = 30.0*Math.PI/180;
     private final static double angleMax = Math.PI - angleMin;
 
     //The bats
-    static int _batLength;
+    private static int _batLength;
     private static int _batHeight = 50;
-    static int _topBatX;
+    private static int _topBatX;
     private static int _topBatY;
-    static int _bottomBatX;
+    private static int _bottomBatX;
     private static int _bottomBatY;
     private final static int _batSpeed = 2;
     private static boolean batEnabled;
@@ -372,5 +373,30 @@ public class GameState {
     public static void setScore(int scoreT, int scoreB){
         scoreTop = scoreT;
         scoreBot = scoreB;
+    }
+    public static Bundle saveData(){
+        Bundle dataBundle = new Bundle();
+        dataBundle.putInt(MainActivity.BALLX, GameState._ballX);
+        dataBundle.putInt(MainActivity.BALLY, GameState._ballY);
+        dataBundle.putDouble(MainActivity.BALLVX, GameState._ballVelocityX);
+        dataBundle.putDouble(MainActivity.BALLVY, GameState._ballVelocityY);
+        dataBundle.putInt(MainActivity.BATX, GameState._bottomBatX);
+        dataBundle.putInt(MainActivity.RESETBUFFER, GameState.resetBuffer1);
+        dataBundle.putInt(MainActivity.SCORE_TOP, GameState.scoreTop);
+        dataBundle.putInt(MainActivity.SCORE_BOT, GameState.scoreBot);
+        return dataBundle;
+    }
+    public static void getData(Bundle dataBundle){
+        if(dataBundle != null){
+            GameState._ballX = dataBundle.getInt(MainActivity.BALLX);
+            GameState._ballY = dataBundle.getInt(MainActivity.BALLY);
+            GameState._ballVelocityX = dataBundle.getDouble(MainActivity.BALLVX);
+            GameState._ballVelocityY = dataBundle.getDouble(MainActivity.BALLVY);
+            GameState._bottomBatX = dataBundle.getInt(MainActivity.BATX);
+            GameState._topBatX = dataBundle.getInt(MainActivity.BATX);
+            GameState.resetBuffer1 = dataBundle.getInt(MainActivity.RESETBUFFER);
+            GameState.scoreTop = dataBundle.getInt(MainActivity.SCORE_TOP);
+            GameState.scoreBot = dataBundle.getInt(MainActivity.SCORE_BOT);
+        }
     }
 }
