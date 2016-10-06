@@ -48,7 +48,7 @@ public class BluetoothSocketListener implements Runnable {
                     if(type.equals(MainActivity.POSITION)) {
                         final double xPercent = Double.parseDouble(data[1].trim());
                         final double ballVelX = Double.parseDouble(data[2].trim());
-                        final double ballVelY = -1 * Double.parseDouble(data[3].trim());
+                        final double ballVelY = Double.parseDouble(data[3].trim());
                         r = new Runnable() {
                             @Override
                             public void run() {

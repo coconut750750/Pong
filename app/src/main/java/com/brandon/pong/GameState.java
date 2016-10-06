@@ -358,10 +358,10 @@ public class GameState {
     }
 
     public static void setBallData(double ballXPercent, double ballVelX, double ballVelY){
-        _ballX = (int)(ballXPercent*_screenWidth);
+        _ballX = (int)((1-ballXPercent)*_screenWidth);
         _ballY = originY;
-        _ballVelocityX = ballVelX*_screenWidth;
-        _ballVelocityY = ballVelY*_screenHeight;
+        _ballVelocityX = -1*ballVelX*_screenWidth;
+        _ballVelocityY = -1*ballVelY*_screenHeight;
         ballIsVisible = true;
 
     }
