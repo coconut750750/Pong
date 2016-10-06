@@ -104,28 +104,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void sendPos(double xPercent, double ballVelX, double ballVelY) {
-        OutputStream outStream;
-        try {
-            outStream = bluetoothSocket.getOutputStream();
-            byte[] byteString = (POSITION+SEPARATOR+xPercent+SEPARATOR+ ballVelX + SEPARATOR+ ballVelY+SEPARATOR).getBytes();
-            outStream.write(byteString);
-        } catch (IOException e) {
-        }
+        byte[] byteString = (POSITION+SEPARATOR+xPercent+SEPARATOR+ ballVelX + SEPARATOR+ ballVelY+SEPARATOR).getBytes();
+        send(byteString);
+
     }
     public static void sendScore(int score1, int score2) {
-        OutputStream outStream;
-        try {
-            outStream = bluetoothSocket.getOutputStream();
-            byte[] byteString = (SCORE+SEPARATOR+score1+SEPARATOR+score2+SEPARATOR).getBytes();
-            outStream.write(byteString);
-        } catch (IOException e) {
-        }
+        byte[] byteString = (SCORE+SEPARATOR+score1+SEPARATOR+score2+SEPARATOR).getBytes();
+        send(byteString);
     }
     public static void sendPause(){
+        byte[] byteString = (PAUSE+SEPARATOR).getBytes();
+        send(byteString);
+    }
+
+    public static void send(byte[] byteString){
         OutputStream outStream;
         try {
             outStream = bluetoothSocket.getOutputStream();
-            byte[] byteString = (PAUSE+SEPARATOR).getBytes();
             outStream.write(byteString);
         } catch (IOException e) {
         }
