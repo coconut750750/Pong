@@ -1,5 +1,6 @@
 package com.brandon.pong;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -13,7 +14,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +31,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 
@@ -45,7 +49,7 @@ public class BluetoothFragment extends Fragment {
     private List<String> deviceNames;
 
 
-    private UUID uuid = UUID.fromString("9abf0e00-8a39-11e6-bdf4-0800200c9a66");
+    private UUID uuid = UUID.fromString("79fb2000-8bd3-11e6-bdf4-0800200c9a66");
     private static int DISCOVERY_REQUEST = 1;
     public static Handler handler = new Handler();
     private ArrayAdapter<String> aa;
@@ -77,18 +81,29 @@ public class BluetoothFragment extends Fragment {
         // Get the Bluetooth Adapter
         bluetooth = BluetoothAdapter.getDefaultAdapter();
         foundDevices = new ArrayList<>();
+        deviceNames = new ArrayList<>();
+        aa = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_list_item_1, deviceNames);
         if (!bluetooth.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
+        /*Set<BluetoothDevice> pairedDevice = bluetooth.getBondedDevices();
+        if(pairedDevice.size()>0)
+        {
+            for(BluetoothDevice device : pairedDevice)
+            {
+                foundDevices.add(device);
+                deviceNames.add(device.getName());
+            }
+        }*/
+        aa.notifyDataSetChanged();
+
+        // Request location access
+        int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
+        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
 
 
         // Setup the ListView of discovered devices
-        deviceNames = new ArrayList<>();
-        for(BluetoothDevice bluetoothDevice:foundDevices){
-            deviceNames.add(bluetoothDevice.getName());
-        }
-        aa = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_list_item_1, deviceNames);
         list = (ListView)view.findViewById(R.id.list_discovered);
         list.setAdapter(aa);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -107,7 +122,6 @@ public class BluetoothFragment extends Fragment {
                     @Override
                     protected void onPostExecute(Void result) {
                         startGame(2);
-                        progressDialog.dismiss();
                     }
                 };
                 connectTask.execute(index);
@@ -116,31 +130,34 @@ public class BluetoothFragment extends Fragment {
             }
         });
 
-
         // Setup search button
-        searchButton = (Button)view.findViewById(R.id.button_search);
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                view.getContext().registerReceiver(discoveryResult, new IntentFilter(BluetoothDevice.ACTION_FOUND));
-                if (!bluetooth.isDiscovering()) {
-                    foundDevices.clear();
-                    bluetooth.startDiscovery();
-                }
-            }
-        });
         discoveryResult = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 BluetoothDevice remoteDevice;
                 remoteDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (bluetooth.getBondedDevices().contains(remoteDevice)) {
+                Log.d("asdf", remoteDevice.getName());
+                if (!foundDevices.contains(remoteDevice)) {
                     foundDevices.add(remoteDevice);
                     deviceNames.add(remoteDevice.getName());
                     aa.notifyDataSetChanged();
                 }
+
             }
         };
-
+        searchButton = (Button)view.findViewById(R.id.button_search);
+        view.getContext().registerReceiver(discoveryResult, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (!bluetooth.isDiscovering()) {
+                    bluetooth.startDiscovery();
+                    foundDevices.clear();
+                    deviceNames.clear();
+                    aa.notifyDataSetChanged();
+                }
+                Log.d("asdfff","searching "+bluetooth.isEnabled()+" "+bluetooth.isDiscovering()+" "+(discoveryResult==null));
+            }
+        });
 
         // Setup listen button
         listenButton = (Button)view.findViewById(R.id.button_listen);
@@ -148,15 +165,16 @@ public class BluetoothFragment extends Fragment {
             public void onClick(View view) {
                 Intent disc = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
                 startActivityForResult(disc, DISCOVERY_REQUEST);
+                progressDialog.show();
+                progressDialog.setMessage("Waiting for Opponent...");
             }
         });
 
         return view;
-
     }
 
-
     private void startGame(int player) {
+        progressDialog.dismiss();
         Intent intent = new Intent(getView().getContext(), MainActivity.class);
         intent.putExtra(MainActivity.GAME_TYPE, MainActivity.DOUBLE_PLAYER);
         intent.putExtra(MainActivity.PLAYER_NUM, player);
