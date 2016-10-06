@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Handler;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 /***
@@ -54,12 +55,14 @@ public class GameThread extends Thread implements Runnable{
     public void onPause() {
         synchronized (this) {
             mPaused = true;
+            Log.d("paused","thread");
         }
     }
 
     public void onResume() {
         synchronized (this) {
             mPaused = false;
+            Log.d("resume","thread");
             this.notifyAll();
         }
     }

@@ -360,6 +360,11 @@ public class GameState {
 
     public static void toggleGameState(){
         isPaused = !isPaused;
+        if(isPaused){
+            MainActivity.gameView._thread.onPause();
+        } else {
+            MainActivity.gameView._thread.onResume();
+        }
     }
 
     public static void setBallData(double ballXPercent, double ballVelX, double ballVelY){

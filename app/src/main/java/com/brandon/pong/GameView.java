@@ -12,7 +12,7 @@ import android.view.SurfaceView;
  */
 public class GameView extends SurfaceView implements SurfaceHolder.Callback
 {
-    private GameThread _thread;
+    public GameThread _thread;
     private Context context;
 
     public GameView(Context context, AttributeSet attrs) {
