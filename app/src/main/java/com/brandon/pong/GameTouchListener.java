@@ -57,8 +57,9 @@ public class GameTouchListener implements View.OnTouchListener {
         // event when double tap occurs
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            GameState.toggleGameState();
-
+            if(MainActivity.pausedPlayer == 0 || MainActivity.pausedPlayer == MainActivity.playerNum) {
+                GameState.toggleGameState();
+            }
             return true;
         }
     }

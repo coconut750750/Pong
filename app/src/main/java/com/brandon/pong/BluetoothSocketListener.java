@@ -42,7 +42,7 @@ public class BluetoothSocketListener implements Runnable {
                     Runnable r = new Runnable() {
                         @Override
                         public void run() {
-                            return;
+
                         }
                     };
                     if(type.equals(MainActivity.POSITION)) {
@@ -62,6 +62,13 @@ public class BluetoothSocketListener implements Runnable {
                             @Override
                             public void run() {
                                 GameState.setScore(score2, score1);
+                            }
+                        };
+                    } else if (type.equals(MainActivity.PAUSE)){
+                        r = new Runnable() {
+                            @Override
+                            public void run() {
+                                GameState.receiverPauseThread();
                             }
                         };
                     }

@@ -49,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
     final static String SEPARATOR = "~";
     final static String POSITION = "POS";
     final static String SCORE = "SCORE";
+    final static String PAUSE = "PAUSE";
+
+    public static int pausedPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         bsl = null;
         bluetoothSocket = null;
         playerNum = 0;
+        pausedPlayer = 0;
 
         isDouble = false;
         if(type.equals(DOUBLE_PLAYER)){
@@ -113,6 +117,15 @@ public class MainActivity extends AppCompatActivity {
         try {
             outStream = bluetoothSocket.getOutputStream();
             byte[] byteString = (SCORE+SEPARATOR+score1+SEPARATOR+score2+SEPARATOR).getBytes();
+            outStream.write(byteString);
+        } catch (IOException e) {
+        }
+    }
+    public static void sendPause(){
+        OutputStream outStream;
+        try {
+            outStream = bluetoothSocket.getOutputStream();
+            byte[] byteString = (PAUSE+SEPARATOR).getBytes();
             outStream.write(byteString);
         } catch (IOException e) {
         }
