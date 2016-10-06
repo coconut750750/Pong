@@ -88,6 +88,11 @@ public class GameState {
         playerNum = MainActivity.playerNum;
         ballIsVisible = true;
 
+        _batLength = _screenWidth/4;
+        _batHeight = _batLength/6;
+        _ballSize = _batLength/5;
+
+
         if(!isDouble) {
             originX = _screenWidth / 2 - _ballSize / 2;
             originY = _screenHeight / 2 - _ballSize / 2;
@@ -101,10 +106,6 @@ public class GameState {
 
         _ballX = originX;
         _ballY = originY;
-
-        _batLength = _screenWidth/4;
-        _batHeight = _batLength/6;
-        _ballSize = _batLength/5;
 
         batOrigin = (_screenWidth/2) - (_batLength / 2);
         _topBatX = batOrigin;
