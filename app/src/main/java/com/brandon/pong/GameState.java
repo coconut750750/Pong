@@ -25,7 +25,7 @@ public class GameState {
     private static int _screenHeight;
 
     //The ball
-    private final int _ballSize = 50;
+    private static int _ballSize;
     static int _ballX;
     static int _ballY;
 
@@ -43,8 +43,8 @@ public class GameState {
     private final static double angleMax = Math.PI - angleMin;
 
     //The bats
-    final static int _batLength = 300;
-    private final static int _batHeight = 50;
+    static int _batLength;
+    private static int _batHeight = 50;
     static int _topBatX;
     private static int _topBatY;
     static int _bottomBatX;
@@ -100,6 +100,10 @@ public class GameState {
 
         _ballX = originX;
         _ballY = originY;
+
+        _batLength = _screenWidth/4;
+        _batHeight = _batLength/6;
+        _ballSize = _batLength/5;
 
         batOrigin = (_screenWidth/2) - (_batLength / 2);
         _topBatX = batOrigin;
@@ -199,7 +203,7 @@ public class GameState {
                 MainActivity.sendScore(scoreBot, scoreTop);
             }
         } else if (_ballY < 0 && isDouble && _ballVelocityY < 0) {
-            double xPercent = _ballX/(double)_screenWidth;
+            double xPercent = (_ballX+_ballSize/2)/(double)_screenWidth;
             MainActivity.sendPos(xPercent, _ballVelocityX/_screenWidth, _ballVelocityY/_screenHeight);
             _ballVelocityY = 0;
             _ballVelocityX = 0;
@@ -358,7 +362,7 @@ public class GameState {
     }
 
     public static void setBallData(double ballXPercent, double ballVelX, double ballVelY){
-        _ballX = (int)((1-ballXPercent)*_screenWidth);
+        _ballX = (int)((1-ballXPercent)*_screenWidth)-_ballSize/2;
         _ballY = originY;
         _ballVelocityX = -1*ballVelX*_screenWidth;
         _ballVelocityY = -1*ballVelY*_screenHeight;
