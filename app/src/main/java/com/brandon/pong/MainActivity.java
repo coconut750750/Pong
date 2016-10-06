@@ -18,7 +18,8 @@ public class MainActivity extends AppCompatActivity {
 
     Button buttonBot;
     Button buttonTop;
-    public static GameView gameView;
+    GameView gameView;
+    public static GameThread _thread;
     static int height;
 
     final static String BALLX = "BALLX";

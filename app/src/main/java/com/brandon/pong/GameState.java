@@ -324,7 +324,7 @@ public class GameState {
                 //draw pause sign
                 canvas.drawRect(new Rect(_screenWidth/18*5,_screenHeight/3,_screenWidth/18*7,_screenHeight/3*2), paint);
                 canvas.drawRect(new Rect(_screenWidth/18*11,_screenHeight/3,_screenWidth/18*13,_screenHeight/3*2), paint);
-                MainActivity.gameView._thread.onPause();
+                MainActivity._thread.onPause();
 
             }
         } catch(NullPointerException e){
@@ -365,7 +365,7 @@ public class GameState {
             //pauses game thread in the update method after drawing signs
             MainActivity.pausedPlayer = 3-MainActivity.playerNum;
         } else {
-            MainActivity.gameView._thread.onResume();
+            MainActivity._thread.onResume();
             MainActivity.pausedPlayer = 0;
         }
     }
@@ -376,7 +376,7 @@ public class GameState {
             //pauses game thread in the update method after drawing signs
             MainActivity.pausedPlayer = playerNum;
         } else {
-            MainActivity.gameView._thread.onResume();
+            MainActivity._thread.onResume();
             MainActivity.pausedPlayer = 0;
         }
         if(isDouble){
