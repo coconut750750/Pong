@@ -35,7 +35,11 @@ public class GameState {
 
     //constants
     private final static double multiplier = 1.05;
+    private final static double multiplierDouble = 1.10;
     private final static int maxBallSpeed = 30;
+    private final static int maxBallSpeedDouble = 60;
+    private final static int initialBallSpeed = 10;
+    private final static int initialBallSpeedDouble = 20;
     private final static int resetBuffer = 50;
     private static int resetBuffer1;
     private static int batDifferenceBot;
@@ -113,7 +117,11 @@ public class GameState {
 
         if(playerNum == 1 || !isDouble) {
             _ballVelocityX = getBallVelX();
-            _ballVelocityY = Math.sqrt(100 - _ballVelocityX * _ballVelocityX);
+            if(!isDouble) {
+                _ballVelocityY = Math.sqrt(initialBallSpeed * initialBallSpeed - _ballVelocityX * _ballVelocityX);
+            } else{
+                _ballVelocityY = Math.sqrt(initialBallSpeedDouble * initialBallSpeedDouble - _ballVelocityX * _ballVelocityX);
+            }
         } else {
             _ballVelocityY = 0;
             _ballVelocityX = 0;
@@ -179,7 +187,11 @@ public class GameState {
         //DEATH!
         if (_ballY + _ballSize > _screenHeight || (_ballY < 0 && !isDouble)) {
             _ballVelocityX = getBallVelX();
-            _ballVelocityY = Math.sqrt(100 - _ballVelocityX * _ballVelocityX);
+            if(isDouble) {
+                _ballVelocityY = Math.sqrt(initialBallSpeedDouble*initialBallSpeedDouble - _ballVelocityX * _ballVelocityX);
+            } else{
+                _ballVelocityY = Math.sqrt(initialBallSpeed*initialBallSpeed - _ballVelocityX * _ballVelocityX);
+            }
 
             if (_ballY + _ballSize > _screenHeight) {
                 scoreTop += 1;
@@ -257,9 +269,13 @@ public class GameState {
             _ballVelocityY = _ballVelocityY * -1;
         }
 
-        if(_ballVelocity*multiplier < (double)maxBallSpeed) {
+        if(!isDouble && _ballVelocity*multiplier < (double)maxBallSpeed) {
             _ballVelocityX = _ballVelocityX * multiplier;
             _ballVelocityY = _ballVelocityY * multiplier;
+        }
+        if(isDouble && _ballVelocity*multiplierDouble < (double)maxBallSpeedDouble){
+            _ballVelocityX = _ballVelocityX * multiplierDouble;
+            _ballVelocityY = _ballVelocityY * multiplierDouble;
         }
     }
 
@@ -337,7 +353,11 @@ public class GameState {
         int[] possible = new int[]{-5,-6,-7,-8,5,6,7,8};
 
         int rnd = new Random().nextInt(possible.length);
-        return possible[rnd];
+        if(isDouble){
+            return possible[rnd]*2;
+        } else {
+            return possible[rnd];
+        }
     }
 
     private  void drawPoints(Canvas canvas){

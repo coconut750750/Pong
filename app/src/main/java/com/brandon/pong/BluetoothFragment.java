@@ -136,8 +136,7 @@ public class BluetoothFragment extends Fragment {
             public void onReceive(Context context, Intent intent) {
                 BluetoothDevice remoteDevice;
                 remoteDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                Log.d("asdf", remoteDevice.getName());
-                if (!foundDevices.contains(remoteDevice)) {
+                if (!foundDevices.contains(remoteDevice) && bluetooth.getBondedDevices().contains(remoteDevice)) {
                     foundDevices.add(remoteDevice);
                     deviceNames.add(remoteDevice.getName());
                     aa.notifyDataSetChanged();
@@ -155,7 +154,6 @@ public class BluetoothFragment extends Fragment {
                     deviceNames.clear();
                     aa.notifyDataSetChanged();
                 }
-                Log.d("asdfff","searching "+bluetooth.isEnabled()+" "+bluetooth.isDiscovering()+" "+(discoveryResult==null));
             }
         });
 
@@ -165,8 +163,8 @@ public class BluetoothFragment extends Fragment {
             public void onClick(View view) {
                 Intent disc = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
                 startActivityForResult(disc, DISCOVERY_REQUEST);
-                progressDialog.show();
-                progressDialog.setMessage("Waiting for Opponent...");
+                //progressDialog.show();
+                //progressDialog.setMessage("Waiting for Opponent...");
             }
         });
 
