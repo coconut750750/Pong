@@ -30,6 +30,7 @@ public class GameTouchListener implements View.OnTouchListener {
             if (mHandler == null) return true;
             mHandler.removeCallbacks(action);
             mHandler = null;
+            GameState.stopBat(bat);
         }
         return gestureDetector.onTouchEvent(event);
     }

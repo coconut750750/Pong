@@ -44,16 +44,17 @@ public class GameState {
     private static int resetBuffer1;
     private static int batDifferenceBot;
     private static int batDifferenceTop;
-    private final static double angleMin = 30.0*Math.PI/180;
-    private final static double angleMax = Math.PI - angleMin;
+    private final static double maxAngle = 20*Math.PI/180;
 
     //The bats
     private static int _batLength;
     private static int _batHeight = 50;
     private static int _topBatX;
     private static int _topBatY;
+    private static int _topBatMoving;
     private static int _bottomBatX;
     private static int _bottomBatY;
+    private static int _botBatMoving;
     private final static int _batSpeed = 2;
     private static boolean batEnabled;
     private final static int batWallBuffer = 50;
@@ -107,6 +108,9 @@ public class GameState {
 
         _topBatY = batWallBuffer;
         _bottomBatY = _screenHeight-batWallBuffer-_batHeight;
+
+        _topBatMoving = 0;
+        _botBatMoving = 0;
 
         _ballX = originX;
         _ballY = originY;
@@ -249,7 +253,7 @@ public class GameState {
     }
 
     public void bounce(boolean hitTop){
-        int centerBall = _ballX+_ballSize/2;
+        /*int centerBall = _ballX+_ballSize/2;
 
         double tempVelX = _ballVelocityX+6*(centerBall-_topBatX)/_batLength - 3;
         if(!hitTop){
@@ -262,12 +266,34 @@ public class GameState {
         if(angle>angleMin && angle <angleMax){
             _ballVelocityX = tempVelX;
             _ballVelocityY = Math.sqrt(_ballVelocity*_ballVelocity-_ballVelocityX*_ballVelocityX);
+        }*/
+
+        double tempx = _ballVelocityX;
+        double tempy = _ballVelocityY;
+
+        double _ballVelocity = getBallVelocity();
+        double perc = _ballVelocityY/_ballVelocity;
+        double angleAdd;
+        int isMoving;
+        if(hitTop) {
+            isMoving = _topBatMoving;
+            angleAdd = maxAngle * perc * _topBatMoving;
+        } else {
+            isMoving = _botBatMoving;
+            angleAdd = maxAngle * perc * _botBatMoving;
         }
+        addAngle(-1*angleAdd);
 
         _ballVelocityY = Math.abs(_ballVelocityY);
         if(!hitTop) {
             _ballVelocityY = _ballVelocityY * -1;
         }
+
+        if(tempx<0){
+            _ballVelocityX *= -1;
+        }
+
+        //Log.d("data",""+isMoving+" "+tempx+" "+_ballVelocityX+" "+tempy+" "+_ballVelocityY+" "+angleAdd);
 
         if(!isDouble && _ballVelocity*multiplier < (double)maxBallSpeed) {
             _ballVelocityX = _ballVelocityX * multiplier;
@@ -277,6 +303,7 @@ public class GameState {
             _ballVelocityX = _ballVelocityX * multiplierDouble;
             _ballVelocityY = _ballVelocityY * multiplierDouble;
         }
+
     }
 
     public static void mKeyPressed(int touchPos, int bat)
@@ -285,11 +312,26 @@ public class GameState {
             return;
         }
         if(bat == 0){
-            _topBatX = move(touchPos, _topBatX);
+            int topX =  move(touchPos, _topBatX);
+            if(topX == _topBatX){
+                _topBatMoving = 0;
+            } else if (topX > _topBatX) {
+                _topBatMoving = 1;
+            } else {
+                _topBatMoving = -1;
+            }
+            _topBatX = topX;
         } else{
-            _bottomBatX = move(touchPos, _bottomBatX);
+            int botX =  move(touchPos, _bottomBatX);
+            if(botX == _bottomBatX){
+                _botBatMoving = 0;
+            } else if (botX > _bottomBatX) {
+                _botBatMoving = 1;
+            } else {
+                _botBatMoving = -1;
+            }
+            _bottomBatX = botX;
         }
-
     }
 
     public static int move(int touchPos, int batX){
@@ -306,6 +348,14 @@ public class GameState {
             batX += _batSpeed;
         }
         return batX;
+    }
+
+    public static void stopBat(int bat){
+        if(bat == 0){
+            _topBatMoving = 0;
+        } else {
+            _botBatMoving = 0;
+        }
     }
 
     //the draw method
@@ -441,5 +491,23 @@ public class GameState {
             GameState.scoreTop = dataBundle.getInt(MainActivity.SCORE_TOP);
             GameState.scoreBot = dataBundle.getInt(MainActivity.SCORE_BOT);
         }
+    }
+
+    public static double getBallAngle(){
+        return Math.atan(_ballVelocityY/_ballVelocityX);
+    }
+
+    public static void setBallAngle(double angle){
+        double _ballVelocity = getBallVelocity();
+        _ballVelocityX = _ballVelocity*Math.cos(angle);
+        _ballVelocityY = _ballVelocity*Math.sin(angle);
+    }
+
+    public static void addAngle(double angle){
+        setBallAngle(angle + getBallAngle());
+    }
+
+    public static double getBallVelocity(){
+        return  Math.sqrt(_ballVelocityX*_ballVelocityX+_ballVelocityY*_ballVelocityY);
     }
 }
