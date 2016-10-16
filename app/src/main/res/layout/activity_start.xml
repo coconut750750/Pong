@@ -4,37 +4,62 @@
     android:id="@+id/activity_start"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.brandon.pong.StartActivity">
+    tools:context="com.brandon.pong.StartActivity"
+    android:padding="16dp"
+    android:background="@color/darkWhite">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Pong!"
         android:textSize="50dp"
-        android:textColor="#000000"
+        android:textColor="@color/lightBlack"
         android:gravity="center"
         android:id="@+id/textView"
         android:layout_marginTop="50dp"/>
 
-    <Button
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonSingle"
-        android:layout_alignParentStart="true"
-        android:id="@+id/buttonDouble"
-        android:text="Double Player"/>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/buttonSingle"
-        android:text="Single Player"
         android:layout_centerVertical="true"
-        android:layout_alignParentStart="true" />
+        android:orientation="horizontal"
+        android:weightSum="1.2">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:layout_weight="1">
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/buttonSingle"
+                android:text="Single Player"
+                android:textColor="@color/lightBlack"
+                android:background="@drawable/button"
+                android:layout_marginBottom="16dp"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/buttonSingle"
+                android:id="@+id/buttonDouble"
+                android:text="Double Player"
+                android:textColor="@color/lightBlack"
+                android:background="@drawable/button"
+                android:layout_marginBottom="16dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/fragment_container"/>
+        android:id="@+id/fragment_container"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

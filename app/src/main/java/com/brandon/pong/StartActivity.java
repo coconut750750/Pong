@@ -39,9 +39,8 @@ public class StartActivity extends AppCompatActivity {
                 FragmentTransaction fragmentTransaction = fm.beginTransaction();
                 fragmentTransaction.add(R.id.fragment_container, bluetoothFrag);
                 fragmentTransaction.commit();
-                buttonSingle.setVisibility(View.GONE);
-                buttonDouble.setVisibility(View.GONE);
             }
         });
     }
+
 }

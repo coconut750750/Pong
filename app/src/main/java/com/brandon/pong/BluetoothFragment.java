@@ -10,28 +10,23 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 
@@ -39,10 +34,10 @@ public class BluetoothFragment extends Fragment {
     private BluetoothAdapter bluetooth;
     public static BluetoothSocket socket;
 
-
     private ListView list;
     private Button searchButton;
     private Button listenButton;
+    private Button menuButton;
 
 
     private ArrayList<BluetoothDevice> foundDevices;
@@ -77,6 +72,15 @@ public class BluetoothFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_bluetooth, container, false);
+
+        // Get views
+        menuButton = (Button)view.findViewById(R.id.button_menu);
+        menuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().getSupportFragmentManager().beginTransaction().remove(BluetoothFragment.this).commit();
+            }
+        });
 
         // Get the Bluetooth Adapter
         bluetooth = BluetoothAdapter.getDefaultAdapter();
