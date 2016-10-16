@@ -6,6 +6,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
@@ -73,14 +74,19 @@ public class GameState {
 
     //Paint
     private static Paint white;
-
+    private Paint amber;
+    private Paint green;
+    private Paint pauseColor;
     private static boolean isPaused;
     private static boolean isDouble;
     private static int playerNum;
     private static boolean ballIsVisible;
 
+    private Context context;
+
     public GameState(Context context)
     {
+        this.context = context;
         isDouble = MainActivity.isDouble;
 
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -162,8 +168,15 @@ public class GameState {
         rectangles.put(keys[4], new Rect(13*rectLen/2+rectWid,SH4-rectWid/2-rectLen, 13*rectLen/2, SH4-rectWid/2));
         rectangles.put(keys[5], new Rect(11*rectLen/2-rectWid,SH4+rectWid/2+rectLen, 11*rectLen/2, SH4+rectWid/2));
         rectangles.put(keys[6], new Rect(13*rectLen/2+rectWid,SH4+rectWid/2+rectLen, 13*rectLen/2, SH4+rectWid/2));
+        //Colors
         white = new Paint();
         white.setARGB(200,220,220,220);
+        amber = new Paint();
+        amber.setColor(ContextCompat.getColor(context, R.color.colorAccent));
+        green = new Paint();
+        green.setColor(ContextCompat.getColor(context, R.color.colorPrimaryLight));
+        pauseColor = new Paint();
+        pauseColor.setColor(ContextCompat.getColor(context, R.color.darkWhite));
     }
 
     //The update method
@@ -253,33 +266,14 @@ public class GameState {
     }
 
     public void bounce(boolean hitTop){
-        /*int centerBall = _ballX+_ballSize/2;
-
-        double tempVelX = _ballVelocityX+6*(centerBall-_topBatX)/_batLength - 3;
-        if(!hitTop){
-            tempVelX = _ballVelocityX+6*(centerBall-_bottomBatX)/_batLength - 3; //add percentage ball is off from bat center * 3
-        }
-
-        double _ballVelocity = Math.sqrt(_ballVelocityX*_ballVelocityX+_ballVelocityY*_ballVelocityY);
-        double angle = Math.acos((tempVelX)/_ballVelocity);
-
-        if(angle>angleMin && angle <angleMax){
-            _ballVelocityX = tempVelX;
-            _ballVelocityY = Math.sqrt(_ballVelocity*_ballVelocity-_ballVelocityX*_ballVelocityX);
-        }*/
-
         double tempx = _ballVelocityX;
-        double tempy = _ballVelocityY;
 
         double _ballVelocity = getBallVelocity();
         double perc = _ballVelocityY/_ballVelocity;
         double angleAdd;
-        int isMoving;
         if(hitTop) {
-            isMoving = _topBatMoving;
             angleAdd = maxAngle * perc * _topBatMoving;
         } else {
-            isMoving = _botBatMoving;
             angleAdd = maxAngle * perc * _botBatMoving;
         }
         addAngle(-1*angleAdd);
@@ -292,8 +286,6 @@ public class GameState {
         if(tempx<0){
             _ballVelocityX *= -1;
         }
-
-        //Log.d("data",""+isMoving+" "+tempx+" "+_ballVelocityX+" "+tempy+" "+_ballVelocityY+" "+angleAdd);
 
         if(!isDouble && _ballVelocity*multiplier < (double)maxBallSpeed) {
             _ballVelocityX = _ballVelocityX * multiplier;
@@ -367,30 +359,27 @@ public class GameState {
             drawPoints(canvas);
 
             //draw middle line
-            paint.setARGB(200,200,200,0);
             if(!isDouble) {
-                canvas.drawRect(new Rect(0, _screenHeight / 2 + 10, _screenWidth, _screenHeight / 2 - 10), paint);
+                canvas.drawRect(new Rect(0, _screenHeight / 2 + 10, _screenWidth, _screenHeight / 2 - 10), amber);
             } else {
-                canvas.drawRect(new Rect(0, 10, _screenWidth, 0), paint);
+                canvas.drawRect(new Rect(0, 10, _screenWidth, 0), amber);
             }
-
-            paint.setARGB(200, 0, 200, 0);
 
             //draw the ball
             if(ballIsVisible) {
-                canvas.drawRect(new Rect(_ballX, _ballY, _ballX + _ballSize, _ballY + _ballSize), paint);
+                canvas.drawRect(new Rect(_ballX, _ballY, _ballX + _ballSize, _ballY + _ballSize), green);
             }
             //draw the bats
             if(!isDouble){
-                canvas.drawRect(new Rect(_topBatX, _topBatY, _topBatX + _batLength, _topBatY + _batHeight), paint); //top bat
+                canvas.drawRect(new Rect(_topBatX, _topBatY, _topBatX + _batLength, _topBatY + _batHeight), green); //top bat
             }
 
-            canvas.drawRect(new Rect(_bottomBatX, _bottomBatY, _bottomBatX + _batLength, _bottomBatY + _batHeight), paint); //bottom bat
+            canvas.drawRect(new Rect(_bottomBatX, _bottomBatY, _bottomBatX + _batLength, _bottomBatY + _batHeight), green); //bottom bat
+
             if (isPaused){
-                paint.setARGB(230, 230, 230, 230);
                 //draw pause sign
-                canvas.drawRect(new Rect(_screenWidth/18*5,_screenHeight/3,_screenWidth/18*7,_screenHeight/3*2), paint);
-                canvas.drawRect(new Rect(_screenWidth/18*11,_screenHeight/3,_screenWidth/18*13,_screenHeight/3*2), paint);
+                canvas.drawRect(new Rect(_screenWidth/18*5,_screenHeight/3,_screenWidth/18*7,_screenHeight/3*2), pauseColor);
+                canvas.drawRect(new Rect(_screenWidth/18*11,_screenHeight/3,_screenWidth/18*13,_screenHeight/3*2), pauseColor);
                 MainActivity._thread.onPause();
 
             }
@@ -463,10 +452,12 @@ public class GameState {
         ballIsVisible = true;
 
     }
+
     public static void setScore(int scoreT, int scoreB){
         scoreTop = scoreT;
         scoreBot = scoreB;
     }
+
     public static Bundle saveData(){
         Bundle dataBundle = new Bundle();
         dataBundle.putInt(MainActivity.BALLX, GameState._ballX);
@@ -479,6 +470,7 @@ public class GameState {
         dataBundle.putInt(MainActivity.SCORE_BOT, GameState.scoreBot);
         return dataBundle;
     }
+
     public static void getData(Bundle dataBundle){
         if(dataBundle != null){
             GameState._ballX = dataBundle.getInt(MainActivity.BALLX);

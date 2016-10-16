@@ -9,9 +9,9 @@
     </style>
 
     <style name="AppTheme.Dark.Dialog" parent="Theme.AppCompat.Dialog">
-        <item name="colorAccent">@color/favoriteAccent</item>
-        <item name="android:textColorPrimary">@color/favoriteLighter</item>
-        <item name="android:background">@color/colorLogin</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">#ffffff</item>
+        <item name="android:background">@color/colorPrimary</item>
     </style>
 
 </resources>
