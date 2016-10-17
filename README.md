@@ -13,5 +13,4 @@ One paddle per screen. Host or connect to a game through bluetooth. Opponent dev
 
 Ball speed in X and Y direction and ball's position is determined as a percentage of the screen's width and height when the data is sent over to opponent. Ball disappears when it hits the top edge of screen and is shown on opponent's device.
 
-<img src="image.png" width="50px"/>
-
+![screengrab](image.png)
