@@ -159,6 +159,19 @@ public class GameState {
 
         resetShadows();
 
+        setDataForPoints();
+
+        setColors();
+
+    }
+
+    public void resetShadows(){
+        ballShadows = new int[10][2];
+        ballShadowIndex = 0;
+        ballShadowOn = false;
+    }
+
+    public void setDataForPoints(){
         parseScoreData.put(0, new ArrayList<>(Arrays.asList(1,2,3,4,5,6)));
         parseScoreData.put(1, new ArrayList<>(Arrays.asList(4,6)));
         parseScoreData.put(2, new ArrayList<>(Arrays.asList(0,1,2,4,5)));
@@ -179,7 +192,9 @@ public class GameState {
         rectangles.put(keys[4], new Rect(13*rectLen/2+rectWid,SH4-rectWid/2-rectLen, 13*rectLen/2, SH4-rectWid/2));
         rectangles.put(keys[5], new Rect(11*rectLen/2-rectWid,SH4+rectWid/2+rectLen, 11*rectLen/2, SH4+rectWid/2));
         rectangles.put(keys[6], new Rect(13*rectLen/2+rectWid,SH4+rectWid/2+rectLen, 13*rectLen/2, SH4+rectWid/2));
-        //Colors
+    }
+
+    public void setColors(){
         white = new Paint();
         white.setARGB(200,220,220,220);
         amber = new Paint();
@@ -188,12 +203,6 @@ public class GameState {
         green.setColor(ContextCompat.getColor(context, R.color.colorPrimaryLight));
         pauseColor = new Paint();
         pauseColor.setColor(ContextCompat.getColor(context, R.color.darkWhite));
-    }
-
-    public void resetShadows(){
-        ballShadows = new int[10][2];
-        ballShadowIndex = 0;
-        ballShadowOn = false;
     }
 
     //The update method
