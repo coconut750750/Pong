@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        String type = intent.getStringExtra(GAME_TYPE);
+        final String type = intent.getStringExtra(GAME_TYPE);
 
         bsl = null;
         bluetoothSocket = null;
@@ -136,10 +136,12 @@ public class MainActivity extends AppCompatActivity {
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close){
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
+                buttonBot.setEnabled(true);
             }
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 GameState.toggleGameState();
+                buttonBot.setEnabled(false);
             }
         };
 
