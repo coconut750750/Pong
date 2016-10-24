@@ -57,7 +57,7 @@ public class GameState {
     private static int _bottomBatY;
     private static int _botBatMoving;
     private final static int _batSpeed = 2;
-    private final static int _cpuSpeedMult = 5;
+    private final static int _cpuSpeedMult = 7;
     private static boolean batEnabled;
     private final static int batWallBuffer = 50;
 
@@ -84,7 +84,7 @@ public class GameState {
     private static boolean ballIsVisible;
     private static int shakingY;
     private static int shakingX;
-    private final static int[] shakingProcess = new int[]{0,1,3,5,7,9,7,5,3,1,-1,-3,-5,-7,-9,-7,-5,-3,-1};
+    private final static int[] shakingProcess = new int[]{0,7,11,13,14,13,11,7,0,-4,-6,-7,-6,-4,0,2,3,2,0,-1};
     private int[][] ballShadows;
     private int ballShadowIndex;
     private boolean ballShadowOn;
@@ -472,6 +472,7 @@ public class GameState {
                 canvas.drawRect(rect, white);
             }
             rect.offset(0,-1*_screenHeight/2);
+            rect.offset(-1*shakeX,-1*shakeY);
 
         }
     }
