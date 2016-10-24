@@ -133,7 +133,16 @@ public class MainActivity extends AppCompatActivity {
         drawerName = (TextView) header.findViewById(R.id.drawer_name);
         drawerName.setText("Pong");
 
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close){
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+            }
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                GameState.toggleGameState();
+            }
+        };
+
         drawerLayout.addDrawerListener(drawerToggle);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
