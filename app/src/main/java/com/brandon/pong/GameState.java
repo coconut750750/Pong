@@ -85,6 +85,9 @@ public class GameState {
     private static int shakingY;
     private static int shakingX;
     private final static int[] shakingProcess = new int[]{0,1,3,5,7,9,7,5,3,1,-1,-3,-5,-7,-9,-7,-5,-3,-1};
+    private int[][] ballShadows;
+    private int ballShadowIndex;
+    private boolean ballShadowOn;
 
     private Context context;
 
@@ -154,6 +157,8 @@ public class GameState {
         shakingY = 0;
         shakingX = 0;
 
+        resetShadows();
+
         parseScoreData.put(0, new ArrayList<>(Arrays.asList(1,2,3,4,5,6)));
         parseScoreData.put(1, new ArrayList<>(Arrays.asList(4,6)));
         parseScoreData.put(2, new ArrayList<>(Arrays.asList(0,1,2,4,5)));
@@ -185,6 +190,12 @@ public class GameState {
         pauseColor.setColor(ContextCompat.getColor(context, R.color.darkWhite));
     }
 
+    public void resetShadows(){
+        ballShadows = new int[10][2];
+        ballShadowIndex = 0;
+        ballShadowOn = false;
+    }
+
     //The update method
     public void update() {
 
@@ -206,6 +217,15 @@ public class GameState {
 
         _ballX += _ballVelocityX;
         _ballY += _ballVelocityY;
+
+        if(!isDouble) {
+            ballShadows[ballShadowIndex][0] = _ballX;
+            ballShadows[ballShadowIndex][1] = _ballY;
+            ballShadowIndex = (ballShadowIndex + 1) % ballShadows.length;
+            if (ballShadowIndex == 0) {
+                ballShadowOn = true;
+            }
+        }
 
         //DEATH!
         if (_ballY + _ballSize > _screenHeight || (_ballY < 0 && !isDouble)) {
@@ -239,6 +259,7 @@ public class GameState {
             if(isDouble){
                 MainActivity.sendScore(scoreBot, scoreTop);
             }
+            resetShadows();
         } else if (_ballY < 0 && isDouble && _ballVelocityY < 0) {
             double xPercent = (_ballX+_ballSize/2)/(double)_screenWidth;
             MainActivity.sendPos(xPercent, _ballVelocityX/_screenWidth, _ballVelocityY/_screenHeight);
@@ -403,7 +424,9 @@ public class GameState {
             //draw the ball
             if(ballIsVisible) {
                 canvas.drawRect(new Rect(_ballX, _ballY, _ballX + _ballSize, _ballY + _ballSize), green);
+                drawShadow(canvas);
             }
+            green.setAlpha(255);
             //draw the bats
             if(!isDouble){
                 canvas.drawRect(new Rect(_topBatX, _topBatY+shakeY, _topBatX + _batLength, _topBatY + _batHeight +shakeY), green); //top bat
@@ -420,17 +443,6 @@ public class GameState {
             }
         } catch(NullPointerException e){
 
-        }
-    }
-
-    private  static double getBallVelX(){
-        int[] possible = new int[]{-6,-7,-8,-9,6,7,8,9};
-
-        int rnd = new Random().nextInt(possible.length);
-        if(isDouble){
-            return possible[rnd]*2;
-        } else {
-            return possible[rnd];
         }
     }
 
@@ -452,6 +464,36 @@ public class GameState {
             }
             rect.offset(0,-1*_screenHeight/2);
 
+        }
+    }
+
+    private void drawShadow(Canvas canvas){
+        if(!ballShadowOn){
+            return;
+        }
+        Paint green2 = green;
+        int index = ballShadowIndex;
+        for(int i = 9; i > 0; i--){
+            index -= 1;
+            if(index == -1){
+                index = 9;
+            }
+            int x = ballShadows[index][0];
+            int y = ballShadows[index][1];
+            green2.setAlpha(255*i/10);
+            canvas.drawRect(new Rect(x, y, x + _ballSize, y + _ballSize), green2);
+        }
+
+    }
+
+    private  static double getBallVelX(){
+        int[] possible = new int[]{-6,-7,-8,-9,6,7,8,9};
+
+        int rnd = new Random().nextInt(possible.length);
+        if(isDouble){
+            return possible[rnd]*2;
+        } else {
+            return possible[rnd];
         }
     }
 
