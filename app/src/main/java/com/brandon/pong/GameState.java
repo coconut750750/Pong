@@ -37,9 +37,9 @@ public class GameState {
     //constants
     private final static double multiplier = 1.05;
     private final static double multiplierDouble = 1.10;
-    private final static int maxBallSpeed = 30;
+    private final static int maxBallSpeed = 40;
     private final static int maxBallSpeedDouble = 60;
-    private final static int initialBallSpeed = 10;
+    private final static int initialBallSpeed = 15;
     private final static int initialBallSpeedDouble = 20;
     private final static int resetBuffer = 50;
     private static int resetBuffer1;
@@ -57,6 +57,7 @@ public class GameState {
     private static int _bottomBatY;
     private static int _botBatMoving;
     private final static int _batSpeed = 2;
+    private final static int _cpuSpeedMult = 5;
     private static boolean batEnabled;
     private final static int batWallBuffer = 50;
 
@@ -270,6 +271,13 @@ public class GameState {
                 bounce(false);
             }
         }
+
+        //cpu moves bat
+        if(_ballVelocityY < 0) {
+            for(int i = 0; i<_cpuSpeedMult; i++) {
+                mKeyPressed(_ballX, 0);
+            }
+        }
     }
 
     public void bounce(boolean hitTop){
@@ -368,7 +376,7 @@ public class GameState {
 
             int shakeY = 0;
             if(shakingY != 0){
-                shakeY = shakingProcess[shakingY]*(int)_ballVelocityY/10;
+                shakeY = shakingProcess[shakingY]*(int)_ballVelocityY/10*-1;
                 shakingY++;
                 if(shakingY >= shakingProcess.length){
                     shakingY = 0;
@@ -416,7 +424,7 @@ public class GameState {
     }
 
     private  static double getBallVelX(){
-        int[] possible = new int[]{-5,-6,-7,-8,5,6,7,8};
+        int[] possible = new int[]{-6,-7,-8,-9,6,7,8,9};
 
         int rnd = new Random().nextInt(possible.length);
         if(isDouble){

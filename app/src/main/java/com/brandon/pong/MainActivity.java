@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         if(!isDouble){
             setContentView(R.layout.activity_main);
             buttonTop = (Button)findViewById(R.id.buttonTop);
-            buttonTop.setOnTouchListener(new GameTouchListener(this, 0));
+            //buttonTop.setOnTouchListener(new GameTouchListener(this, 0));
         } else {
             setContentView(R.layout.activity_main_double);
         }

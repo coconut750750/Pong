@@ -55,14 +55,12 @@ public class GameThread extends Thread implements Runnable{
     public void onPause() {
         synchronized (this) {
             mPaused = true;
-            Log.d("paused","thread");
         }
     }
 
     public void onResume() {
         synchronized (this) {
             mPaused = false;
-            Log.d("resume","thread");
             this.notifyAll();
         }
     }
