@@ -72,7 +72,7 @@ public class GameState {
     private final static HashMap<Integer, List<Integer>> parseScoreData = new HashMap<>();
     private static HashMap<String, Rect> rectangles = new HashMap<>();
 
-    //Paint
+    //Drawing
     private static Paint white;
     private Paint amber;
     private Paint green;
@@ -81,6 +81,9 @@ public class GameState {
     private static boolean isDouble;
     private static int playerNum;
     private static boolean ballIsVisible;
+    private static int shakingY;
+    private static int shakingX;
+    private final static int[] shakingProcess = new int[]{0,1,3,5,7,9,7,5,3,1,-1,-3,-5,-7,-9,-7,-5,-3,-1};
 
     private Context context;
 
@@ -147,6 +150,8 @@ public class GameState {
         scoreTop = 0;
 
         isPaused = false;
+        shakingY = 0;
+        shakingX = 0;
 
         parseScoreData.put(0, new ArrayList<>(Arrays.asList(1,2,3,4,5,6)));
         parseScoreData.put(1, new ArrayList<>(Arrays.asList(4,6)));
@@ -242,8 +247,10 @@ public class GameState {
         }
 
         //Collisions with the sides
-        if(_ballX+_ballSize > _screenWidth || _ballX < 0)
+        if(_ballX+_ballSize > _screenWidth || _ballX < 0) {
             _ballVelocityX *= -1;
+            shakingX = 1;
+        }
 
         int afterMult = (int)Math.ceil(Math.abs(_ballVelocityY)*multiplier)+2;
 
@@ -295,6 +302,8 @@ public class GameState {
             _ballVelocityX = _ballVelocityX * multiplierDouble;
             _ballVelocityY = _ballVelocityY * multiplierDouble;
         }
+
+        shakingY = 1;
 
     }
 
@@ -356,13 +365,31 @@ public class GameState {
             //Clear the screen
             canvas.drawRGB(20, 20, 20);
             //draw points
-            drawPoints(canvas);
+
+            int shakeY = 0;
+            if(shakingY != 0){
+                shakeY = shakingProcess[shakingY]*(int)_ballVelocityY/10;
+                shakingY++;
+                if(shakingY >= shakingProcess.length){
+                    shakingY = 0;
+                }
+            }
+            int shakeX = 0;
+            if (shakingX != 0) {
+                shakeX = shakingProcess[shakingX]*(int)_ballVelocityX/20;
+                shakingX++;
+                if(shakingX >= shakingProcess.length){
+                    shakingX = 0;
+                }
+            }
+
+            drawPoints(canvas, shakeY, shakeX);
 
             //draw middle line
             if(!isDouble) {
-                canvas.drawRect(new Rect(0, _screenHeight / 2 + 10, _screenWidth, _screenHeight / 2 - 10), amber);
+                canvas.drawRect(new Rect(0, _screenHeight / 2 + 10+shakeY, _screenWidth, _screenHeight / 2 - 10 +shakeY), amber);
             } else {
-                canvas.drawRect(new Rect(0, 10, _screenWidth, 0), amber);
+                canvas.drawRect(new Rect(0, 10+shakeY, _screenWidth, shakeY), amber);
             }
 
             //draw the ball
@@ -371,10 +398,10 @@ public class GameState {
             }
             //draw the bats
             if(!isDouble){
-                canvas.drawRect(new Rect(_topBatX, _topBatY, _topBatX + _batLength, _topBatY + _batHeight), green); //top bat
+                canvas.drawRect(new Rect(_topBatX, _topBatY+shakeY, _topBatX + _batLength, _topBatY + _batHeight +shakeY), green); //top bat
             }
 
-            canvas.drawRect(new Rect(_bottomBatX, _bottomBatY, _bottomBatX + _batLength, _bottomBatY + _batHeight), green); //bottom bat
+            canvas.drawRect(new Rect(_bottomBatX, _bottomBatY+shakeY, _bottomBatX + _batLength, _bottomBatY + _batHeight +shakeY), green); //bottom bat
 
             if (isPaused){
                 //draw pause sign
@@ -399,7 +426,7 @@ public class GameState {
         }
     }
 
-    private  void drawPoints(Canvas canvas){
+    private  void drawPoints(Canvas canvas, int shakeY, int shakeX){
 
         List<Integer> topData = parseScoreData.get(scoreTop);
         List<Integer> botData = parseScoreData.get(scoreBot);
@@ -407,6 +434,7 @@ public class GameState {
         for(int i = 0; i <keys.length; i++){
             int j = i%keys.length;
             Rect rect = rectangles.get(keys[j]);
+            rect.offset(shakeX,shakeY);
             if(topData.contains(j)){
                 canvas.drawRect(rect, white);
             }
