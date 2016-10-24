@@ -2,21 +2,31 @@ package com.brandon.pong;
 
 
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
+import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,17 +68,21 @@ public class MainActivity extends AppCompatActivity {
 
     public static int pausedPlayer;
 
+    //Drawer
+    public DrawerLayout drawerLayout;
+    public TextView drawerName;
+    public TextView drawerEmail;
+    public ActionBarDrawerToggle drawerToggle;
+    public NavigationView navigationView;
+    public ListView navigationFavList;
+
+    public Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         String type = intent.getStringExtra(GAME_TYPE);
-
-        setTitle("Pong");
-
-        //toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         bsl = null;
         bluetoothSocket = null;
@@ -94,6 +108,11 @@ public class MainActivity extends AppCompatActivity {
             setContentView(R.layout.activity_main_double);
         }
 
+        //toolbar
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        setTitle("Pong");
+
         buttonBot = (Button)findViewById(R.id.buttonBot);
         buttonBot.setOnTouchListener(new GameTouchListener(this, 1));
 
@@ -102,6 +121,30 @@ public class MainActivity extends AppCompatActivity {
         gameView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             public void onGlobalLayout() {
                 height = gameView.getHeight();
+            }
+        });
+
+        //drawer view
+        drawerLayout = (DrawerLayout)findViewById(R.id.main_drawer_layout);
+        navigationView = (NavigationView) findViewById(R.id.nvView);
+
+        View header = navigationView.getHeaderView(0);
+
+        drawerName = (TextView) header.findViewById(R.id.drawer_name);
+        drawerName.setText("Pong");
+
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
+        drawerLayout.addDrawerListener(drawerToggle);
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                Log.d("string", "" + (item.getItemId()));
+
+                Context c = getApplicationContext();
+                //c.startActivity(MainActivity.chatActivity(c, uid));
+
+                return false;
             }
         });
     }

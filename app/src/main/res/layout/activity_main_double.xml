@@ -1,33 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.brandon.pong.MainActivity">
 
-    <android.support.v7.widget.Toolbar
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/toolbar"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:fitsSystemWindows="true"
-        android:minHeight="?attr/actionBarSize"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:background="?attr/colorPrimary"
-        android:elevation="16dp">
-    </android.support.v7.widget.Toolbar>
+    <include
+        layout="@layout/toolbar"
+        android:id="@+id/toolbar"/>
 
     <com.brandon.pong.GameView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/gameView"/>
+        android:id="@+id/gameView"
+        android:layout_below="@id/toolbar"/>
 
     <Button
         android:id="@+id/buttonBot"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#00000000"/>
+        android:background="#00000000"
+        android:layout_below="@id/toolbar"/>
 
 
-</FrameLayout>
+</RelativeLayout>

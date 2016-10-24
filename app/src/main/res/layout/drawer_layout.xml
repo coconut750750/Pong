@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_below="@+id/drawer_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:weightSum="1.5"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nvView"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="@color/primary_material_light"
+        app:headerLayout="@layout/drawer_header"
+        android:layout_weight="1">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/header_height">
+
+            <TextView
+                android:id="@+id/fav_sub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Favorites"
+                android:textSize="14sp"
+                android:layout_marginTop="@dimen/content_areas"
+                android:layout_marginLeft="16dp"/>
+
+        </RelativeLayout>
+    </android.support.design.widget.NavigationView>
+
+</LinearLayout>
