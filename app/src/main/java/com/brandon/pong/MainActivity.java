@@ -71,10 +71,8 @@ public class MainActivity extends AppCompatActivity {
     //Drawer
     public DrawerLayout drawerLayout;
     public TextView drawerName;
-    public TextView drawerEmail;
     public ActionBarDrawerToggle drawerToggle;
     public NavigationView navigationView;
-    public ListView navigationFavList;
 
     public Toolbar toolbar;
 
@@ -114,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         setTitle("Pong");
 
         buttonBot = (Button)findViewById(R.id.buttonBot);
-        buttonBot.setOnTouchListener(new GameTouchListener(this, 1));
+        buttonBot.setOnTouchListener(new GameTouchListener(this, 1, drawerLayout));
 
         gameView = (GameView)findViewById(R.id.gameView);
 

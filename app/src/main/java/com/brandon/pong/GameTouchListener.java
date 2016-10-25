@@ -2,8 +2,10 @@ package com.brandon.pong;
 
 import android.content.Context;
 import android.os.Handler;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -17,10 +19,12 @@ public class GameTouchListener implements View.OnTouchListener {
     private int bat;
     //private boolean isLeft;
     GestureDetector gestureDetector;
+    DrawerLayout drawerLayout;
 
-    public GameTouchListener(Context context, int bat){
+    public GameTouchListener(Context context, int bat, DrawerLayout drawer){
         this.bat = bat;
         gestureDetector = new GestureDetector(context, new GestureListener());
+        drawerLayout = drawer;
     }
 
     @Override public boolean onTouch(View v, MotionEvent event) {
@@ -60,6 +64,7 @@ public class GameTouchListener implements View.OnTouchListener {
         public boolean onDoubleTap(MotionEvent e) {
             if(MainActivity.pausedPlayer == 0 || MainActivity.pausedPlayer == MainActivity.playerNum) {
                 GameState.toggleGameState();
+                drawerLayout.openDrawer(Gravity.LEFT);
             }
             return true;
         }
