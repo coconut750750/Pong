@@ -111,12 +111,12 @@ public class MainActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Pong");
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         setDrawer();
 
         buttonBot = (Button)findViewById(R.id.buttonBot);
         buttonBot.setOnTouchListener(new GameTouchListener(this, 1, drawerLayout));
-        Log.d("drawer",""+(drawerLayout==null));
 
         gameView = (GameView)findViewById(R.id.gameView);
 
@@ -152,6 +152,8 @@ public class MainActivity extends AppCompatActivity {
         };
 
         drawerLayout.addDrawerListener(drawerToggle);
+
+        drawerToggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override

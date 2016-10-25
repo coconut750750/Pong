@@ -360,6 +360,8 @@ public class GameState {
                 _topBatMoving = -1;
             }
             _topBatX = topX;
+            if(_topBatX<0)
+                _topBatX = 0;
         } else{
             int botX =  move(touchPos, _bottomBatX, speed);
             if(botX == _bottomBatX){
@@ -370,6 +372,8 @@ public class GameState {
                 _botBatMoving = -1;
             }
             _bottomBatX = botX;
+            if(_bottomBatX<0)
+                _bottomBatX = 0;
         }
     }
 
@@ -379,7 +383,8 @@ public class GameState {
         }
         else if(batX+_batLength/2>touchPos && batX>0) //left
         {
-            if(batX+_batLength/2-speed<touchPos){
+            int midPos = batX+_batLength/2-speed;
+            if(midPos<touchPos){
                 batX = touchPos-_batLength/2;
             } else {
                 batX -= speed;
@@ -388,7 +393,8 @@ public class GameState {
 
         else if (batX+_batLength<_screenWidth) //right
         {
-            if(batX+_batLength/2+speed>touchPos){
+            int midPos = batX+_batLength/2+speed;
+            if(midPos>touchPos){
                 batX = touchPos-_batLength/2;
             } else {
                 batX += speed;
