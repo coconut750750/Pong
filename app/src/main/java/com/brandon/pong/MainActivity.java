@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     public TextView drawerName;
     public ActionBarDrawerToggle drawerToggle;
     public NavigationView navigationView;
+    public TextView quit;
 
     public Toolbar toolbar;
 
@@ -115,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
         buttonBot = (Button)findViewById(R.id.buttonBot);
         buttonBot.setOnTouchListener(new GameTouchListener(this, 1, drawerLayout));
+        Log.d("drawer",""+(drawerLayout==null));
 
         gameView = (GameView)findViewById(R.id.gameView);
 
@@ -123,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 height = gameView.getHeight();
             }
         });
+
     }
 
     public void setDrawer(){
@@ -157,6 +160,16 @@ public class MainActivity extends AppCompatActivity {
                 //c.startActivity(MainActivity.chatActivity(c, uid));
 
                 return false;
+            }
+        });
+
+        quit = (TextView)drawerLayout.findViewById(R.id.quit);
+        quit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                _thread.stopThread();
+                GameState.reset();
+                finish();
             }
         });
     }

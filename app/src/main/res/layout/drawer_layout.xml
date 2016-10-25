@@ -20,11 +20,11 @@
             android:layout_marginTop="@dimen/header_height">
 
             <TextView
-                android:id="@+id/fav_sub"
+                android:id="@+id/quit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Favorites"
-                android:textSize="14sp"
+                android:text="Quit"
+                android:textSize="24dp"
                 android:layout_marginTop="@dimen/content_areas"
                 android:layout_marginLeft="16dp"/>
 

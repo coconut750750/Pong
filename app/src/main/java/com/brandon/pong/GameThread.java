@@ -18,17 +18,19 @@ public class GameThread extends Thread implements Runnable{
     private GameState _state;
 
     private boolean mPaused;
+    private boolean isRunning;
 
     public GameThread(SurfaceHolder surfaceHolder, Context context, Handler handler)
     {
         _surfaceHolder = surfaceHolder;
         _paint = new Paint();
         _state = new GameState(context);
+        isRunning = true;
     }
 
     @Override
     public void run() {
-        while(true)
+        while(isRunning)
         {
             Canvas canvas = _surfaceHolder.lockCanvas();
             _state.update();
@@ -44,6 +46,9 @@ public class GameThread extends Thread implements Runnable{
                     try {
                         this.wait();
                     } catch (InterruptedException e) {
+                    }
+                    if(isRunning){
+                        break;
                     }
                 }
             }
@@ -62,6 +67,14 @@ public class GameThread extends Thread implements Runnable{
         synchronized (this) {
             mPaused = false;
             this.notifyAll();
+        }
+    }
+
+    public void stopThread(){
+        synchronized (this){
+            isRunning = false;
+            _state = null;
+            _surfaceHolder = null;
         }
     }
 }

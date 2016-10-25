@@ -94,14 +94,23 @@ public class GameState {
     public GameState(Context context)
     {
         this.context = context;
-        isDouble = MainActivity.isDouble;
-
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         _screenWidth = size.x;
         _screenHeight = MainActivity.height;
+        reset();
+
+        resetShadows();
+
+        setDataForPoints();
+
+        setColors();
+    }
+
+    public static void reset(){
+        isDouble = MainActivity.isDouble;
 
         playerNum = MainActivity.playerNum;
         ballIsVisible = true;
@@ -156,13 +165,6 @@ public class GameState {
         isPaused = false;
         shakingY = 0;
         shakingX = 0;
-
-        resetShadows();
-
-        setDataForPoints();
-
-        setColors();
-
     }
 
     public void resetShadows(){
@@ -530,6 +532,10 @@ public class GameState {
         if(isDouble){
             MainActivity.sendPause();
         }
+    }
+
+    public static boolean getIsPaused(){
+        return isPaused;
     }
 
     public static void setBallData(double ballXPercent, double ballVelX, double ballVelY){
