@@ -85,6 +85,7 @@ public class GameState {
     private static int shakingY;
     private static int shakingX;
     private final static int[] shakingProcess = new int[]{0,7,11,13,14,13,11,7,0,-4,-6,-7,-6,-4,0,2,3,2,0,-1};
+    private final static int numShadows = 10;
     private static int[][] ballShadows;
     private static int ballShadowIndex;
 
@@ -167,7 +168,7 @@ public class GameState {
     }
 
     public void resetShadows(){
-        ballShadows = new int[10][2];
+        ballShadows = new int[numShadows][2];
         ballShadowIndex = 0;
     }
 
@@ -230,7 +231,7 @@ public class GameState {
         if(!isDouble) {
             ballShadows[ballShadowIndex][0] = _ballX;
             ballShadows[ballShadowIndex][1] = _ballY;
-            ballShadowIndex = (ballShadowIndex + 1) % ballShadows.length;
+            ballShadowIndex = (ballShadowIndex + 1) % numShadows;
         }
 
         //DEATH!
@@ -489,17 +490,15 @@ public class GameState {
     private void drawShadow(Canvas canvas){
         Paint green2 = green;
         int index = ballShadowIndex;
-        for(int i = 9; i > 0; i--){
-            index -= 1;
-            if(index == -1){
-                index = 9;
-            }
+        for(int i = numShadows-1; i > 0; i--){
+            index = (index+numShadows-1)%numShadows;
+
             if(ballShadows[index][0] == 0 && ballShadows[index][1] == 0){
                 return;
             }
             int x = ballShadows[index][0];
             int y = ballShadows[index][1];
-            green2.setAlpha(255*i/10);
+            green2.setAlpha(255*i/numShadows);
             canvas.drawRect(new Rect(x, y, x + _ballSize, y + _ballSize), green2);
         }
 
