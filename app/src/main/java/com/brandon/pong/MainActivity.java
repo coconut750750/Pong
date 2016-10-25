@@ -111,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         setTitle("Pong");
 
+        setDrawer();
+
         buttonBot = (Button)findViewById(R.id.buttonBot);
         buttonBot.setOnTouchListener(new GameTouchListener(this, 1, drawerLayout));
 
@@ -121,8 +123,9 @@ public class MainActivity extends AppCompatActivity {
                 height = gameView.getHeight();
             }
         });
+    }
 
-        //drawer view
+    public void setDrawer(){
         drawerLayout = (DrawerLayout)findViewById(R.id.main_drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nvView);
 
@@ -171,10 +174,12 @@ public class MainActivity extends AppCompatActivity {
         send(byteString);
 
     }
+
     public static void sendScore(int score1, int score2) {
         byte[] byteString = (SCORE+SEPARATOR+score1+SEPARATOR+score2+SEPARATOR).getBytes();
         send(byteString);
     }
+
     public static void sendPause(){
         byte[] byteString = (PAUSE+SEPARATOR).getBytes();
         send(byteString);
