@@ -338,7 +338,6 @@ public class GameState {
         }
 
         shakingY = 1;
-
     }
 
     public static void mKeyPressed(int touchPos, int bat, int speed)
@@ -348,13 +347,14 @@ public class GameState {
         }
         if(bat == 0){
             int topX =  move(touchPos, _topBatX, speed);
-            if(topX == _topBatX){
+            _topBatMoving = 0;
+            /*if(topX == _topBatX){
                 _topBatMoving = 0;
             } else if (topX > _topBatX) {
                 _topBatMoving = 1;
             } else {
                 _topBatMoving = -1;
-            }
+            }*/
             _topBatX = topX;
             if(_topBatX<0)
                 _topBatX = 0;
