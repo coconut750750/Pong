@@ -42,7 +42,7 @@ public class GameTouchListener implements View.OnTouchListener {
         @Override public void run() {
 
             //GameState.mKeyPressed(isLeft, x);
-            GameState.mKeyPressed(x, bat);
+            GameState.mKeyPressed(x, bat, GameState._batSpeed);
             mHandler.postDelayed(this, delay);
 
         }

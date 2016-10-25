@@ -144,7 +144,9 @@ public class MainActivity extends AppCompatActivity {
             }
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                GameState.toggleGameState();
+                if(!GameState.getIsPaused()) {
+                    GameState.toggleGameState();
+                }
                 buttonBot.setEnabled(false);
             }
         };

@@ -56,7 +56,7 @@ public class GameState {
     private static int _bottomBatX;
     private static int _bottomBatY;
     private static int _botBatMoving;
-    private final static int _batSpeed = 2;
+    public final static int _batSpeed = 2;
     private final static int _cpuSpeedMult = 7;
     private static boolean batEnabled;
     private final static int batWallBuffer = 50;
@@ -306,9 +306,7 @@ public class GameState {
 
         //cpu moves bat
         if(_ballVelocityY < 0) {
-            for(int i = 0; i<_cpuSpeedMult; i++) {
-                mKeyPressed(_ballX, 0);
-            }
+            mKeyPressed(_ballX, 0, _batSpeed*_cpuSpeedMult);
         }
     }
 
@@ -347,13 +345,13 @@ public class GameState {
 
     }
 
-    public static void mKeyPressed(int touchPos, int bat)
+    public static void mKeyPressed(int touchPos, int bat, int speed)
     {
         if (isPaused){
             return;
         }
         if(bat == 0){
-            int topX =  move(touchPos, _topBatX);
+            int topX =  move(touchPos, _topBatX, speed);
             if(topX == _topBatX){
                 _topBatMoving = 0;
             } else if (topX > _topBatX) {
@@ -363,7 +361,7 @@ public class GameState {
             }
             _topBatX = topX;
         } else{
-            int botX =  move(touchPos, _bottomBatX);
+            int botX =  move(touchPos, _bottomBatX, speed);
             if(botX == _bottomBatX){
                 _botBatMoving = 0;
             } else if (botX > _bottomBatX) {
@@ -375,18 +373,26 @@ public class GameState {
         }
     }
 
-    public static int move(int touchPos, int batX){
+    public static int move(int touchPos, int batX, int speed){
         if(!batEnabled || batX+_batLength/2 == touchPos){
             return batX;
         }
         else if(batX+_batLength/2>touchPos && batX>0) //left
         {
-            batX -= _batSpeed;
+            if(batX+_batLength/2-speed<touchPos){
+                batX = touchPos-_batLength/2;
+            } else {
+                batX -= speed;
+            }
         }
 
         else if (batX+_batLength<_screenWidth) //right
         {
-            batX += _batSpeed;
+            if(batX+_batLength/2+speed>touchPos){
+                batX = touchPos-_batLength/2;
+            } else {
+                batX += speed;
+            }
         }
         return batX;
     }
