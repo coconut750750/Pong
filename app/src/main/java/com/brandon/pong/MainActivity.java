@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         View header = navigationView.getHeaderView(0);
 
         drawerName = (TextView) header.findViewById(R.id.drawer_name);
-        drawerName.setText("Pong");
+        drawerName.setText("Menu");
 
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close){
             public void onDrawerClosed(View view) {
