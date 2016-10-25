@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     public ActionBarDrawerToggle drawerToggle;
     public NavigationView navigationView;
     public TextView quit;
+    public TextView restart;
 
     public Toolbar toolbar;
 
@@ -174,6 +176,18 @@ public class MainActivity extends AppCompatActivity {
                 _thread.stopThread();
                 GameState.reset();
                 finish();
+            }
+        });
+
+        restart = (TextView)drawerLayout.findViewById(R.id.restart);
+        restart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                _thread._state.resetShadows();
+                GameState.reset();
+                GameState.toggleGameState();
+                _thread.onPause();
+                drawerLayout.closeDrawer(Gravity.LEFT);
             }
         });
     }

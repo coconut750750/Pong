@@ -15,7 +15,7 @@ public class GameThread extends Thread implements Runnable{
     /** Handle to the surface manager object we interact with */
     private SurfaceHolder _surfaceHolder;
     private Paint _paint;
-    private GameState _state;
+    public GameState _state;
 
     private boolean mPaused;
     private boolean isRunning;
@@ -52,8 +52,6 @@ public class GameThread extends Thread implements Runnable{
                     }
                 }
             }
-
-
         }
     }
 

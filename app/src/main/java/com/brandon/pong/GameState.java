@@ -85,9 +85,8 @@ public class GameState {
     private static int shakingY;
     private static int shakingX;
     private final static int[] shakingProcess = new int[]{0,7,11,13,14,13,11,7,0,-4,-6,-7,-6,-4,0,2,3,2,0,-1};
-    private int[][] ballShadows;
-    private int ballShadowIndex;
-    private boolean ballShadowOn;
+    private static int[][] ballShadows;
+    private static int ballShadowIndex;
 
     private Context context;
 
@@ -170,7 +169,6 @@ public class GameState {
     public void resetShadows(){
         ballShadows = new int[10][2];
         ballShadowIndex = 0;
-        ballShadowOn = false;
     }
 
     public void setDataForPoints(){
@@ -233,9 +231,6 @@ public class GameState {
             ballShadows[ballShadowIndex][0] = _ballX;
             ballShadows[ballShadowIndex][1] = _ballY;
             ballShadowIndex = (ballShadowIndex + 1) % ballShadows.length;
-            if (ballShadowIndex == 0) {
-                ballShadowOn = true;
-            }
         }
 
         //DEATH!
@@ -492,15 +487,15 @@ public class GameState {
     }
 
     private void drawShadow(Canvas canvas){
-        if(!ballShadowOn){
-            return;
-        }
         Paint green2 = green;
         int index = ballShadowIndex;
         for(int i = 9; i > 0; i--){
             index -= 1;
             if(index == -1){
                 index = 9;
+            }
+            if(ballShadows[index][0] == 0 && ballShadows[index][1] == 0){
+                return;
             }
             int x = ballShadows[index][0];
             int y = ballShadows[index][1];

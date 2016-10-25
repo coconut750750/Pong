@@ -29,6 +29,17 @@
                 android:layout_marginTop="@dimen/content_areas"
                 android:layout_marginLeft="16dp"/>
 
+            <TextView
+                android:id="@+id/restart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Restart"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18dp"
+                android:layout_marginTop="@dimen/content_areas"
+                android:layout_marginLeft="16dp"
+                android:layout_below="@id/quit"/>
+
         </RelativeLayout>
     </android.support.design.widget.NavigationView>
 
