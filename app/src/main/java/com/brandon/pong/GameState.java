@@ -602,4 +602,8 @@ public class GameState {
     public static double getBallVelocity(){
         return  Math.sqrt(_ballVelocityX*_ballVelocityX+_ballVelocityY*_ballVelocityY);
     }
+
+    public static boolean getIsDouble(){
+        return isDouble;
+    }
 }

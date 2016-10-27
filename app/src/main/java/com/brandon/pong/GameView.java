@@ -46,7 +46,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback
         MainActivity.getData();
         MainActivity._thread.start();
         MainActivity._thread.onResume();
-        GameState.toggleGameState();
+        if(!GameState.getIsDouble()) {
+            GameState.toggleGameState();
+        }
         holder.addCallback(this);
     }
 

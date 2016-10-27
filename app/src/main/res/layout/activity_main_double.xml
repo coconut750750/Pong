@@ -9,18 +9,39 @@
         layout="@layout/toolbar"
         android:id="@+id/toolbar"/>
 
-    <com.brandon.pong.GameView
+    <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/gameView"
-        android:layout_below="@id/toolbar"/>
+        android:id="@+id/main_drawer_layout"
+        tools:context="com.brandon.mailbox.MainActivity">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/buttonBot"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#00000000"
-        android:layout_below="@id/toolbar"/>
+            <include
+                layout="@layout/toolbar"
+                android:id="@+id/toolbar"/>
+
+            <com.brandon.pong.GameView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/gameView"
+                android:layout_below="@id/toolbar"/>
+
+            <Button
+                android:id="@+id/buttonBot"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#00000000"
+                android:layout_below="@id/toolbar"/>
+
+        </RelativeLayout>
+
+        <include
+            layout="@layout/drawer_layout"/>
+
+    </android.support.v4.widget.DrawerLayout >
 
 
 </RelativeLayout>

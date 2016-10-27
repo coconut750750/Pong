@@ -67,6 +67,9 @@ public class GameTouchListener implements View.OnTouchListener {
                     drawerLayout.openDrawer(Gravity.LEFT);
                 } else if(GameState.getIsPaused()){
                     GameState.toggleGameState();
+                    if(GameState.getIsDouble()){
+                        MainActivity.sendPause();
+                    }
                 }
             }
             return true;
