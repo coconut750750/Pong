@@ -228,11 +228,10 @@ public class GameState {
         _ballX += _ballVelocityX;
         _ballY += _ballVelocityY;
 
-        if(!isDouble) {
-            ballShadows[ballShadowIndex][0] = _ballX;
-            ballShadows[ballShadowIndex][1] = _ballY;
-            ballShadowIndex = (ballShadowIndex + 1) % numShadows;
-        }
+        ballShadows[ballShadowIndex][0] = _ballX;
+        ballShadows[ballShadowIndex][1] = _ballY;
+        ballShadowIndex = (ballShadowIndex + 1) % numShadows;
+
 
         //DEATH!
         if (_ballY + _ballSize > _screenHeight || (_ballY < 0 && !isDouble)) {
@@ -273,6 +272,7 @@ public class GameState {
             _ballVelocityY = 0;
             _ballVelocityX = 0;
             ballIsVisible = false;
+            resetShadows();
         }
 
         //Collisions with the sides
