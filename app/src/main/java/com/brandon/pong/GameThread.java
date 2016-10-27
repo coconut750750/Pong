@@ -14,7 +14,6 @@ public class GameThread extends Thread implements Runnable{
 
     /** Handle to the surface manager object we interact with */
     private SurfaceHolder _surfaceHolder;
-    private Paint _paint;
     public GameState _state;
 
     private boolean mPaused;
@@ -23,7 +22,6 @@ public class GameThread extends Thread implements Runnable{
     public GameThread(SurfaceHolder surfaceHolder, Context context, Handler handler)
     {
         _surfaceHolder = surfaceHolder;
-        _paint = new Paint();
         _state = new GameState(context);
         isRunning = true;
     }
@@ -34,7 +32,7 @@ public class GameThread extends Thread implements Runnable{
         {
             Canvas canvas = _surfaceHolder.lockCanvas();
             _state.update();
-            _state.draw(canvas,_paint);
+            _state.draw(canvas);
             try{
                 _surfaceHolder.unlockCanvasAndPost(canvas);
             } catch(IllegalStateException e){

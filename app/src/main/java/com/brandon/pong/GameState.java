@@ -209,7 +209,7 @@ public class GameState {
     //The update method
     public void update() {
 
-        if (isPaused){
+        if (isPaused || !ballIsVisible){
             return;
         }
 
@@ -278,6 +278,9 @@ public class GameState {
         if(_ballX+_ballSize > _screenWidth || _ballX < 0) {
             _ballVelocityX *= -1;
             shakingX = 1;
+            if(isDouble){
+                MainActivity.sendShake(MainActivity.AXIS[0],_ballVelocityX);
+            }
         }
 
         int afterMult = (int)Math.ceil(Math.abs(_ballVelocityY)*multiplier)+2;
@@ -337,6 +340,9 @@ public class GameState {
         }
 
         shakingY = 1;
+        if(isDouble){
+            MainActivity.sendShake(MainActivity.AXIS[1],_ballVelocityY);
+        }
     }
 
     public static void mKeyPressed(int touchPos, int bat, int speed)
@@ -407,7 +413,7 @@ public class GameState {
     }
 
     //the draw method
-    public void draw(Canvas canvas, Paint paint) {
+    public void draw(Canvas canvas) {
         try{
             //Clear the screen
             canvas.drawRGB(20, 20, 20);
@@ -604,5 +610,14 @@ public class GameState {
 
     public static boolean getIsDouble(){
         return isDouble;
+    }
+
+    public static void setShakingX(double vel){
+        _ballVelocityX = vel;
+        shakingX = 1;
+    }
+    public static void setShakingY(double vel){
+        _ballVelocityY = vel;
+        shakingY = 1;
     }
 }

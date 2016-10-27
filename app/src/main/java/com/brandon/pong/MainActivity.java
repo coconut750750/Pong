@@ -64,8 +64,10 @@ public class MainActivity extends AppCompatActivity {
     public static int playerNum;
     final static String SEPARATOR = "~";
     final static String POSITION = "POS";
+    final static String SHAKE = "SHAKE";
     final static String SCORE = "SCORE";
     final static String PAUSE = "PAUSE";
+    final static String[] AXIS = new String[]{"x","y"};
 
     public static int pausedPlayer;
 
@@ -203,7 +205,11 @@ public class MainActivity extends AppCompatActivity {
     public static void sendPos(double xPercent, double ballVelX, double ballVelY) {
         byte[] byteString = (POSITION+SEPARATOR+xPercent+SEPARATOR+ ballVelX + SEPARATOR+ ballVelY+SEPARATOR).getBytes();
         send(byteString);
+    }
 
+    public static void sendShake(String axis, double ballVel){
+        byte[] byteString = (SHAKE+SEPARATOR+axis+SEPARATOR+ ballVel + SEPARATOR).getBytes();
+        send(byteString);
     }
 
     public static void sendScore(int score1, int score2) {

@@ -55,6 +55,15 @@ public class BluetoothSocketListener implements Runnable {
                                 GameState.setBallData(xPercent, ballVelX, ballVelY);
                             }
                         };
+                    } else if(type.equals(MainActivity.SHAKE)){
+                        final String axis = data[1].trim();
+                        final double vel = Double.parseDouble(data[2].trim());
+                        if(axis == MainActivity.AXIS[0]){
+                            GameState.setShakingX(vel);
+                        } else{
+                            GameState.setShakingY(vel);
+                        }
+
                     } else if (type.equals(MainActivity.SCORE)) {
                         final int score1 = Integer.parseInt(data[2].trim());
                         final int score2 = Integer.parseInt(data[1].trim());
