@@ -167,7 +167,7 @@ public class GameState {
         shakingX = 0;
     }
 
-    public void resetShadows(){
+    public static void resetShadows(){
         ballShadows = new int[numShadows][2];
         ballShadowIndex = 0;
     }
@@ -272,7 +272,6 @@ public class GameState {
             _ballVelocityY = 0;
             _ballVelocityX = 0;
             ballIsVisible = false;
-            resetShadows();
         }
 
         //Collisions with the sides
@@ -550,7 +549,7 @@ public class GameState {
         _ballVelocityX = -1*ballVelX*_screenWidth;
         _ballVelocityY = -1*ballVelY*_screenHeight;
         ballIsVisible = true;
-
+        resetShadows();
     }
 
     public static void setScore(int scoreT, int scoreB){
