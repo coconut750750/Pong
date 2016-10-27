@@ -276,6 +276,11 @@ public class GameState {
 
         //Collisions with the sides
         if(_ballX+_ballSize > _screenWidth || _ballX < 0) {
+            if(_ballX+_ballSize > _screenWidth){
+                _ballX = _screenWidth-_ballSize;
+            } else{
+                _ballX = 0;
+            }
             _ballVelocityX *= -1;
             shakingX = 1;
             if(isDouble){
@@ -550,7 +555,7 @@ public class GameState {
     }
 
     public static void setBallData(double ballXPercent, double ballVelX, double ballVelY){
-        _ballX = (int)((1-ballXPercent)*_screenWidth)-_ballSize/2;
+        _ballX = (int)((1-ballXPercent)*_screenWidth-_ballSize/2);
         _ballY = originY;
         _ballVelocityX = -1*ballVelX*_screenWidth;
         _ballVelocityY = -1*ballVelY*_screenHeight;
@@ -613,11 +618,11 @@ public class GameState {
     }
 
     public static void setShakingX(double vel){
-        _ballVelocityX = vel;
+        _ballVelocityX = -1*vel;
         shakingX = 1;
     }
     public static void setShakingY(double vel){
-        _ballVelocityY = vel;
+        _ballVelocityY = -1*vel;
         shakingY = 1;
     }
 }

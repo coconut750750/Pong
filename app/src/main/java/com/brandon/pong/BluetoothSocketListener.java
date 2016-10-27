@@ -58,7 +58,7 @@ public class BluetoothSocketListener implements Runnable {
                     } else if(type.equals(MainActivity.SHAKE)){
                         final String axis = data[1].trim();
                         final double vel = Double.parseDouble(data[2].trim());
-                        if(axis == MainActivity.AXIS[0]){
+                        if(axis.equals(MainActivity.AXIS[0])){
                             GameState.setShakingX(vel);
                         } else{
                             GameState.setShakingY(vel);
