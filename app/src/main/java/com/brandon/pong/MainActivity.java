@@ -53,12 +53,9 @@ public class MainActivity extends AppCompatActivity {
     final static String DOUBLE_PLAYER = "DOUBLE";
 
     final static String PLAYER_NUM = "PNUM";
-    final static int PLAYER1 = 1;
-    final static int PLAYER2 = 2;
 
     BluetoothSocketListener bsl;
     public static BluetoothSocket bluetoothSocket;
-    public static Handler handler;
 
     public static boolean isDouble;
     public static int playerNum;
@@ -96,8 +93,7 @@ public class MainActivity extends AppCompatActivity {
         if(type.equals(DOUBLE_PLAYER)){
             isDouble = true;
             bluetoothSocket = BluetoothFragment.socket;
-            handler = BluetoothFragment.handler;
-            BluetoothSocketListener bsl = new BluetoothSocketListener(bluetoothSocket, handler);
+            BluetoothSocketListener bsl = new BluetoothSocketListener(bluetoothSocket);
             Thread messageListener = new Thread(bsl);
             messageListener.start();
             playerNum = intent.getIntExtra(PLAYER_NUM, 0);

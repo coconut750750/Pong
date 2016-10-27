@@ -14,11 +14,9 @@ import java.io.InputStream;
 
 public class BluetoothSocketListener implements Runnable {
     private BluetoothSocket socket;
-    private Handler handler;
 
-    public BluetoothSocketListener(BluetoothSocket socket, Handler handler) {
+    public BluetoothSocketListener(BluetoothSocket socket) {
         this.socket = socket;
-        this.handler = handler;
     }
 
     public void run() {
@@ -39,22 +37,11 @@ public class BluetoothSocketListener implements Runnable {
                     String[] data = message.split(MainActivity.SEPARATOR);
                     final String type = data[0].trim();
 
-                    Runnable r = new Runnable() {
-                        @Override
-                        public void run() {
-
-                        }
-                    };
                     if(type.equals(MainActivity.POSITION)) {
                         final double xPercent = Double.parseDouble(data[1].trim());
                         final double ballVelX = Double.parseDouble(data[2].trim());
                         final double ballVelY = Double.parseDouble(data[3].trim());
-                        r = new Runnable() {
-                            @Override
-                            public void run() {
-                                GameState.setBallData(xPercent, ballVelX, ballVelY);
-                            }
-                        };
+                        GameState.setBallData(xPercent, ballVelX, ballVelY);
                     } else if(type.equals(MainActivity.SHAKE)){
                         final String axis = data[1].trim();
                         final double vel = Double.parseDouble(data[2].trim());
@@ -63,27 +50,14 @@ public class BluetoothSocketListener implements Runnable {
                         } else{
                             GameState.setShakingY(vel);
                         }
-
                     } else if (type.equals(MainActivity.SCORE)) {
                         final int score1 = Integer.parseInt(data[2].trim());
                         final int score2 = Integer.parseInt(data[1].trim());
-                        r = new Runnable() {
-                            @Override
-                            public void run() {
-                                GameState.setScore(score2, score1);
-                            }
-                        };
+                        GameState.setScore(score2, score1);
+                        GameState.returnBats();
                     } else if (type.equals(MainActivity.PAUSE)){
-                        r = new Runnable() {
-                            @Override
-                            public void run() {
-                                GameState.receiverPauseThread();
-                                Log.d("paused","recieved");
-                            }
-                        };
+                        GameState.receiverPauseThread();
                     }
-
-                    handler.post(r);
                     socket.getInputStream();
                 }
             }

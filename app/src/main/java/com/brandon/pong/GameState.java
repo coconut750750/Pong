@@ -209,7 +209,7 @@ public class GameState {
     //The update method
     public void update() {
 
-        if (isPaused || !ballIsVisible){
+        if (isPaused){
             return;
         }
 
@@ -223,6 +223,10 @@ public class GameState {
             batEnabled = true;
             _topBatX = batOrigin;
             _bottomBatX = batOrigin;
+        }
+
+        if(!ballIsVisible){
+            return;
         }
 
         _ballX += _ballVelocityX;
@@ -566,6 +570,13 @@ public class GameState {
     public static void setScore(int scoreT, int scoreB){
         scoreTop = scoreT;
         scoreBot = scoreB;
+    }
+
+    public static void returnBats(){
+        resetBuffer1++;
+        batDifferenceBot = _bottomBatX - batOrigin;
+        batDifferenceTop = _topBatX - batOrigin;
+        batEnabled = false;
     }
 
     public static Bundle saveData(){

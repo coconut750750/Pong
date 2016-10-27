@@ -46,7 +46,6 @@ public class BluetoothFragment extends Fragment {
 
     private UUID uuid = UUID.fromString("79fb2000-8bd3-11e6-bdf4-0800200c9a66");
     private static int DISCOVERY_REQUEST = 1;
-    public static Handler handler = new Handler();
     private ArrayAdapter<String> aa;
     int REQUEST_ENABLE_BT = 1;
 
