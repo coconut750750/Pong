@@ -69,6 +69,7 @@ public class BluetoothSocketListener implements Runnable {
                             @Override
                             public void run() {
                                 GameState.receiverPauseThread();
+                                Log.d("paused","recieved");
                             }
                         };
                     }

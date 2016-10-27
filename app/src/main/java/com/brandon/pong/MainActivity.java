@@ -146,11 +146,8 @@ public class MainActivity extends AppCompatActivity {
             }
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                if(!GameState.getIsPaused()) {
+                if(!GameState.getIsPaused() && (MainActivity.pausedPlayer == 0 || MainActivity.pausedPlayer == MainActivity.playerNum)) {
                     GameState.toggleGameState();
-                    if(GameState.getIsDouble()){
-                        MainActivity.sendPause();
-                    }
                 }
                 buttonBot.setEnabled(false);
             }

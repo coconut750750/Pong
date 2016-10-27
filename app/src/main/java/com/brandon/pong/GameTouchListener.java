@@ -63,13 +63,10 @@ public class GameTouchListener implements View.OnTouchListener {
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             if(MainActivity.pausedPlayer == 0 || MainActivity.pausedPlayer == MainActivity.playerNum) {
-                if(!drawerLayout.isDrawerOpen(Gravity.LEFT) && !GameState.getIsPaused()) {
+                if(!GameState.getIsPaused()) {
                     drawerLayout.openDrawer(Gravity.LEFT);
-                } else if(GameState.getIsPaused()){
+                } else {
                     GameState.toggleGameState();
-                    if(GameState.getIsDouble()){
-                        MainActivity.sendPause();
-                    }
                 }
             }
             return true;
