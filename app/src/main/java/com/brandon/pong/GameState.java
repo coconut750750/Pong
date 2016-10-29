@@ -41,8 +41,8 @@ public class GameState {
     private final static int maxBallSpeedDouble = 60;
     private final static int initialBallSpeed = 15;
     private final static int initialBallSpeedDouble = 20;
-    private final static int resetBuffer = 200;
-    private final static int displayMsgEvery = 50;
+    private final static int resetBuffer = 100;
+    private final static int displayMsgEvery = 20;
     private static int resetBuffer1;
     private static int batDifferenceBot;
     private static int batDifferenceTop;
@@ -278,12 +278,21 @@ public class GameState {
             _bottomBatX -= batDifferenceBot/resetBuffer;
             _topBatX -= batDifferenceTop/resetBuffer;
             resetBuffer1++;
+            if(win || lose) {
+                int resetAt = resetBuffer1 % displayMsgEvery;
+                if (resetAt == displayMsgEvery / 2) {
+                    displayMsg = true;
+                } else if (resetAt == 0) {
+                    displayMsg = false;
+                }
+            }
             return;
         } else if (resetBuffer1 == resetBuffer){
             resetBuffer1 = 0;
             batEnabled = true;
             _topBatX = batOrigin;
             _bottomBatX = batOrigin;
+            win = lose = false;
         }
 
         if(!ballIsVisible){
@@ -314,6 +323,11 @@ public class GameState {
                 scoreBot += 1;
             }
             if (scoreTop > 9 || scoreBot > 9) {
+                if(scoreTop > scoreBot){
+                    lose = true;
+                } else{
+                    win = true;
+                }
                 scoreTop = 0;
                 scoreBot = 0;
             }
@@ -506,11 +520,14 @@ public class GameState {
                 }
             }
 
-            drawPoints(canvas, shakeY, shakeX);
-
-            drawMsg(canvas, shakeY, shakeX, winKeys, winRectangles);
-
-            drawMsg(canvas, shakeY, shakeX, loseKeys, loseRectangles);
+            if(displayMsg) {
+                if(win)
+                    drawMsg(canvas, shakeY, shakeX, winKeys, winRectangles);
+                else if(lose)
+                    drawMsg(canvas, shakeY, shakeX, loseKeys, loseRectangles);
+            } else{
+                drawPoints(canvas, shakeY, shakeX);
+            }
 
             //draw middle line
             if(!isDouble) {
