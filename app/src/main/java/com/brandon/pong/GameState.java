@@ -41,7 +41,8 @@ public class GameState {
     private final static int maxBallSpeedDouble = 60;
     private final static int initialBallSpeed = 15;
     private final static int initialBallSpeedDouble = 20;
-    private final static int resetBuffer = 50;
+    private final static int resetBuffer = 200;
+    private final static int displayMsgEvery = 50;
     private static int resetBuffer1;
     private static int batDifferenceBot;
     private static int batDifferenceTop;
@@ -73,6 +74,17 @@ public class GameState {
     private final static HashMap<Integer, List<Integer>> parseScoreData = new HashMap<>();
     private static HashMap<String, Rect> rectangles = new HashMap<>();
 
+    private final static int winKeys = 10;
+    private static HashMap<Integer, Rect> winRectangles = new HashMap<>();
+
+    private final static int loseKeys = 15;
+    private static HashMap<Integer, Rect> loseRectangles = new HashMap<>();
+
+    private int rectLen;
+    private int rectWid;
+    private int SH4;
+    private int midX;
+
     //Drawing
     private static Paint white;
     private Paint amber;
@@ -84,10 +96,13 @@ public class GameState {
     private static boolean ballIsVisible;
     private static int shakingY;
     private static int shakingX;
-    private final static int[] shakingProcess = new int[]{0,7,11,13,14,13,11,7,0,-4,-6,-7,-6,-4,0,2,3,2,0,-1};
+    private final static int[] shakingProcess = new int[]{7,11,13,14,13,11,7,0,-4,-6,-7,-6,-4,0,2,3,2,0,-1};
     private final static int numShadows = 10;
     private static int[][] ballShadows;
     private static int ballShadowIndex;
+    private static boolean win;
+    private static boolean lose;
+    private static boolean displayMsg;
 
     private Context context;
 
@@ -105,11 +120,13 @@ public class GameState {
         resetShadows();
 
         setDataForPoints();
+        setDataForWin();
+        setDataForLose();
 
         setColors();
     }
 
-    public static void reset(){
+    static void reset(){
         isDouble = MainActivity.isDouble;
 
         playerNum = MainActivity.playerNum;
@@ -165,14 +182,23 @@ public class GameState {
         isPaused = false;
         shakingY = 0;
         shakingX = 0;
+
+        win = false;
+        lose = false;
+        displayMsg = false;
     }
 
-    public static void resetShadows(){
+    static void resetShadows(){
         ballShadows = new int[numShadows][2];
         ballShadowIndex = 0;
     }
 
-    public void setDataForPoints(){
+    void setDataForPoints(){
+        rectLen = _screenWidth/12;
+        rectWid = rectLen/4;
+        midX = _screenWidth/2;
+        SH4 = _screenHeight/4;
+
         parseScoreData.put(0, new ArrayList<>(Arrays.asList(1,2,3,4,5,6)));
         parseScoreData.put(1, new ArrayList<>(Arrays.asList(4,6)));
         parseScoreData.put(2, new ArrayList<>(Arrays.asList(0,1,2,4,5)));
@@ -183,9 +209,7 @@ public class GameState {
         parseScoreData.put(7, new ArrayList<>(Arrays.asList(1,4,6)));
         parseScoreData.put(8, new ArrayList<>(Arrays.asList(0,1,2,3,4,5,6)));
         parseScoreData.put(9, new ArrayList<>(Arrays.asList(0,1,2,3,4,6)));
-        int rectLen = _screenWidth/12;
-        int rectWid = rectLen/4;
-        int SH4 = _screenHeight/4;
+
         rectangles.put(keys[0], new Rect(11*rectLen/2,SH4-rectWid/2, 13*rectLen/2, SH4+rectWid/2));
         rectangles.put(keys[1], new Rect(11*rectLen/2,SH4-3*rectWid/2-rectLen, 13*rectLen/2, SH4-rectWid/2-rectLen));
         rectangles.put(keys[2], new Rect(11*rectLen/2,SH4+rectWid/2+rectLen, 13*rectLen/2, SH4+3*rectWid/2+rectLen));
@@ -193,6 +217,43 @@ public class GameState {
         rectangles.put(keys[4], new Rect(13*rectLen/2+rectWid,SH4-rectWid/2-rectLen, 13*rectLen/2, SH4-rectWid/2));
         rectangles.put(keys[5], new Rect(11*rectLen/2-rectWid,SH4+rectWid/2+rectLen, 11*rectLen/2, SH4+rectWid/2));
         rectangles.put(keys[6], new Rect(13*rectLen/2+rectWid,SH4+rectWid/2+rectLen, 13*rectLen/2, SH4+rectWid/2));
+    }
+
+    void setDataForWin(){
+        winRectangles.put(0, new Rect(midX-rectWid/2, SH4-rectLen/2, midX+rectWid/2,SH4+rectLen/2));
+
+        winRectangles.put(1, new Rect(midX-5*rectWid/2, SH4-rectLen/2, midX-3*rectWid/2,SH4+rectLen/2));
+        winRectangles.put(2, new Rect(midX-7*rectWid/2, SH4+rectLen/4, midX-5*rectWid/2,SH4+rectLen/2));
+        winRectangles.put(3, new Rect(midX-9*rectWid/2, SH4-rectLen/2, midX-7*rectWid/2,SH4+rectLen/2));
+        winRectangles.put(4, new Rect(midX-11*rectWid/2, SH4+rectLen/4, midX-9*rectWid/2,SH4+rectLen/2));
+        winRectangles.put(5, new Rect(midX-13*rectWid/2, SH4-rectLen/2, midX-11*rectWid/2,SH4+rectLen/2));
+
+        winRectangles.put(6, new Rect(midX+3*rectWid/2, SH4-rectLen/2, midX+5*rectWid/2,SH4+rectLen/2));
+        winRectangles.put(7, new Rect(midX+5*rectWid/2, SH4-rectLen/2, midX+7*rectWid/2,SH4));
+        winRectangles.put(8, new Rect(midX+7*rectWid/2, SH4, midX+9*rectWid/2,SH4+rectLen/2));
+        winRectangles.put(9, new Rect(midX+9*rectWid/2, SH4-rectLen/2, midX+11*rectWid/2,SH4+rectLen/2));
+    }
+
+    void setDataForLose(){
+        loseRectangles.put(0, new Rect(midX-3*rectWid/2, SH4-rectLen/2, midX-rectWid/2,SH4+rectLen/2));
+        loseRectangles.put(1, new Rect(midX-5*rectWid/2, SH4+rectLen/4, midX-3*rectWid/2,SH4+rectLen/2));
+        loseRectangles.put(2, new Rect(midX-5*rectWid/2, SH4-rectLen/2, midX-3*rectWid/2,SH4-rectLen/4));
+        loseRectangles.put(3, new Rect(midX-7*rectWid/2, SH4-rectLen/2, midX-5*rectWid/2,SH4+rectLen/2));
+
+        loseRectangles.put(4, new Rect(midX-13*rectWid/2, SH4-rectLen/2, midX-11*rectWid/2,SH4+rectLen/2));
+        loseRectangles.put(5, new Rect(midX-11*rectWid/2, SH4+rectLen/4, midX-9*rectWid/2,SH4+rectLen/2));
+
+        loseRectangles.put(6, new Rect(midX+rectWid/2, SH4-3*rectLen/10, midX+3*rectWid/2,SH4-rectLen/10));
+        loseRectangles.put(7, new Rect(midX+rectWid/2, SH4-rectLen/2, midX+5*rectWid/2,SH4-3*rectLen/10));
+        loseRectangles.put(8, new Rect(midX+rectWid/2, SH4-rectLen/10, midX+5*rectWid/2,SH4+rectLen/10));
+        loseRectangles.put(9, new Rect(midX+rectWid/2, SH4+3*rectLen/10, midX+5*rectWid/2,SH4+rectLen/2));
+        loseRectangles.put(10, new Rect(midX+3*rectWid/2, SH4+rectLen/10, midX+5*rectWid/2,SH4+3*rectLen/10));
+
+        loseRectangles.put(11, new Rect(midX+7*rectWid/2, SH4-rectLen/2, midX+9*rectWid/2,SH4+rectLen/2));
+        loseRectangles.put(12, new Rect(midX+9*rectWid/2, SH4-rectLen/2, midX+11*rectWid/2,SH4-3*rectLen/10));
+        loseRectangles.put(13, new Rect(midX+9*rectWid/2, SH4-rectLen/10, midX+11*rectWid/2,SH4+rectLen/10));
+        loseRectangles.put(14, new Rect(midX+9*rectWid/2, SH4+3*rectLen/10, midX+11*rectWid/2,SH4+rectLen/2));
+
     }
 
     public void setColors(){
@@ -447,6 +508,10 @@ public class GameState {
 
             drawPoints(canvas, shakeY, shakeX);
 
+            drawMsg(canvas, shakeY, shakeX, winKeys, winRectangles);
+
+            drawMsg(canvas, shakeY, shakeX, loseKeys, loseRectangles);
+
             //draw middle line
             if(!isDouble) {
                 canvas.drawRect(new Rect(0, _screenHeight / 2 + 10+shakeY, _screenWidth, _screenHeight / 2 - 10 +shakeY), amber);
@@ -495,6 +560,22 @@ public class GameState {
             if(botData.contains(j)){
                 canvas.drawRect(rect, white);
             }
+            rect.offset(0,-1*_screenHeight/2);
+            rect.offset(-1*shakeX,-1*shakeY);
+
+        }
+    }
+
+    private void drawMsg(Canvas canvas, int shakeY, int shakeX, int keys, HashMap<Integer, Rect> rects){
+        //for(int i = 0; i <winKeys.length; i++){
+        for(int i = 0; i <keys; i++){
+            Rect rect = rects.get(i);
+            rect.offset(shakeX,shakeY);
+            canvas.drawRect(rect, white);
+
+            rect.offset(0,_screenHeight/2);
+            canvas.drawRect(rect, white);
+
             rect.offset(0,-1*_screenHeight/2);
             rect.offset(-1*shakeX,-1*shakeY);
 
