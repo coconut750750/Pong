@@ -103,6 +103,7 @@ public class GameState {
     private static boolean win;
     private static boolean lose;
     private static boolean displayMsg;
+    private static boolean displayScore;
 
     private Context context;
 
@@ -186,6 +187,7 @@ public class GameState {
         win = false;
         lose = false;
         displayMsg = false;
+        displayScore = true;
     }
 
     static void resetShadows(){
@@ -293,6 +295,7 @@ public class GameState {
             _topBatX = batOrigin;
             _bottomBatX = batOrigin;
             win = lose = false;
+            displayScore = true;
         }
 
         if(!ballIsVisible){
@@ -330,6 +333,7 @@ public class GameState {
                 }
                 scoreTop = 0;
                 scoreBot = 0;
+                displayScore = false;
             }
 
             //reset ball
@@ -520,13 +524,15 @@ public class GameState {
                 }
             }
 
+            if(displayScore){
+                drawPoints(canvas, shakeY, shakeX);
+            }
+
             if(displayMsg) {
                 if(win)
                     drawMsg(canvas, shakeY, shakeX, winKeys, winRectangles);
                 else if(lose)
                     drawMsg(canvas, shakeY, shakeX, loseKeys, loseRectangles);
-            } else{
-                drawPoints(canvas, shakeY, shakeX);
             }
 
             //draw middle line
