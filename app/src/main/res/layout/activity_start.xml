@@ -54,6 +54,15 @@
                 android:textColor="@color/lightBlack"
                 android:background="@drawable/button"
                 android:layout_marginBottom="16dp"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/buttonDouble"
+                android:id="@+id/buttonHelp"
+                android:text="Help"
+                android:textColor="@color/lightBlack"
+                android:background="@drawable/button"
+                android:layout_marginBottom="16dp"/>
         </LinearLayout>
     </LinearLayout>
 

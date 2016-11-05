@@ -20,7 +20,7 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        setTitle("Pong");
+        setTitle("MultiPong");
 
         //toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

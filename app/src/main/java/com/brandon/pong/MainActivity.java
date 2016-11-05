@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         //toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setTitle("Pong");
+        setTitle("MultiPong");
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         setDrawer();

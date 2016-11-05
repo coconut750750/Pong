@@ -330,6 +330,7 @@ public class GameState {
                     lose = true;
                 } else{
                     win = true;
+
                 }
                 scoreTop = 0;
                 scoreBot = 0;
@@ -587,29 +588,26 @@ public class GameState {
     }
 
     private void drawMsg(Canvas canvas, int shakeY, int shakeX, boolean playerWon){
-        for(int i = 0; i < winKeys; i++){
-            Rect rect = winRectangles.get(i);
-            rect.offset(shakeX,shakeY);
-            if(playerWon){
-                rect.offset(0,_screenHeight/2);
-            }
-            canvas.drawRect(rect, white);
-            if(playerWon) {
-                rect.offset(0, -1 * _screenHeight / 2);
-            }
-            rect.offset(-1*shakeX,-1*shakeY);
+        HashMap<Integer, Rect> rects;
+        int keys;
+        if (playerWon) {
+            keys = winKeys;
+            rects = winRectangles;
+        } else {
+            keys = loseKeys;
+            rects = loseRectangles;
         }
-        for(int i = 0; i < loseKeys; i++){
-            Rect rect = loseRectangles.get(i);
+        for(int i = 0; i <keys; i++){
+            Rect rect = rects.get(i);
             rect.offset(shakeX,shakeY);
-            if(!playerWon){
-                rect.offset(0,_screenHeight/2);
-            }
             canvas.drawRect(rect, white);
-            if(!playerWon){
-                rect.offset(0,-1*_screenHeight/2);
-            }
+
+            rect.offset(0,_screenHeight/2);
+            canvas.drawRect(rect, white);
+
+            rect.offset(0,-1*_screenHeight/2);
             rect.offset(-1*shakeX,-1*shakeY);
+
         }
     }
 
@@ -682,6 +680,14 @@ public class GameState {
     public static void setScore(int scoreT, int scoreB){
         scoreTop = scoreT;
         scoreBot = scoreB;
+        win = scoreB > 9;
+        lose = scoreT > 9;
+        Log.d("asdf",""+scoreTop+" "+scoreBot+" "+win+" "+displayMsg);
+        if(win || lose) {
+            scoreTop = 0;
+            scoreBot = 0;
+            displayScore = false;
+        }
     }
 
     public static void returnBats(){
