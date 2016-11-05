@@ -175,7 +175,7 @@ public class GameState {
         resetBuffer1 = 1;
         batDifferenceBot = 0;
         batDifferenceTop = 0;
-        batEnabled = true;
+        batEnabled = false;
 
         scoreBot = 0;
         scoreTop = 0;
@@ -529,10 +529,7 @@ public class GameState {
             }
 
             if(displayMsg) {
-                if(win)
-                    drawMsg(canvas, shakeY, shakeX, winKeys, winRectangles);
-                else if(lose)
-                    drawMsg(canvas, shakeY, shakeX, loseKeys, loseRectangles);
+                drawMsg(canvas, shakeY, shakeX, win);
             }
 
             //draw middle line
@@ -589,19 +586,30 @@ public class GameState {
         }
     }
 
-    private void drawMsg(Canvas canvas, int shakeY, int shakeX, int keys, HashMap<Integer, Rect> rects){
-        //for(int i = 0; i <winKeys.length; i++){
-        for(int i = 0; i <keys; i++){
-            Rect rect = rects.get(i);
+    private void drawMsg(Canvas canvas, int shakeY, int shakeX, boolean playerWon){
+        for(int i = 0; i < winKeys; i++){
+            Rect rect = winRectangles.get(i);
             rect.offset(shakeX,shakeY);
+            if(playerWon){
+                rect.offset(0,_screenHeight/2);
+            }
             canvas.drawRect(rect, white);
-
-            rect.offset(0,_screenHeight/2);
-            canvas.drawRect(rect, white);
-
-            rect.offset(0,-1*_screenHeight/2);
+            if(playerWon) {
+                rect.offset(0, -1 * _screenHeight / 2);
+            }
             rect.offset(-1*shakeX,-1*shakeY);
-
+        }
+        for(int i = 0; i < loseKeys; i++){
+            Rect rect = loseRectangles.get(i);
+            rect.offset(shakeX,shakeY);
+            if(!playerWon){
+                rect.offset(0,_screenHeight/2);
+            }
+            canvas.drawRect(rect, white);
+            if(!playerWon){
+                rect.offset(0,-1*_screenHeight/2);
+            }
+            rect.offset(-1*shakeX,-1*shakeY);
         }
     }
 
