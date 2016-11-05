@@ -14,6 +14,7 @@ public class StartActivity extends AppCompatActivity {
 
     Button buttonSingle;
     Button buttonDouble;
+    Button buttonHelp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +29,7 @@ public class StartActivity extends AppCompatActivity {
 
         buttonSingle = (Button)findViewById(R.id.buttonSingle);
         buttonDouble = (Button)findViewById(R.id.buttonDouble);
+        buttonHelp = (Button)findViewById(R.id.buttonHelp);
 
         buttonSingle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,6 +48,14 @@ public class StartActivity extends AppCompatActivity {
                 FragmentTransaction fragmentTransaction = fm.beginTransaction();
                 fragmentTransaction.add(R.id.fragment_container, bluetoothFrag);
                 fragmentTransaction.commit();
+            }
+        });
+
+        buttonHelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(StartActivity.this, HelpActivity.class);
+                startActivity(intent);
             }
         });
     }

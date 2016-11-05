@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     public NavigationView navigationView;
     public TextView quit;
     public TextView restart;
+    public TextView help;
 
     public Toolbar toolbar;
 
@@ -188,6 +189,16 @@ public class MainActivity extends AppCompatActivity {
                 drawerLayout.closeDrawer(Gravity.LEFT);
             }
         });
+
+        help = (TextView)drawerLayout.findViewById(R.id.help);
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, HelpActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     public static void saveData() {

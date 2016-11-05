@@ -40,6 +40,17 @@
                 android:layout_marginLeft="16dp"
                 android:layout_below="@id/quit"/>
 
+            <TextView
+                android:id="@+id/help"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Help"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18dp"
+                android:layout_marginTop="@dimen/content_areas"
+                android:layout_marginLeft="16dp"
+                android:layout_below="@id/restart"/>
+
         </RelativeLayout>
     </android.support.design.widget.NavigationView>
 
