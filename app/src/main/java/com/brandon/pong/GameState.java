@@ -325,17 +325,6 @@ public class GameState {
                 _ballVelocityY *= -1;
                 scoreBot += 1;
             }
-            if (scoreTop > 9 || scoreBot > 9) {
-                if(scoreTop > scoreBot){
-                    lose = true;
-                } else{
-                    win = true;
-
-                }
-                scoreTop = 0;
-                scoreBot = 0;
-                displayScore = false;
-            }
 
             //reset ball
             _ballX = originX;
@@ -356,6 +345,18 @@ public class GameState {
             _ballVelocityY = 0;
             _ballVelocityX = 0;
             ballIsVisible = false;
+        }
+
+        if (scoreTop > 9 || scoreBot > 9) {
+            if(scoreTop > scoreBot){
+                lose = true;
+            } else{
+                win = true;
+
+            }
+            scoreTop = 0;
+            scoreBot = 0;
+            displayScore = false;
         }
 
         //Collisions with the sides
