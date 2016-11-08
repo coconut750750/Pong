@@ -1,6 +1,8 @@
 # Pong
 A pong clone for Android.
 
+Get it on [Google Play](https://play.google.com/store/apps/details?id=com.brandon.pong) now! 
+
 
 #Single player
 Two paddles per screen. Each half of the screen controls on of the paddles. Ball bounce angle changes depending on the whether the paddles are moving and the direction of their movement.
