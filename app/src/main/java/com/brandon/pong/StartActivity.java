@@ -16,6 +16,8 @@ public class StartActivity extends AppCompatActivity {
     Button buttonDouble;
     Button buttonHelp;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
