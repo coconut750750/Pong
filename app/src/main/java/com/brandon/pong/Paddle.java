@@ -4,52 +4,72 @@ package com.brandon.pong;
  * Created by Brandon on 11/11/16.
  */
 
-public class Paddle {
+class Paddle {
     private int xPos;
     private int yPos;
     private int isMoving;
     private static boolean isEnabled;
 
-    public Paddle(int xPos, int yPos){
+    private static int length;
+    private static int height;
+
+    Paddle(int xPos, int yPos){
         this.xPos = xPos;
         this.yPos = yPos;
         isMoving = 0;
         isEnabled = false;
+        height = 50;
     }
 
-    public int getX(){
+    int getX(){
         return xPos;
     }
 
-    public void setX(int x){
+    void setX(int x){
         xPos = x;
     }
 
-    public int getY(){
+    int getY(){
         return yPos;
     }
 
-    public int getMoving(){
+    int getMoving(){
         return isMoving;
     }
 
-    public void setMoving(int moving){
+    void setMoving(int moving){
         isMoving = moving;
     }
 
-    public static boolean getEnabled(){
+    static boolean getEnabled(){
         return isEnabled;
     }
 
-    public static void disable(){
+    static void disable(){
         isEnabled = false;
     }
 
-    public static void enable(){
+    static void enable(){
         isEnabled = true;
     }
 
-    public void move(int speed){
+    void move(int speed){
         xPos += speed;
+    }
+
+    static void setLength(int length){
+        Paddle.length = length;
+    }
+
+    static int getLength(){
+        return length;
+    }
+
+    static void setHeight(int height){
+        Paddle.height = height;
+    }
+
+    static int getHeight(){
+        return height;
     }
 }
