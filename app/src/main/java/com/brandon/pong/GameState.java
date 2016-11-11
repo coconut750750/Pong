@@ -52,6 +52,7 @@ class GameState {
     private static Paddle topPaddle;
     private static Paddle botPaddle;
     private static Monkey monkey;
+    private static boolean monkeyEnabled;
     final static int _batSpeed = 2;
     private final static int _cpuSpeedMult = 7;
     private final static int batWallBuffer = 50;
@@ -147,9 +148,11 @@ class GameState {
 
         topPaddle = new Paddle(batOrigin, batWallBuffer);
         botPaddle = new Paddle(batOrigin, _screenHeight-batWallBuffer-Paddle.getHeight());
-        monkey = new Monkey(0, _screenHeight/2-Paddle.getHeight()/2);
-        monkey.setMonkeyLength(Paddle.getLength()/2);
-        monkey.setVelocity(5);
+        if(monkeyEnabled) {
+            monkey = new Monkey(0, _screenHeight / 2 - Paddle.getHeight() / 2);
+            monkey.setMonkeyLength(Paddle.getLength() / 2);
+            monkey.setVelocity(5);
+        }
 
         if(playerNum == 1 || !isDouble) {
             _ballVelocityX = getBallVelX();
@@ -295,7 +298,9 @@ class GameState {
 
         _ballX += _ballVelocityX;
         _ballY += _ballVelocityY;
-        monkey.move(monkey.getVelocity());
+        if(monkeyEnabled) {
+            monkey.move(monkey.getVelocity());
+        }
 
         ballShadows[ballShadowIndex][0] = _ballX;
         ballShadows[ballShadowIndex][1] = _ballY;
@@ -364,12 +369,14 @@ class GameState {
             }
         }
 
-        if(monkey.getX()+monkey.getMonkeyLength() > _screenWidth || monkey.getX() < 0){
-            monkey.bounce();
-            if(monkey.getX() < 0){
-                monkey.setX(0);
-            } else{
-                monkey.setX(_screenWidth-monkey.getMonkeyLength());
+        if(monkeyEnabled) {
+            if (monkey.getX() + monkey.getMonkeyLength() > _screenWidth || monkey.getX() < 0) {
+                monkey.bounce();
+                if (monkey.getX() < 0) {
+                    monkey.setX(0);
+                } else {
+                    monkey.setX(_screenWidth - monkey.getMonkeyLength());
+                }
             }
         }
 
@@ -388,15 +395,16 @@ class GameState {
                 && _ballX+_ballSize >= botPaddle.getX()-batBuffer && _ballX <= botPaddle.getX()+Paddle.getLength()+batBuffer){
             bounce(false);
         }
-        if (_ballY+_ballSize >= monkey.getY() && _ballY <= monkey.getY()+Paddle.getHeight()
-                && _ballX+_ballSize >= monkey.getX() && _ballX <= monkey.getX()+monkey.getMonkeyLength()){
-            _ballVelocityY *= -1;
-            if(_ballVelocityY > 0){
-                _ballY = monkey.getY()+Paddle.getHeight();
-            } else {
-                _ballY = monkey.getY()-_ballSize;
+        if(monkeyEnabled) {
+            if (_ballY + _ballSize >= monkey.getY() && _ballY <= monkey.getY() + Paddle.getHeight()
+                    && _ballX + _ballSize >= monkey.getX() && _ballX <= monkey.getX() + monkey.getMonkeyLength()) {
+                _ballVelocityY *= -1;
+                if (_ballVelocityY > 0) {
+                    _ballY = monkey.getY() + Paddle.getHeight();
+                } else {
+                    _ballY = monkey.getY() - _ballSize;
+                }
             }
-
         }
 
         //cpu moves bat
@@ -550,7 +558,9 @@ class GameState {
             }
 
             //draw monkey
-            canvas.drawRect(new Rect(monkey.getX(), monkey.getY()+shakeY, monkey.getX() + monkey.getMonkeyLength(), monkey.getY() + Paddle.getHeight()+shakeY), green);
+            if(monkeyEnabled) {
+                canvas.drawRect(new Rect(monkey.getX(), monkey.getY() + shakeY, monkey.getX() + monkey.getMonkeyLength(), monkey.getY() + Paddle.getHeight() + shakeY), green);
+            }
 
             //draw the ball
             if(ballIsVisible) {
@@ -766,5 +776,12 @@ class GameState {
     static void setShakingY(double vel){
         _ballVelocityY = -1*vel;
         shakingY = 1;
+    }
+
+    static void enableMonkey(){
+        monkeyEnabled = true;
+    }
+    static void disableMonkey(){
+        monkeyEnabled = false;
     }
 }

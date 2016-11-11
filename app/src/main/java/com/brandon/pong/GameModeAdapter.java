@@ -1,8 +1,9 @@
 package com.brandon.pong;
 
-import android.graphics.Color;
+import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
+/***
  * Created by Brandon on 11/11/16.
  */
 
@@ -29,9 +30,25 @@ class GameModeAdapter extends RecyclerView.Adapter<GameModeAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(GameModeAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(GameModeAdapter.ViewHolder holder, final int position) {
         TextView textView = (TextView)holder.cardView.findViewById(R.id.game_mode_text);
         textView.setText(gameModes.get(position));
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), MainActivity.class);
+                switch (position){
+                    case 0:
+                        intent.putExtra(MainActivity.GAME_TYPE, MainActivity.SINGLE_PLAYER);
+                        break;
+                    case 1:
+                        intent.putExtra(MainActivity.GAME_TYPE, MainActivity.MONKEY);
+                        break;
+                }
+                Log.d("asdf",""+position);
+                view.getContext().startActivity(intent);
+            }
+        });
     }
 
     @Override

@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
     final static String GAME_TYPE = "TYPE";
     final static String SINGLE_PLAYER = "SINGLE";
+    final static String MONKEY = "MONKEY";
     final static String DOUBLE_PLAYER = "DOUBLE";
 
     final static String PLAYER_NUM = "PNUM";
@@ -104,6 +105,11 @@ public class MainActivity extends AppCompatActivity {
         if(!isDouble){
             setContentView(R.layout.activity_main);
             buttonTop = (Button)findViewById(R.id.buttonTop);
+            if(type.equals(MONKEY)){
+                GameState.enableMonkey();
+            } else {
+                GameState.disableMonkey();
+            }
             //buttonTop.setOnTouchListener(new GameTouchListener(this, 0));
         } else {
             setContentView(R.layout.activity_main_double);

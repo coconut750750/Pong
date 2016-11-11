@@ -36,9 +36,11 @@ public class StartActivity extends AppCompatActivity {
         buttonSingle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(StartActivity.this, MainActivity.class);
-                intent.putExtra(MainActivity.GAME_TYPE, MainActivity.SINGLE_PLAYER);
-                startActivity(intent);
+                Fragment gameModesFragment = new GameModesFragment();
+                FragmentManager fm = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fm.beginTransaction();
+                fragmentTransaction.add(R.id.fragment_container, gameModesFragment);
+                fragmentTransaction.commit();
             }
         });
 

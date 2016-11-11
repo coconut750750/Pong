@@ -1,8 +1,9 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.brandon.pong.GameModesFragment">
+    tools:context="com.brandon.pong.GameModesFragment"
+    android:background="@drawable/card_border">
 
     <android.support.v7.widget.RecyclerView
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -11,4 +12,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:overScrollMode="never"/>
-</FrameLayout>
+    <Button
+        android:id="@+id/button_menu"
+        android:text="Main Menu"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/lightBlack"
+        android:background="@drawable/button"
+        android:layout_marginBottom="16dp"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>

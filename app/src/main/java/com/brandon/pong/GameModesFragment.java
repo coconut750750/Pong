@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import java.util.ArrayList;
 
@@ -14,6 +15,7 @@ public class GameModesFragment extends Fragment {
     RecyclerView mRecyclerView;
     RecyclerView.LayoutManager mLayoutManager;
     GameModeAdapter gameModeAdapter;
+    Button menuButton;
 
     public GameModesFragment() {
         // Required empty public constructor
@@ -42,6 +44,14 @@ public class GameModesFragment extends Fragment {
         mRecyclerView.setAdapter(gameModeAdapter);
 
         gameModeAdapter.notifyDataSetChanged();
+
+        menuButton = (Button)view.findViewById(R.id.button_menu);
+        menuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().getSupportFragmentManager().beginTransaction().remove(GameModesFragment.this).commit();
+            }
+        });
 
         return view;
     }
