@@ -20,7 +20,7 @@ import java.util.Random;
 /***
  * Created by Brandon on 9/16/16.
  */
-public class GameState {
+class GameState {
 
     //screen width and height
     private static int _screenWidth;
@@ -53,7 +53,7 @@ public class GameState {
     private static int _batHeight = 50;
     private static Paddle topPaddle;
     private static Paddle botPaddle;
-    public final static int _batSpeed = 2;
+    final static int _batSpeed = 2;
     private final static int _cpuSpeedMult = 7;
     private final static int batWallBuffer = 50;
 
@@ -102,7 +102,7 @@ public class GameState {
 
     private Context context;
 
-    public GameState(Context context)
+    GameState(Context context)
     {
         this.context = context;
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -184,7 +184,7 @@ public class GameState {
         ballShadowIndex = 0;
     }
 
-    void setDataForPoints(){
+    private void setDataForPoints(){
         rectLen = _screenWidth/12;
         rectWid = rectLen/4;
         midX = _screenWidth/2;
@@ -210,7 +210,7 @@ public class GameState {
         rectangles.put(keys[6], new Rect(13*rectLen/2+rectWid,SH4+rectWid/2+rectLen, 13*rectLen/2, SH4+rectWid/2));
     }
 
-    void setDataForWin(){
+    private void setDataForWin(){
         winRectangles.put(0, new Rect(midX-rectWid/2, SH4-rectLen/2, midX+rectWid/2,SH4+rectLen/2));
 
         winRectangles.put(1, new Rect(midX-5*rectWid/2, SH4-rectLen/2, midX-3*rectWid/2,SH4+rectLen/2));
@@ -225,7 +225,7 @@ public class GameState {
         winRectangles.put(9, new Rect(midX+9*rectWid/2, SH4-rectLen/2, midX+11*rectWid/2,SH4+rectLen/2));
     }
 
-    void setDataForLose(){
+    private void setDataForLose(){
         loseRectangles.put(0, new Rect(midX-3*rectWid/2, SH4-rectLen/2, midX-rectWid/2,SH4+rectLen/2));
         loseRectangles.put(1, new Rect(midX-5*rectWid/2, SH4+rectLen/4, midX-3*rectWid/2,SH4+rectLen/2));
         loseRectangles.put(2, new Rect(midX-5*rectWid/2, SH4-rectLen/2, midX-3*rectWid/2,SH4-rectLen/4));
@@ -247,7 +247,7 @@ public class GameState {
 
     }
 
-    public void setColors(){
+    private void setColors(){
         white = new Paint();
         white.setARGB(200,220,220,220);
         amber = new Paint();
@@ -259,15 +259,15 @@ public class GameState {
     }
 
     //The update method
-    public void update() {
+    void update() {
 
         if (isPaused){
             return;
         }
 
         if(resetBuffer1!= 0 && resetBuffer1!=resetBuffer){
-            botPaddle.move(batDifferenceBot/resetBuffer);
-            topPaddle.move(batDifferenceTop/resetBuffer);
+            botPaddle.move(-1*batDifferenceBot/resetBuffer);
+            topPaddle.move(-1*batDifferenceTop/resetBuffer);
             resetBuffer1++;
             if(win || lose) {
                 int resetAt = resetBuffer1 % displayMsgEvery;
@@ -386,7 +386,7 @@ public class GameState {
         }
     }
 
-    public void bounce(boolean hitTop){
+    private void bounce(boolean hitTop){
         double tempx = _ballVelocityX;
 
         double _ballVelocity = getBallVelocity();
@@ -423,7 +423,7 @@ public class GameState {
         }
     }
 
-    public static void mKeyPressed(int touchPos, int bat, int speed) {
+    static void mKeyPressed(int touchPos, int bat, int speed) {
         if (isPaused){
             return;
         }
@@ -456,7 +456,7 @@ public class GameState {
         }
     }
 
-    public static int move(int touchPos, int batX, int speed){
+    private static int move(int touchPos, int batX, int speed){
         if(!Paddle.getEnabled() || batX+_batLength/2 == touchPos){
             return batX;
         }
@@ -482,7 +482,7 @@ public class GameState {
         return batX;
     }
 
-    public static void stopBat(int bat){
+    static void stopBat(int bat){
         if(bat == 0){
             topPaddle.setMoving(0);
         } else {
@@ -491,7 +491,7 @@ public class GameState {
     }
 
     //the draw method
-    public void draw(Canvas canvas) {
+    void draw(Canvas canvas) {
         try{
             //Clear the screen
             canvas.drawRGB(20, 20, 20);
@@ -629,7 +629,7 @@ public class GameState {
         }
     }
 
-    public static void receiverPauseThread(){
+    static void receiverPauseThread(){
         isPaused = !isPaused;
         if(isPaused){
             //pauses game thread in the update method after drawing signs
@@ -640,7 +640,7 @@ public class GameState {
         }
     }
 
-    public static void toggleGameState(){
+    static void toggleGameState(){
         isPaused = !isPaused;
         if(isPaused){
             //pauses game thread in the update method after drawing signs
@@ -654,11 +654,11 @@ public class GameState {
         }
     }
 
-    public static boolean getIsPaused(){
+    static boolean getIsPaused(){
         return isPaused;
     }
 
-    public static void setBallData(double ballXPercent, double ballVelX, double ballVelY){
+    static void setBallData(double ballXPercent, double ballVelX, double ballVelY){
         _ballX = (int)((1-ballXPercent)*_screenWidth-_ballSize/2);
         _ballY = originY;
         _ballVelocityX = -1*ballVelX*_screenWidth;
@@ -667,12 +667,11 @@ public class GameState {
         resetShadows();
     }
 
-    public static void setScore(int scoreT, int scoreB){
+    static void setScore(int scoreT, int scoreB){
         scoreTop = scoreT;
         scoreBot = scoreB;
         win = scoreB > 9;
         lose = scoreT > 9;
-        Log.d("asdf",""+scoreTop+" "+scoreBot+" "+win+" "+displayMsg);
         if(win || lose) {
             scoreTop = 0;
             scoreBot = 0;
@@ -680,34 +679,35 @@ public class GameState {
         }
     }
 
-    public static void returnBats(){
+    static void returnBats(){
         resetBuffer1++;
         batDifferenceBot = botPaddle.getX() - batOrigin;
         batDifferenceTop = topPaddle.getX() - batOrigin;
         Paddle.disable();
     }
 
-    public static Bundle saveData(){
+    static Bundle saveData(){
         Bundle dataBundle = new Bundle();
         dataBundle.putInt(MainActivity.BALLX, GameState._ballX);
         dataBundle.putInt(MainActivity.BALLY, GameState._ballY);
         dataBundle.putDouble(MainActivity.BALLVX, GameState._ballVelocityX);
         dataBundle.putDouble(MainActivity.BALLVY, GameState._ballVelocityY);
-        dataBundle.putInt(MainActivity.BATX, botPaddle.getX());
+        dataBundle.putInt(MainActivity.BATBX, botPaddle.getX());
+        dataBundle.putInt(MainActivity.BATTX, topPaddle.getX());
         dataBundle.putInt(MainActivity.RESETBUFFER, GameState.resetBuffer1);
         dataBundle.putInt(MainActivity.SCORE_TOP, GameState.scoreTop);
         dataBundle.putInt(MainActivity.SCORE_BOT, GameState.scoreBot);
         return dataBundle;
     }
 
-    public static void getData(Bundle dataBundle){
+    static void getData(Bundle dataBundle){
         if(dataBundle != null){
             GameState._ballX = dataBundle.getInt(MainActivity.BALLX);
             GameState._ballY = dataBundle.getInt(MainActivity.BALLY);
             GameState._ballVelocityX = dataBundle.getDouble(MainActivity.BALLVX);
             GameState._ballVelocityY = dataBundle.getDouble(MainActivity.BALLVY);
-            botPaddle.setX(dataBundle.getInt(MainActivity.BATX));
-            topPaddle.setX(dataBundle.getInt(MainActivity.BATX));
+            botPaddle.setX(dataBundle.getInt(MainActivity.BATBX));
+            topPaddle.setX(dataBundle.getInt(MainActivity.BATTX));
 
             GameState.resetBuffer1 = dataBundle.getInt(MainActivity.RESETBUFFER);
             GameState.scoreTop = dataBundle.getInt(MainActivity.SCORE_TOP);
@@ -715,33 +715,33 @@ public class GameState {
         }
     }
 
-    public static double getBallAngle(){
+    private static double getBallAngle(){
         return Math.atan(_ballVelocityY/_ballVelocityX);
     }
 
-    public static void setBallAngle(double angle){
+    private static void setBallAngle(double angle){
         double _ballVelocity = getBallVelocity();
         _ballVelocityX = _ballVelocity*Math.cos(angle);
         _ballVelocityY = _ballVelocity*Math.sin(angle);
     }
 
-    public static void addAngle(double angle){
+    private static void addAngle(double angle){
         setBallAngle(angle + getBallAngle());
     }
 
-    public static double getBallVelocity(){
+    private static double getBallVelocity(){
         return  Math.sqrt(_ballVelocityX*_ballVelocityX+_ballVelocityY*_ballVelocityY);
     }
 
-    public static boolean getIsDouble(){
+    static boolean getIsDouble(){
         return isDouble;
     }
 
-    public static void setShakingX(double vel){
+    static void setShakingX(double vel){
         _ballVelocityX = -1*vel;
         shakingX = 1;
     }
-    public static void setShakingY(double vel){
+    static void setShakingY(double vel){
         _ballVelocityY = -1*vel;
         shakingY = 1;
     }

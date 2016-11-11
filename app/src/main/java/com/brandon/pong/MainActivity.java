@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
     final static String BALLY = "BALLY";
     final static String BALLVX = "BALLVX";
     final static String BALLVY = "BALLVY";
-    final static String BATX = "BATX";
+    final static String BATTX = "BATTX";
+    final static String BATBX = "BATBX";
     final static String RESETBUFFER = "RESETBUFFER";
     final static String SCORE_TOP = "SCORETOP";
     final static String SCORE_BOT = "SCOREBOT";
