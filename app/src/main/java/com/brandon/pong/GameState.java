@@ -51,15 +51,10 @@ public class GameState {
     //The bats
     private static int _batLength;
     private static int _batHeight = 50;
-    private static int _topBatX;
-    private static int _topBatY;
-    private static int _topBatMoving;
-    private static int _bottomBatX;
-    private static int _bottomBatY;
-    private static int _botBatMoving;
+    private static Paddle topPaddle;
+    private static Paddle botPaddle;
     public final static int _batSpeed = 2;
     private final static int _cpuSpeedMult = 7;
-    private static boolean batEnabled;
     private final static int batWallBuffer = 50;
 
     //Origin
@@ -146,18 +141,13 @@ public class GameState {
             originY =  0 - _ballSize / 2;
         }
 
-        _topBatY = batWallBuffer;
-        _bottomBatY = _screenHeight-batWallBuffer-_batHeight;
-
-        _topBatMoving = 0;
-        _botBatMoving = 0;
-
         _ballX = originX;
         _ballY = originY;
 
         batOrigin = (_screenWidth/2) - (_batLength / 2);
-        _topBatX = batOrigin;
-        _bottomBatX = batOrigin;
+
+        topPaddle = new Paddle(batOrigin, batWallBuffer);
+        botPaddle = new Paddle(batOrigin, _screenHeight-batWallBuffer-_batHeight);
 
         if(playerNum == 1 || !isDouble) {
             _ballVelocityX = getBallVelX();
@@ -175,7 +165,6 @@ public class GameState {
         resetBuffer1 = 1;
         batDifferenceBot = 0;
         batDifferenceTop = 0;
-        batEnabled = false;
 
         scoreBot = 0;
         scoreTop = 0;
@@ -277,8 +266,8 @@ public class GameState {
         }
 
         if(resetBuffer1!= 0 && resetBuffer1!=resetBuffer){
-            _bottomBatX -= batDifferenceBot/resetBuffer;
-            _topBatX -= batDifferenceTop/resetBuffer;
+            botPaddle.move(batDifferenceBot/resetBuffer);
+            topPaddle.move(batDifferenceTop/resetBuffer);
             resetBuffer1++;
             if(win || lose) {
                 int resetAt = resetBuffer1 % displayMsgEvery;
@@ -291,9 +280,9 @@ public class GameState {
             return;
         } else if (resetBuffer1 == resetBuffer){
             resetBuffer1 = 0;
-            batEnabled = true;
-            _topBatX = batOrigin;
-            _bottomBatX = batOrigin;
+            Paddle.enable();
+            topPaddle.setX(batOrigin);
+            botPaddle.setX(batOrigin);
             win = lose = false;
             displayScore = true;
         }
@@ -331,10 +320,8 @@ public class GameState {
             _ballY = originY;
 
             //reset bat
-            resetBuffer1++;
-            batDifferenceBot = _bottomBatX - batOrigin;
-            batDifferenceTop = _topBatX - batOrigin;
-            batEnabled = false;
+            returnBats();
+
             if(isDouble){
                 MainActivity.sendScore(scoreBot, scoreTop);
             }
@@ -377,16 +364,17 @@ public class GameState {
 
         double batBuffer = Math.abs(_ballVelocityX);
 
+
         if(!isDouble) {
-            if (_ballX + _ballSize >= _topBatX - batBuffer && _ballX <= _topBatX + _batLength + batBuffer) {
-                boolean hitTop = _ballY < _topBatY + _batHeight && _ballY > _topBatY + _batHeight - afterMult;
+            if (_ballX + _ballSize >= topPaddle.getX() - batBuffer && _ballX <= topPaddle.getX() + _batLength + batBuffer) {
+                boolean hitTop = _ballY < topPaddle.getY() + _batHeight && _ballY > topPaddle.getY() + _batHeight - afterMult;
                 if (hitTop) {
                     bounce(true);
                 }
             }
         }
-        if (_ballX+_ballSize >= _bottomBatX-batBuffer && _ballX <= _bottomBatX+_batLength+batBuffer){
-            boolean hitBot = _ballY+_ballSize > _bottomBatY && _ballY+_ballSize < _bottomBatY+afterMult;
+        if (_ballX+_ballSize >= botPaddle.getX()-batBuffer && _ballX <= botPaddle.getX()+_batLength+batBuffer){
+            boolean hitBot = _ballY+_ballSize > botPaddle.getY() && _ballY+_ballSize < botPaddle.getY()+afterMult;
             if(hitBot){
                 bounce(false);
             }
@@ -405,9 +393,9 @@ public class GameState {
         double perc = _ballVelocityY/_ballVelocity;
         double angleAdd;
         if(hitTop) {
-            angleAdd = maxAngle * perc * _topBatMoving;
+            angleAdd = maxAngle * perc * topPaddle.getMoving();
         } else {
-            angleAdd = maxAngle * perc * _botBatMoving;
+            angleAdd = maxAngle * perc * botPaddle.getMoving();
         }
         addAngle(-1*angleAdd);
 
@@ -435,14 +423,14 @@ public class GameState {
         }
     }
 
-    public static void mKeyPressed(int touchPos, int bat, int speed)
-    {
+    public static void mKeyPressed(int touchPos, int bat, int speed) {
         if (isPaused){
             return;
         }
+
         if(bat == 0){
-            int topX =  move(touchPos, _topBatX, speed);
-            _topBatMoving = 0;
+            int topX =  move(touchPos, topPaddle.getX(), speed);
+            topPaddle.setMoving(0);
             /*if(topX == _topBatX){
                 _topBatMoving = 0;
             } else if (topX > _topBatX) {
@@ -450,26 +438,26 @@ public class GameState {
             } else {
                 _topBatMoving = -1;
             }*/
-            _topBatX = topX;
-            if(_topBatX<0)
-                _topBatX = 0;
+            topPaddle.setX(topX);
+            if(topPaddle.getX()<0)
+                topPaddle.setX(0);
         } else{
-            int botX =  move(touchPos, _bottomBatX, speed);
-            if(botX == _bottomBatX){
-                _botBatMoving = 0;
-            } else if (botX > _bottomBatX) {
-                _botBatMoving = 1;
+            int botX =  move(touchPos, botPaddle.getX(), speed);
+            if(botX == botPaddle.getX()){
+                botPaddle.setMoving(0);
+            } else if (botX > botPaddle.getX()) {
+                botPaddle.setMoving(1);
             } else {
-                _botBatMoving = -1;
+                botPaddle.setMoving(-1);
             }
-            _bottomBatX = botX;
-            if(_bottomBatX<0)
-                _bottomBatX = 0;
+            botPaddle.setX(botX);
+            if(botPaddle.getX()<0)
+                botPaddle.setX(0);
         }
     }
 
     public static int move(int touchPos, int batX, int speed){
-        if(!batEnabled || batX+_batLength/2 == touchPos){
+        if(!Paddle.getEnabled() || batX+_batLength/2 == touchPos){
             return batX;
         }
         else if(batX+_batLength/2>touchPos && batX>0) //left
@@ -496,9 +484,9 @@ public class GameState {
 
     public static void stopBat(int bat){
         if(bat == 0){
-            _topBatMoving = 0;
+            topPaddle.setMoving(0);
         } else {
-            _botBatMoving = 0;
+            botPaddle.setMoving(0);
         }
     }
 
@@ -549,10 +537,11 @@ public class GameState {
             green.setAlpha(255);
             //draw the bats
             if(!isDouble){
-                canvas.drawRect(new Rect(_topBatX, _topBatY+shakeY, _topBatX + _batLength, _topBatY + _batHeight +shakeY), green); //top bat
+                canvas.drawRect(new Rect(topPaddle.getX(), topPaddle.getY()+shakeY, topPaddle.getX() + _batLength, topPaddle.getY() + _batHeight +shakeY), green); //top bat
             }
 
-            canvas.drawRect(new Rect(_bottomBatX, _bottomBatY+shakeY, _bottomBatX + _batLength, _bottomBatY + _batHeight +shakeY), green); //bottom bat
+            canvas.drawRect(new Rect(botPaddle.getX(), botPaddle.getY()+shakeY, botPaddle.getX() + _batLength, botPaddle.getY() + _batHeight +shakeY), green); //bottom bat
+
 
             if (isPaused){
                 //draw pause sign
@@ -693,9 +682,9 @@ public class GameState {
 
     public static void returnBats(){
         resetBuffer1++;
-        batDifferenceBot = _bottomBatX - batOrigin;
-        batDifferenceTop = _topBatX - batOrigin;
-        batEnabled = false;
+        batDifferenceBot = botPaddle.getX() - batOrigin;
+        batDifferenceTop = topPaddle.getX() - batOrigin;
+        Paddle.disable();
     }
 
     public static Bundle saveData(){
@@ -704,7 +693,7 @@ public class GameState {
         dataBundle.putInt(MainActivity.BALLY, GameState._ballY);
         dataBundle.putDouble(MainActivity.BALLVX, GameState._ballVelocityX);
         dataBundle.putDouble(MainActivity.BALLVY, GameState._ballVelocityY);
-        dataBundle.putInt(MainActivity.BATX, GameState._bottomBatX);
+        dataBundle.putInt(MainActivity.BATX, botPaddle.getX());
         dataBundle.putInt(MainActivity.RESETBUFFER, GameState.resetBuffer1);
         dataBundle.putInt(MainActivity.SCORE_TOP, GameState.scoreTop);
         dataBundle.putInt(MainActivity.SCORE_BOT, GameState.scoreBot);
@@ -717,8 +706,9 @@ public class GameState {
             GameState._ballY = dataBundle.getInt(MainActivity.BALLY);
             GameState._ballVelocityX = dataBundle.getDouble(MainActivity.BALLVX);
             GameState._ballVelocityY = dataBundle.getDouble(MainActivity.BALLVY);
-            GameState._bottomBatX = dataBundle.getInt(MainActivity.BATX);
-            GameState._topBatX = dataBundle.getInt(MainActivity.BATX);
+            botPaddle.setX(dataBundle.getInt(MainActivity.BATX));
+            topPaddle.setX(dataBundle.getInt(MainActivity.BATX));
+
             GameState.resetBuffer1 = dataBundle.getInt(MainActivity.RESETBUFFER);
             GameState.scoreTop = dataBundle.getInt(MainActivity.SCORE_TOP);
             GameState.scoreBot = dataBundle.getInt(MainActivity.SCORE_BOT);
