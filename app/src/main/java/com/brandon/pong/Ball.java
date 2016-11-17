@@ -13,6 +13,7 @@ class Ball {
     private int[][] shadows;
     private int shadowIndex;
     private static final int NUM_SHADOWS = 10;
+    public static final int NUM_BOUNCES_TIL_TWO_BALL = 5;
     private boolean isVisible;
 
     Ball(int x, int y){

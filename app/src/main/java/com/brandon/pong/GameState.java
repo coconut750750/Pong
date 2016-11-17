@@ -30,6 +30,7 @@ class GameState {
     private static Ball ball;
     private static Ball[] balls;
     private static boolean twoBall;
+    private static int bounces;
 
     Ball[] getBalls(){
         return balls;
@@ -150,9 +151,7 @@ class GameState {
         }
         balls[0] = ball;
 
-
-        //_ballX = originX;
-        //_ballY = originY;
+        bounces = 0;
 
         batOrigin = (_screenWidth/2) - (Paddle.getLength() / 2);
 
@@ -272,8 +271,10 @@ class GameState {
         }
 
         if(resetBuffer1!= 0 && resetBuffer1!=resetBuffer){
-            botPaddle.move(-1*batDifferenceBot/resetBuffer);
-            topPaddle.move(-1*batDifferenceTop/resetBuffer);
+            if(!twoBall) {
+                botPaddle.move(-1 * batDifferenceBot / resetBuffer);
+                topPaddle.move(-1 * batDifferenceTop / resetBuffer);
+            }
             resetBuffer1++;
             if(win || lose) {
                 int resetAt = resetBuffer1 % displayMsgEvery;
@@ -282,20 +283,30 @@ class GameState {
                 } else if (resetAt == 0) {
                     displayMsg = false;
                 }
+                if(twoBall){
+                    resetBall(balls[0]);
+                    resetBall(balls[1]);
+                    balls[1].setVisible(false);
+                    bounces = 0;
+                }
+            } else if(twoBall){
+                resetBuffer1 = resetBuffer;
             }
             return;
         } else if (resetBuffer1 == resetBuffer){
             resetBuffer1 = 0;
             Paddle.enable();
-            topPaddle.setX(batOrigin);
-            botPaddle.setX(batOrigin);
+            if(!twoBall) {
+                topPaddle.setX(batOrigin);
+                botPaddle.setX(batOrigin);
+            }
             win = lose = false;
             displayScore = true;
         }
 
         for(Ball ball:balls) {
             if (!ball.isVisible()) {
-                return;
+                continue;
             }
 
             ball.addX(ball.getXVel());
@@ -310,7 +321,7 @@ class GameState {
             if (ball.getY() + Ball.getSize() > _screenHeight || (ball.getY() < 0 && !isDouble)) {
                 resetBall(ball);
 
-                if (ball.getX() + Ball.getSize() > _screenHeight) {
+                if (ball.getY() + Ball.getSize() > _screenHeight) {
                     scoreTop += 1;
                 } else {
                     ball.setYVel(ball.getYVel() * -1);
@@ -403,22 +414,35 @@ class GameState {
                     }
                 }
             }
-
-            //cpu moves bat
-            if (ball.getYVel() < 0) {
-                mKeyPressed(ball.getX(), 0, _batSpeed * _cpuSpeedMult);
-            }
         }
+
+        //cpu moves bat
+        if(twoBall) {
+            if ((balls[0].getY() < balls[1].getY() || balls[1].getYVel() >= 0) && balls[0].getYVel() < 0) {
+                mKeyPressed(balls[0].getX(), 0, _batSpeed * _cpuSpeedMult/3*5);
+            } else if ((balls[1].getY() < balls[0].getY() || balls[0].getYVel() >= 0) && balls[1].getYVel() < 0) {
+                mKeyPressed(balls[1].getX(), 0, _batSpeed * _cpuSpeedMult/3*5);
+            }
+        } else if (ball.getYVel() < 0) {
+            mKeyPressed(ball.getX(), 0, _batSpeed * _cpuSpeedMult);
+        }
+
     }
 
     private void bounce(boolean hitTop, Ball ball){
+        bounces++;
+        if(bounces==Ball.NUM_BOUNCES_TIL_TWO_BALL && twoBall){
+            balls[1].setVisible(true);
+            resetBall(balls[1]);
+        }
+
         double tempx = ball.getXVel();
 
         double _ballVelocity = getBallVelocity(ball);
         double perc = ball.getYVel()/_ballVelocity;
         double angleAdd;
         if(hitTop) {
-            angleAdd = maxAngle * perc * topPaddle.getMoving();
+            angleAdd = maxAngle * perc * (double)topPaddle.getMoving()/5.0;
         } else {
             angleAdd = maxAngle * perc * botPaddle.getMoving();
         }
@@ -456,13 +480,13 @@ class GameState {
         if(bat == 0){
             int topX =  move(touchPos, topPaddle.getX(), speed);
             topPaddle.setMoving(0);
-            /*if(topX == _topBatX){
-                _topBatMoving = 0;
-            } else if (topX > _topBatX) {
-                _topBatMoving = 1;
+            if(topX == topPaddle.getX()){
+                topPaddle.setMoving(0);
+            } else if (topX > topPaddle.getX()) {
+                topPaddle.setMoving(1);
             } else {
-                _topBatMoving = -1;
-            }*/
+                topPaddle.setMoving(-1);
+            }
             topPaddle.setX(topX);
             if(topPaddle.getX()<0)
                 topPaddle.setX(0);

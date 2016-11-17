@@ -50,10 +50,10 @@ public class MainActivity extends AppCompatActivity {
     static Bundle dataBundle;
 
     final static String GAME_TYPE = "TYPE";
-    final static String SINGLE_PLAYER = "SINGLE";
-    final static String MONKEY = "MONKEY";
-    final static String DOUBLE_PLAYER = "DOUBLE";
-    final static String TWO_BALL = "TWOBALL";
+    final static String SINGLE_PLAYER = "Single Player";
+    final static String MONKEY = "Monkey in the Middle";
+    final static String DOUBLE_PLAYER = "Double Player";
+    final static String TWO_BALL = "Twice the Fun";
 
     final static String PLAYER_NUM = "PNUM";
 
@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
             case MONKEY:
                 GameState.enableMonkey();
             case TWO_BALL:
+                GameState.doubleBall();
             case SINGLE_PLAYER:
                 setContentView(R.layout.activity_main);
                 buttonTop = (Button)findViewById(R.id.buttonTop);
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         //toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setTitle("Multi Pong");
+        setTitle(type);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         setDrawer();
