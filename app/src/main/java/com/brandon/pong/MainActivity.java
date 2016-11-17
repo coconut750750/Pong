@@ -106,19 +106,11 @@ public class MainActivity extends AppCompatActivity {
                 setContentView(R.layout.activity_main_double);
                 break;
             case MONKEY:
-                setContentView(R.layout.activity_main);
-                buttonTop = (Button)findViewById(R.id.buttonTop);
                 GameState.enableMonkey();
-                break;
+            case TWO_BALL:
             case SINGLE_PLAYER:
                 setContentView(R.layout.activity_main);
                 buttonTop = (Button)findViewById(R.id.buttonTop);
-                GameState.disableMonkey();
-                break;
-            case TWO_BALL:
-                setContentView(R.layout.activity_main);
-                buttonTop = (Button)findViewById(R.id.buttonTop);
-                GameState.disableMonkey();
                 break;
         }
 

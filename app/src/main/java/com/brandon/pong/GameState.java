@@ -28,7 +28,8 @@ class GameState {
 
     //The ball
     private static Ball ball;
-    private static Ball ball2;
+    private static Ball[] balls;
+    private static boolean twoBall;
 
     Ball getBall(){
         return ball;
@@ -92,9 +93,6 @@ class GameState {
     private static int shakingY;
     private static int shakingX;
     private final static int[] shakingProcess = new int[]{7,11,13,14,13,11,7,0,-4,-6,-7,-6,-4,0,2,3,2,0,-1};
-    //private final static int numShadows = 10;
-    //private static int[][] ballShadows;
-    //private static int ballShadowIndex;
     private static boolean win;
     private static boolean lose;
     private static boolean displayMsg;
@@ -142,7 +140,11 @@ class GameState {
             originY =  0 - Ball.getSize() / 2;
         }
 
+        if(twoBall){
+            balls = new Ball[2];
+        }
         ball = new Ball(originX, originY);
+
         //_ballX = originX;
         //_ballY = originY;
 
@@ -150,6 +152,7 @@ class GameState {
 
         topPaddle = new Paddle(batOrigin, batWallBuffer);
         botPaddle = new Paddle(batOrigin, _screenHeight-batWallBuffer-Paddle.getHeight());
+
         if(monkeyEnabled) {
             monkey = new Monkey(0, _screenHeight / 2 - Paddle.getHeight() / 2);
             monkey.setMonkeyLength(Paddle.getLength() / 2);
@@ -179,10 +182,6 @@ class GameState {
         lose = false;
         displayMsg = false;
         displayScore = true;
-    }
-
-    static void resetShadows(){
-        ball.resetShadows();
     }
 
     private void setDataForPoints(){
@@ -343,14 +342,8 @@ class GameState {
         }
 
         //Collisions with the sides
-        if(ball.getX()+Ball.getSize() > _screenWidth || ball.getX() < 0) {
-            if(ball.getX() < 0){
-                ball.setX(0);
-            } else{
-                ball.setX(_screenWidth-Ball.getSize());
-            }
-
-            ball.setXVel(ball.getXVel() * -1);
+        boolean hitSide = ball.hitSide(0,_screenWidth);
+        if(hitSide) {
             shakingX = 1;
             if(isDouble){
                 MainActivity.sendShake(MainActivity.AXIS[0],ball.getXVel());
@@ -374,15 +367,24 @@ class GameState {
 
 
         if(!isDouble) {
-            if (ball.getY() <= topPaddle.getY() + Paddle.getHeight() && ball.getY() >= topPaddle.getY() + Paddle.getHeight() - afterMult
-                    && ball.getX() + Ball.getSize() >= topPaddle.getX() - batBuffer && ball.getX() <= topPaddle.getX() + Paddle.getLength() + batBuffer) {
+            boolean hitTop = ball.hitTop(topPaddle.getY() + Paddle.getHeight(),
+                                        topPaddle.getY() + Paddle.getHeight() - afterMult,
+                                        topPaddle.getX() - batBuffer,
+                                        topPaddle.getX() + Paddle.getLength() + batBuffer);
+            if(hitTop)
                 bounce(true);
-            }
+
         }
-        if (ball.getY()+Ball.getSize() >= botPaddle.getY() && ball.getY()+Ball.getSize() <= botPaddle.getY()+afterMult
-                && ball.getX()+Ball.getSize() >= botPaddle.getX()-batBuffer && ball.getX() <= botPaddle.getX()+Paddle.getLength()+batBuffer){
+
+        boolean hitBot = ball.hitBot(botPaddle.getY(),
+                                    botPaddle.getY()+afterMult,
+                                    botPaddle.getX()-batBuffer,
+                                    botPaddle.getX()+Paddle.getLength()+batBuffer);
+
+        if (hitBot){
             bounce(false);
         }
+
         if(monkeyEnabled) {
             if (ball.getY() + Ball.getSize() >= monkey.getY() && ball.getY() <= monkey.getY() + Paddle.getHeight()
                     && ball.getX() + Ball.getSize() >= monkey.getX() && ball.getX() <= monkey.getX() + monkey.getMonkeyLength()) {
@@ -781,7 +783,8 @@ class GameState {
     static void enableMonkey(){
         monkeyEnabled = true;
     }
-    static void disableMonkey(){
-        monkeyEnabled = false;
+
+    static void doubleBall(){
+        twoBall = true;
     }
 }

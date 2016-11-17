@@ -92,5 +92,25 @@ class Ball {
         this.yVel = yVel;
     }
 
+    boolean hitSide(int left, int right){
+        boolean hit = getX()+Ball.getSize() > right || getX() < left;
+        if(hit) {
+            if(getX() < left){
+                setX(left);
+            } else{
+                setX(right-Ball.getSize());
+            }
+            setXVel(getXVel() * -1);
+        }
+        return hit;
+    }
+
+    boolean hitTop(int top1, int top2, double left, double right){
+        return (getY() <= top1 && getY() >= top2 && getX() + Ball.getSize() >= left && getX() <= right);
+    }
+
+    boolean hitBot(int bot1, int bot2, double left, double right){
+        return (getY()+Ball.getSize() >= bot1 && getY()+Ball.getSize() <= bot2 && getX()+Ball.getSize() >= left && getX() <= right);
+    }
 
 }
