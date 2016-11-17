@@ -28,13 +28,7 @@ class GameState {
 
     //The ball
     private static Ball ball;
-    /*
-    private static int _ballSize;
-    private static int _ballX;
-    private static int _ballY;
-
-    private static double _ballVelocityX;
-    private static double _ballVelocityY;*/
+    private static Ball ball2;
 
     //constants
     private final static double multiplier = 1.05;

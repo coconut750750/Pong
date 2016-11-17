@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     final static String SINGLE_PLAYER = "SINGLE";
     final static String MONKEY = "MONKEY";
     final static String DOUBLE_PLAYER = "DOUBLE";
+    final static String TWO_BALL = "TWOBALL";
 
     final static String PLAYER_NUM = "PNUM";
 
@@ -93,32 +94,38 @@ public class MainActivity extends AppCompatActivity {
         pausedPlayer = 0;
 
         isDouble = false;
-        if(type.equals(DOUBLE_PLAYER)){
-            isDouble = true;
-            bluetoothSocket = BluetoothFragment.socket;
-            BluetoothSocketListener bsl = new BluetoothSocketListener(bluetoothSocket);
-            Thread messageListener = new Thread(bsl);
-            messageListener.start();
-            playerNum = intent.getIntExtra(PLAYER_NUM, 0);
-        }
 
-        if(!isDouble){
-            setContentView(R.layout.activity_main);
-            buttonTop = (Button)findViewById(R.id.buttonTop);
-            if(type.equals(MONKEY)){
+        switch (type){
+            case DOUBLE_PLAYER:
+                isDouble = true;
+                bluetoothSocket = BluetoothFragment.socket;
+                BluetoothSocketListener bsl = new BluetoothSocketListener(bluetoothSocket);
+                Thread messageListener = new Thread(bsl);
+                messageListener.start();
+                playerNum = intent.getIntExtra(PLAYER_NUM, 0);
+                setContentView(R.layout.activity_main_double);
+                break;
+            case MONKEY:
+                setContentView(R.layout.activity_main);
+                buttonTop = (Button)findViewById(R.id.buttonTop);
                 GameState.enableMonkey();
-            } else {
+                break;
+            case SINGLE_PLAYER:
+                setContentView(R.layout.activity_main);
+                buttonTop = (Button)findViewById(R.id.buttonTop);
                 GameState.disableMonkey();
-            }
-            //buttonTop.setOnTouchListener(new GameTouchListener(this, 0));
-        } else {
-            setContentView(R.layout.activity_main_double);
+                break;
+            case TWO_BALL:
+                setContentView(R.layout.activity_main);
+                buttonTop = (Button)findViewById(R.id.buttonTop);
+                GameState.disableMonkey();
+                break;
         }
 
         //toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setTitle("MultiPong");
+        setTitle("Multi Pong");
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         setDrawer();

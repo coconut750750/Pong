@@ -39,6 +39,7 @@ public class GameModesFragment extends Fragment {
         gameModeAdapter = new GameModeAdapter(new ArrayList<String>(){{
             add("Classic");
             add("Monkey in the Middle");
+            add("Twice the Fun");
         }});
 
         mRecyclerView.setAdapter(gameModeAdapter);

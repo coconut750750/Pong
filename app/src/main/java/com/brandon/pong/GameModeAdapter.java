@@ -44,8 +44,10 @@ class GameModeAdapter extends RecyclerView.Adapter<GameModeAdapter.ViewHolder> {
                     case 1:
                         intent.putExtra(MainActivity.GAME_TYPE, MainActivity.MONKEY);
                         break;
+                    case 2:
+                        intent.putExtra(MainActivity.GAME_TYPE, MainActivity.TWO_BALL);
+                        break;
                 }
-                Log.d("asdf",""+position);
                 view.getContext().startActivity(intent);
             }
         });
