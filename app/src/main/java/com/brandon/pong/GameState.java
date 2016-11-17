@@ -27,12 +27,14 @@ class GameState {
     private static int _screenHeight;
 
     //The ball
+    private static Ball ball;
+    /*
     private static int _ballSize;
     private static int _ballX;
     private static int _ballY;
 
     private static double _ballVelocityX;
-    private static double _ballVelocityY;
+    private static double _ballVelocityY;*/
 
     //constants
     private final static double multiplier = 1.05;
@@ -130,19 +132,21 @@ class GameState {
 
         Paddle.setLength(_screenWidth/4);
         Paddle.setHeight(Paddle.getLength()/6);
-        _ballSize = Paddle.getLength()/5;
+        //_ballSize = Paddle.getLength()/5;
+        Ball.setSize(Paddle.getLength()/5);
 
 
         if(!isDouble) {
-            originX = _screenWidth / 2 - _ballSize / 2;
-            originY = _screenHeight / 2 - _ballSize / 2;
+            originX = _screenWidth / 2 - Ball.getSize() / 2;
+            originY = _screenHeight / 2 - Ball.getSize() / 2;
         } else {
-            originX = _screenWidth / 2 - _ballSize / 2;
-            originY =  0 - _ballSize / 2;
+            originX = _screenWidth / 2 - Ball.getSize() / 2;
+            originY =  0 - Ball.getSize() / 2;
         }
 
-        _ballX = originX;
-        _ballY = originY;
+        ball = new Ball(originX, originY);
+        //_ballX = originX;
+        //_ballY = originY;
 
         batOrigin = (_screenWidth/2) - (Paddle.getLength() / 2);
 
@@ -155,15 +159,10 @@ class GameState {
         }
 
         if(playerNum == 1 || !isDouble) {
-            _ballVelocityX = getBallVelX();
-            if(!isDouble) {
-                _ballVelocityY = Math.sqrt(initialBallSpeed * initialBallSpeed - _ballVelocityX * _ballVelocityX);
-            } else{
-                _ballVelocityY = Math.sqrt(initialBallSpeedDouble * initialBallSpeedDouble - _ballVelocityX * _ballVelocityX);
-            }
+            resetBall(ball);
         } else {
-            _ballVelocityY = 0;
-            _ballVelocityX = 0;
+            ball.setYVel(0);
+            ball.setXVel(0);
             ballIsVisible = false;
         }
 
@@ -296,36 +295,31 @@ class GameState {
             return;
         }
 
-        _ballX += _ballVelocityX;
-        _ballY += _ballVelocityY;
+        ball.addX(ball.getXVel());
+        ball.addY(ball.getYVel());
         if(monkeyEnabled) {
             monkey.move(monkey.getVelocity());
         }
 
-        ballShadows[ballShadowIndex][0] = _ballX;
-        ballShadows[ballShadowIndex][1] = _ballY;
+        ballShadows[ballShadowIndex][0] = ball.getX();
+        ballShadows[ballShadowIndex][1] = ball.getY();
         ballShadowIndex = (ballShadowIndex + 1) % numShadows;
 
 
         //DEATH!
-        if (_ballY + _ballSize > _screenHeight || (_ballY < 0 && !isDouble)) {
-            _ballVelocityX = getBallVelX();
-            if(isDouble) {
-                _ballVelocityY = Math.sqrt(initialBallSpeedDouble*initialBallSpeedDouble - _ballVelocityX * _ballVelocityX);
-            } else{
-                _ballVelocityY = Math.sqrt(initialBallSpeed*initialBallSpeed - _ballVelocityX * _ballVelocityX);
-            }
+        if (ball.getY() + Ball.getSize() > _screenHeight || (ball.getY() < 0 && !isDouble)) {
+            resetBall(ball);
 
-            if (_ballY + _ballSize > _screenHeight) {
+            if (ball.getX() + Ball.getSize() > _screenHeight) {
                 scoreTop += 1;
             } else {
-                _ballVelocityY *= -1;
+                ball.setYVel(ball.getYVel() * -1);
                 scoreBot += 1;
             }
 
             //reset ball
-            _ballX = originX;
-            _ballY = originY;
+            ball.setX(originX);
+            ball.setY(originY);
 
             //reset bat
             returnBats();
@@ -334,11 +328,11 @@ class GameState {
                 MainActivity.sendScore(scoreBot, scoreTop);
             }
             resetShadows();
-        } else if (_ballY < 0 && isDouble && _ballVelocityY < 0) {
-            double xPercent = (_ballX+_ballSize/2)/(double)_screenWidth;
-            MainActivity.sendPos(xPercent, _ballVelocityX/_screenWidth, _ballVelocityY/_screenHeight);
-            _ballVelocityY = 0;
-            _ballVelocityX = 0;
+        } else if (ball.getY() < 0 && isDouble && ball.getYVel() < 0) {
+            double xPercent = (ball.getX()+Ball.getSize()/2)/(double)_screenWidth;
+            MainActivity.sendPos(xPercent, ball.getXVel()/_screenWidth, ball.getYVel()/_screenHeight);
+            ball.setYVel(0);
+            ball.setXVel(0);
             ballIsVisible = false;
         }
 
@@ -355,17 +349,17 @@ class GameState {
         }
 
         //Collisions with the sides
-        if(_ballX+_ballSize > _screenWidth || _ballX < 0) {
-            if(_ballX < 0){
-                _ballX = 0;
+        if(ball.getX()+Ball.getSize() > _screenWidth || ball.getX() < 0) {
+            if(ball.getX() < 0){
+                ball.setX(0);
             } else{
-                _ballX = _screenWidth-_ballSize;
+                ball.setX(_screenWidth-Ball.getSize());
             }
 
-            _ballVelocityX *= -1;
+            ball.setXVel(ball.getXVel() * -1);
             shakingX = 1;
             if(isDouble){
-                MainActivity.sendShake(MainActivity.AXIS[0],_ballVelocityX);
+                MainActivity.sendShake(MainActivity.AXIS[0],ball.getXVel());
             }
         }
 
@@ -380,44 +374,44 @@ class GameState {
             }
         }
 
-        int afterMult = (int)Math.ceil(Math.abs(_ballVelocityY)*multiplier)+2;
+        int afterMult = (int)Math.ceil(Math.abs(ball.getYVel())*multiplier)+2;
 
-        double batBuffer = Math.abs(_ballVelocityX);
+        double batBuffer = Math.abs(ball.getXVel());
 
 
         if(!isDouble) {
-            if (_ballY <= topPaddle.getY() + Paddle.getHeight() && _ballY >= topPaddle.getY() + Paddle.getHeight() - afterMult
-                    && _ballX + _ballSize >= topPaddle.getX() - batBuffer && _ballX <= topPaddle.getX() + Paddle.getLength() + batBuffer) {
+            if (ball.getY() <= topPaddle.getY() + Paddle.getHeight() && ball.getY() >= topPaddle.getY() + Paddle.getHeight() - afterMult
+                    && ball.getX() + Ball.getSize() >= topPaddle.getX() - batBuffer && ball.getX() <= topPaddle.getX() + Paddle.getLength() + batBuffer) {
                 bounce(true);
             }
         }
-        if (_ballY+_ballSize >= botPaddle.getY() && _ballY+_ballSize <= botPaddle.getY()+afterMult
-                && _ballX+_ballSize >= botPaddle.getX()-batBuffer && _ballX <= botPaddle.getX()+Paddle.getLength()+batBuffer){
+        if (ball.getY()+Ball.getSize() >= botPaddle.getY() && ball.getY()+Ball.getSize() <= botPaddle.getY()+afterMult
+                && ball.getX()+Ball.getSize() >= botPaddle.getX()-batBuffer && ball.getX() <= botPaddle.getX()+Paddle.getLength()+batBuffer){
             bounce(false);
         }
         if(monkeyEnabled) {
-            if (_ballY + _ballSize >= monkey.getY() && _ballY <= monkey.getY() + Paddle.getHeight()
-                    && _ballX + _ballSize >= monkey.getX() && _ballX <= monkey.getX() + monkey.getMonkeyLength()) {
-                _ballVelocityY *= -1;
-                if (_ballVelocityY > 0) {
-                    _ballY = monkey.getY() + Paddle.getHeight();
+            if (ball.getY() + Ball.getSize() >= monkey.getY() && ball.getY() <= monkey.getY() + Paddle.getHeight()
+                    && ball.getX() + Ball.getSize() >= monkey.getX() && ball.getX() <= monkey.getX() + monkey.getMonkeyLength()) {
+                ball.setYVel(ball.getYVel()*-1);
+                if (ball.getYVel() > 0) {
+                    ball.setY(monkey.getY() + Paddle.getHeight());
                 } else {
-                    _ballY = monkey.getY() - _ballSize;
+                    ball.setY(monkey.getY() - Ball.getSize());
                 }
             }
         }
 
         //cpu moves bat
-        if(_ballVelocityY < 0) {
-            mKeyPressed(_ballX, 0, _batSpeed*_cpuSpeedMult);
+        if(ball.getYVel() < 0) {
+            mKeyPressed(ball.getX(), 0, _batSpeed*_cpuSpeedMult);
         }
     }
 
     private void bounce(boolean hitTop){
-        double tempx = _ballVelocityX;
+        double tempx = ball.getXVel();
 
         double _ballVelocity = getBallVelocity();
-        double perc = _ballVelocityY/_ballVelocity;
+        double perc = ball.getYVel()/_ballVelocity;
         double angleAdd;
         if(hitTop) {
             angleAdd = maxAngle * perc * topPaddle.getMoving();
@@ -426,27 +420,27 @@ class GameState {
         }
         addAngle(-1*angleAdd);
 
-        _ballVelocityY = Math.abs(_ballVelocityY);
+        ball.setYVel(Math.abs(ball.getYVel()));
         if(!hitTop) {
-            _ballVelocityY = _ballVelocityY * -1;
+            ball.setYVel(ball.getYVel() * -1);
         }
 
         if(tempx<0){
-            _ballVelocityX *= -1;
+            ball.setXVel(ball.getXVel()*-1);
         }
 
         if(!isDouble && _ballVelocity*multiplier < (double)maxBallSpeed) {
-            _ballVelocityX = _ballVelocityX * multiplier;
-            _ballVelocityY = _ballVelocityY * multiplier;
+            ball.setXVel(ball.getXVel() * multiplier);
+            ball.setYVel(ball.getYVel() * multiplier);
         }
         if(isDouble && _ballVelocity*multiplierDouble < (double)maxBallSpeedDouble){
-            _ballVelocityX = _ballVelocityX * multiplierDouble;
-            _ballVelocityY = _ballVelocityY * multiplierDouble;
+            ball.setXVel(ball.getXVel() * multiplierDouble);
+            ball.setYVel(ball.getYVel() * multiplierDouble);
         }
 
         shakingY = 1;
         if(isDouble){
-            MainActivity.sendShake(MainActivity.AXIS[1],_ballVelocityY);
+            MainActivity.sendShake(MainActivity.AXIS[1],ball.getYVel());
         }
     }
 
@@ -527,7 +521,7 @@ class GameState {
 
             int shakeY = 0;
             if(shakingY != 0){
-                shakeY = shakingProcess[shakingY]*(int)_ballVelocityY/10*-1;
+                shakeY = shakingProcess[shakingY]*(int)ball.getYVel()/10*-1;
                 shakingY++;
                 if(shakingY >= shakingProcess.length){
                     shakingY = 0;
@@ -535,7 +529,7 @@ class GameState {
             }
             int shakeX = 0;
             if (shakingX != 0) {
-                shakeX = shakingProcess[shakingX]*(int)_ballVelocityX/20;
+                shakeX = shakingProcess[shakingX]*(int)ball.getXVel()/20;
                 shakingX++;
                 if(shakingX >= shakingProcess.length){
                     shakingX = 0;
@@ -564,7 +558,7 @@ class GameState {
 
             //draw the ball
             if(ballIsVisible) {
-                canvas.drawRect(new Rect(_ballX, _ballY, _ballX + _ballSize, _ballY + _ballSize), green);
+                canvas.drawRect(new Rect(ball.getX(), ball.getY(), ball.getX() + Ball.getSize(), ball.getY() + Ball.getSize()), green);
                 drawShadow(canvas);
             }
             green.setAlpha(255);
@@ -645,12 +639,13 @@ class GameState {
             int x = ballShadows[index][0];
             int y = ballShadows[index][1];
             green2.setAlpha(255*i/numShadows);
-            canvas.drawRect(new Rect(x, y, x + _ballSize, y + _ballSize), green2);
+            int size = Ball.getSize();
+            canvas.drawRect(new Rect(x, y, x + size, y + size), green2);
         }
 
     }
 
-    private  static double getBallVelX(){
+    private static double getBallVelX(){
         int[] possible = new int[]{-6,-7,-8,-9,6,7,8,9};
 
         int rnd = new Random().nextInt(possible.length);
@@ -658,6 +653,16 @@ class GameState {
             return possible[rnd]*2;
         } else {
             return possible[rnd];
+        }
+    }
+
+    private static void resetBall(Ball ball){
+        double xvel = getBallVelX();
+        ball.setXVel(xvel);
+        if(!isDouble) {
+            ball.setYVel(Math.sqrt(initialBallSpeed * initialBallSpeed - xvel*xvel));
+        } else{
+            ball.setYVel(Math.sqrt(initialBallSpeedDouble * initialBallSpeedDouble - xvel*xvel));
         }
     }
 
@@ -691,10 +696,10 @@ class GameState {
     }
 
     static void setBallData(double ballXPercent, double ballVelX, double ballVelY){
-        _ballX = (int)((1-ballXPercent)*_screenWidth-_ballSize/2);
-        _ballY = originY;
-        _ballVelocityX = -1*ballVelX*_screenWidth;
-        _ballVelocityY = -1*ballVelY*_screenHeight;
+        ball.setX((int)((1-ballXPercent)*_screenWidth-Ball.getSize()/2));
+        ball.setY(originY);
+        ball.setXVel(-1*ballVelX*_screenWidth);
+        ball.setYVel(-1*ballVelY*_screenHeight);
         ballIsVisible = true;
         resetShadows();
     }
@@ -720,10 +725,10 @@ class GameState {
 
     static Bundle saveData(){
         Bundle dataBundle = new Bundle();
-        dataBundle.putInt(MainActivity.BALLX, GameState._ballX);
-        dataBundle.putInt(MainActivity.BALLY, GameState._ballY);
-        dataBundle.putDouble(MainActivity.BALLVX, GameState._ballVelocityX);
-        dataBundle.putDouble(MainActivity.BALLVY, GameState._ballVelocityY);
+        dataBundle.putInt(MainActivity.BALLX, GameState.ball.getX());
+        dataBundle.putInt(MainActivity.BALLY, GameState.ball.getY());
+        dataBundle.putDouble(MainActivity.BALLVX, GameState.ball.getXVel());
+        dataBundle.putDouble(MainActivity.BALLVY, GameState.ball.getYVel());
         dataBundle.putInt(MainActivity.BATBX, botPaddle.getX());
         dataBundle.putInt(MainActivity.BATTX, topPaddle.getX());
         dataBundle.putInt(MainActivity.RESETBUFFER, GameState.resetBuffer1);
@@ -734,10 +739,10 @@ class GameState {
 
     static void getData(Bundle dataBundle){
         if(dataBundle != null){
-            GameState._ballX = dataBundle.getInt(MainActivity.BALLX);
-            GameState._ballY = dataBundle.getInt(MainActivity.BALLY);
-            GameState._ballVelocityX = dataBundle.getDouble(MainActivity.BALLVX);
-            GameState._ballVelocityY = dataBundle.getDouble(MainActivity.BALLVY);
+            GameState.ball.setX(dataBundle.getInt(MainActivity.BALLX));
+            GameState.ball.setY(dataBundle.getInt(MainActivity.BALLY));
+            GameState.ball.setXVel(dataBundle.getDouble(MainActivity.BALLVX));
+            GameState.ball.setYVel(dataBundle.getDouble(MainActivity.BALLVY));
             botPaddle.setX(dataBundle.getInt(MainActivity.BATBX));
             topPaddle.setX(dataBundle.getInt(MainActivity.BATTX));
 
@@ -748,13 +753,13 @@ class GameState {
     }
 
     private static double getBallAngle(){
-        return Math.atan(_ballVelocityY/_ballVelocityX);
+        return Math.atan(ball.getYVel()/ball.getXVel());
     }
 
     private static void setBallAngle(double angle){
         double _ballVelocity = getBallVelocity();
-        _ballVelocityX = _ballVelocity*Math.cos(angle);
-        _ballVelocityY = _ballVelocity*Math.sin(angle);
+        ball.setXVel(_ballVelocity*Math.cos(angle));
+        ball.setYVel(_ballVelocity*Math.sin(angle));
     }
 
     private static void addAngle(double angle){
@@ -762,7 +767,7 @@ class GameState {
     }
 
     private static double getBallVelocity(){
-        return  Math.sqrt(_ballVelocityX*_ballVelocityX+_ballVelocityY*_ballVelocityY);
+        return Math.sqrt(ball.getXVel()*ball.getXVel()+ball.getYVel()*ball.getYVel());
     }
 
     static boolean getIsDouble(){
@@ -770,11 +775,11 @@ class GameState {
     }
 
     static void setShakingX(double vel){
-        _ballVelocityX = -1*vel;
+        ball.setXVel(-1*vel);
         shakingX = 1;
     }
     static void setShakingY(double vel){
-        _ballVelocityY = -1*vel;
+        ball.setYVel(-1*vel);
         shakingY = 1;
     }
 
