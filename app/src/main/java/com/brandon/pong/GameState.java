@@ -89,7 +89,6 @@ class GameState {
     private static boolean isPaused;
     private static boolean isDouble;
     private static int playerNum;
-    private static boolean ballIsVisible;
     private static int shakingY;
     private static int shakingX;
     private final static int[] shakingProcess = new int[]{7,11,13,14,13,11,7,0,-4,-6,-7,-6,-4,0,2,3,2,0,-1};
@@ -124,7 +123,6 @@ class GameState {
         isDouble = MainActivity.isDouble;
 
         playerNum = MainActivity.playerNum;
-        ballIsVisible = true;
 
         Paddle.setLength(_screenWidth/4);
         Paddle.setHeight(Paddle.getLength()/6);
@@ -140,10 +138,16 @@ class GameState {
             originY =  0 - Ball.getSize() / 2;
         }
 
+        Ball ball = new Ball(originX, originY);
+        ball.setVisible(true);
         if(twoBall){
             balls = new Ball[2];
+            balls[1] = new Ball(originX, originY);
+        } else {
+            balls = new Ball[1];
         }
-        ball = new Ball(originX, originY);
+        balls[0] = ball;
+
 
         //_ballX = originX;
         //_ballY = originY;
@@ -164,7 +168,7 @@ class GameState {
         } else {
             ball.setYVel(0);
             ball.setXVel(0);
-            ballIsVisible = false;
+            ball.setVisible(false);
         }
 
         resetBuffer1 = 1;
@@ -287,7 +291,7 @@ class GameState {
             displayScore = true;
         }
 
-        if(!ballIsVisible){
+        if(!ball.isVisible()){
             return;
         }
 
@@ -326,7 +330,7 @@ class GameState {
             MainActivity.sendPos(xPercent, ball.getXVel()/_screenWidth, ball.getYVel()/_screenHeight);
             ball.setYVel(0);
             ball.setXVel(0);
-            ballIsVisible = false;
+            ball.setVisible(false);
         }
 
         if (scoreTop > 9 || scoreBot > 9) {
@@ -553,7 +557,7 @@ class GameState {
             }
 
             //draw the ball
-            if(ballIsVisible) {
+            if(ball.isVisible()) {
                 canvas.drawRect(new Rect(ball.getX(), ball.getY(), ball.getX() + Ball.getSize(), ball.getY() + Ball.getSize()), green);
                 drawShadow(canvas);
             }
@@ -697,7 +701,7 @@ class GameState {
         ball.setY(originY);
         ball.setXVel(-1*ballVelX*_screenWidth);
         ball.setYVel(-1*ballVelY*_screenHeight);
-        ballIsVisible = true;
+        ball.setVisible(true);
         ball.resetShadows();
     }
 

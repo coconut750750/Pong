@@ -13,12 +13,14 @@ class Ball {
     private int[][] shadows;
     private int shadowIndex;
     private static final int NUM_SHADOWS = 10;
+    private boolean isVisible;
 
     Ball(int x, int y){
         this.xPos = x;
         this.yPos = y;
         xVel = 0;
         yVel = 0;
+        isVisible = false;
     }
 
     void resetShadows(){
@@ -111,6 +113,14 @@ class Ball {
 
     boolean hitBot(int bot1, int bot2, double left, double right){
         return (getY()+Ball.getSize() >= bot1 && getY()+Ball.getSize() <= bot2 && getX()+Ball.getSize() >= left && getX() <= right);
+    }
+
+    void setVisible(boolean visible){
+        isVisible = visible;
+    }
+
+    boolean isVisible(){
+        return isVisible;
     }
 
 }
