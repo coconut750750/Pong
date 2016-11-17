@@ -31,8 +31,8 @@ class GameState {
     private static Ball[] balls;
     private static boolean twoBall;
 
-    Ball getBall(){
-        return ball;
+    Ball[] getBalls(){
+        return balls;
     }
 
     //constants
@@ -110,7 +110,9 @@ class GameState {
         _screenHeight = MainActivity.height;
         reset();
 
-        ball.resetShadows();
+        for(Ball ball:balls) {
+            ball.resetShadows();
+        }
 
         setDataForPoints();
         setDataForWin();
@@ -138,7 +140,7 @@ class GameState {
             originY =  0 - Ball.getSize() / 2;
         }
 
-        Ball ball = new Ball(originX, originY);
+        ball = new Ball(originX, originY);
         ball.setVisible(true);
         if(twoBall){
             balls = new Ball[2];
@@ -291,126 +293,128 @@ class GameState {
             displayScore = true;
         }
 
-        if(!ball.isVisible()){
-            return;
-        }
-
-        ball.addX(ball.getXVel());
-        ball.addY(ball.getYVel());
-        if(monkeyEnabled) {
-            monkey.move(monkey.getVelocity());
-        }
-
-        ball.addShadow();
-
-        //DEATH!
-        if (ball.getY() + Ball.getSize() > _screenHeight || (ball.getY() < 0 && !isDouble)) {
-            resetBall(ball);
-
-            if (ball.getX() + Ball.getSize() > _screenHeight) {
-                scoreTop += 1;
-            } else {
-                ball.setYVel(ball.getYVel() * -1);
-                scoreBot += 1;
+        for(Ball ball:balls) {
+            if (!ball.isVisible()) {
+                return;
             }
 
-            //reset ball
-            ball.setX(originX);
-            ball.setY(originY);
-
-            //reset bat
-            returnBats();
-
-            if(isDouble){
-                MainActivity.sendScore(scoreBot, scoreTop);
+            ball.addX(ball.getXVel());
+            ball.addY(ball.getYVel());
+            if (monkeyEnabled) {
+                monkey.move(monkey.getVelocity());
             }
-            ball.resetShadows();
-        } else if (ball.getY() < 0 && isDouble && ball.getYVel() < 0) {
-            double xPercent = (ball.getX()+Ball.getSize()/2)/(double)_screenWidth;
-            MainActivity.sendPos(xPercent, ball.getXVel()/_screenWidth, ball.getYVel()/_screenHeight);
-            ball.setYVel(0);
-            ball.setXVel(0);
-            ball.setVisible(false);
-        }
 
-        if (scoreTop > 9 || scoreBot > 9) {
-            if(scoreTop > scoreBot){
-                lose = true;
-            } else{
-                win = true;
+            ball.addShadow();
 
-            }
-            scoreTop = 0;
-            scoreBot = 0;
-            displayScore = false;
-        }
+            //DEATH!
+            if (ball.getY() + Ball.getSize() > _screenHeight || (ball.getY() < 0 && !isDouble)) {
+                resetBall(ball);
 
-        //Collisions with the sides
-        boolean hitSide = ball.hitSide(0,_screenWidth);
-        if(hitSide) {
-            shakingX = 1;
-            if(isDouble){
-                MainActivity.sendShake(MainActivity.AXIS[0],ball.getXVel());
-            }
-        }
-
-        if(monkeyEnabled) {
-            if (monkey.getX() + monkey.getMonkeyLength() > _screenWidth || monkey.getX() < 0) {
-                monkey.bounce();
-                if (monkey.getX() < 0) {
-                    monkey.setX(0);
+                if (ball.getX() + Ball.getSize() > _screenHeight) {
+                    scoreTop += 1;
                 } else {
-                    monkey.setX(_screenWidth - monkey.getMonkeyLength());
+                    ball.setYVel(ball.getYVel() * -1);
+                    scoreBot += 1;
+                }
+
+                //reset ball
+                ball.setX(originX);
+                ball.setY(originY);
+
+                //reset bat
+                returnBats();
+
+                if (isDouble) {
+                    MainActivity.sendScore(scoreBot, scoreTop);
+                }
+                ball.resetShadows();
+            } else if (ball.getY() < 0 && isDouble && ball.getYVel() < 0) {
+                double xPercent = (ball.getX() + Ball.getSize() / 2) / (double) _screenWidth;
+                MainActivity.sendPos(xPercent, ball.getXVel() / _screenWidth, ball.getYVel() / _screenHeight);
+                ball.setYVel(0);
+                ball.setXVel(0);
+                ball.setVisible(false);
+            }
+
+            if (scoreTop > 9 || scoreBot > 9) {
+                if (scoreTop > scoreBot) {
+                    lose = true;
+                } else {
+                    win = true;
+
+                }
+                scoreTop = 0;
+                scoreBot = 0;
+                displayScore = false;
+            }
+
+            //Collisions with the sides
+            boolean hitSide = ball.hitSide(0, _screenWidth);
+            if (hitSide) {
+                shakingX = 1;
+                if (isDouble) {
+                    MainActivity.sendShake(MainActivity.AXIS[0], ball.getXVel());
                 }
             }
-        }
 
-        int afterMult = (int)Math.ceil(Math.abs(ball.getYVel())*multiplier)+2;
-
-        double batBuffer = Math.abs(ball.getXVel());
-
-
-        if(!isDouble) {
-            boolean hitTop = ball.hitTop(topPaddle.getY() + Paddle.getHeight(),
-                                        topPaddle.getY() + Paddle.getHeight() - afterMult,
-                                        topPaddle.getX() - batBuffer,
-                                        topPaddle.getX() + Paddle.getLength() + batBuffer);
-            if(hitTop)
-                bounce(true);
-
-        }
-
-        boolean hitBot = ball.hitBot(botPaddle.getY(),
-                                    botPaddle.getY()+afterMult,
-                                    botPaddle.getX()-batBuffer,
-                                    botPaddle.getX()+Paddle.getLength()+batBuffer);
-
-        if (hitBot){
-            bounce(false);
-        }
-
-        if(monkeyEnabled) {
-            if (ball.getY() + Ball.getSize() >= monkey.getY() && ball.getY() <= monkey.getY() + Paddle.getHeight()
-                    && ball.getX() + Ball.getSize() >= monkey.getX() && ball.getX() <= monkey.getX() + monkey.getMonkeyLength()) {
-                ball.setYVel(ball.getYVel()*-1);
-                if (ball.getYVel() > 0) {
-                    ball.setY(monkey.getY() + Paddle.getHeight());
-                } else {
-                    ball.setY(monkey.getY() - Ball.getSize());
+            if (monkeyEnabled) {
+                if (monkey.getX() + monkey.getMonkeyLength() > _screenWidth || monkey.getX() < 0) {
+                    monkey.bounce();
+                    if (monkey.getX() < 0) {
+                        monkey.setX(0);
+                    } else {
+                        monkey.setX(_screenWidth - monkey.getMonkeyLength());
+                    }
                 }
             }
-        }
 
-        //cpu moves bat
-        if(ball.getYVel() < 0) {
-            mKeyPressed(ball.getX(), 0, _batSpeed*_cpuSpeedMult);
+            int afterMult = (int) Math.ceil(Math.abs(ball.getYVel()) * multiplier) + 2;
+
+            double batBuffer = Math.abs(ball.getXVel());
+
+
+            if (!isDouble) {
+                boolean hitTop = ball.hitTop(topPaddle.getY() + Paddle.getHeight(),
+                        topPaddle.getY() + Paddle.getHeight() - afterMult,
+                        topPaddle.getX() - batBuffer,
+                        topPaddle.getX() + Paddle.getLength() + batBuffer);
+                if (hitTop)
+                    bounce(true, ball);
+
+            }
+
+            boolean hitBot = ball.hitBot(botPaddle.getY(),
+                    botPaddle.getY() + afterMult,
+                    botPaddle.getX() - batBuffer,
+                    botPaddle.getX() + Paddle.getLength() + batBuffer);
+
+            if (hitBot) {
+                bounce(false, ball);
+            }
+
+            if (monkeyEnabled) {
+                if (ball.getY() + Ball.getSize() >= monkey.getY() && ball.getY() <= monkey.getY() + Paddle.getHeight()
+                        && ball.getX() + Ball.getSize() >= monkey.getX() && ball.getX() <= monkey.getX() + monkey.getMonkeyLength()) {
+                    ball.setYVel(ball.getYVel() * -1);
+                    if (ball.getYVel() > 0) {
+                        ball.setY(monkey.getY() + Paddle.getHeight());
+                    } else {
+                        ball.setY(monkey.getY() - Ball.getSize());
+                    }
+                }
+            }
+
+            //cpu moves bat
+            if (ball.getYVel() < 0) {
+                mKeyPressed(ball.getX(), 0, _batSpeed * _cpuSpeedMult);
+            }
         }
     }
 
-    private void bounce(boolean hitTop){
+    private void bounce(boolean hitTop, Ball ball){
         double tempx = ball.getXVel();
 
-        double _ballVelocity = getBallVelocity();
+        double _ballVelocity = getBallVelocity(ball);
         double perc = ball.getYVel()/_ballVelocity;
         double angleAdd;
         if(hitTop) {
@@ -418,7 +422,7 @@ class GameState {
         } else {
             angleAdd = maxAngle * perc * botPaddle.getMoving();
         }
-        addAngle(-1*angleAdd);
+        addAngle(-1*angleAdd, ball);
 
         ball.setYVel(Math.abs(ball.getYVel()));
         if(!hitTop) {
@@ -521,7 +525,7 @@ class GameState {
 
             int shakeY = 0;
             if(shakingY != 0){
-                shakeY = shakingProcess[shakingY]*(int)ball.getYVel()/10*-1;
+                shakeY = shakingProcess[shakingY]*(int)balls[0].getYVel()/10*-1;
                 shakingY++;
                 if(shakingY >= shakingProcess.length){
                     shakingY = 0;
@@ -529,7 +533,7 @@ class GameState {
             }
             int shakeX = 0;
             if (shakingX != 0) {
-                shakeX = shakingProcess[shakingX]*(int)ball.getXVel()/20;
+                shakeX = shakingProcess[shakingX]*(int)balls[0].getXVel()/20;
                 shakingX++;
                 if(shakingX >= shakingProcess.length){
                     shakingX = 0;
@@ -557,9 +561,11 @@ class GameState {
             }
 
             //draw the ball
-            if(ball.isVisible()) {
-                canvas.drawRect(new Rect(ball.getX(), ball.getY(), ball.getX() + Ball.getSize(), ball.getY() + Ball.getSize()), green);
-                drawShadow(canvas);
+            for(Ball ball:balls) {
+                if (ball.isVisible()) {
+                    canvas.drawRect(new Rect(ball.getX(), ball.getY(), ball.getX() + Ball.getSize(), ball.getY() + Ball.getSize()), green);
+                    drawShadow(canvas, ball);
+                }
             }
             green.setAlpha(255);
             //draw the bats
@@ -627,7 +633,7 @@ class GameState {
         }
     }
 
-    private void drawShadow(Canvas canvas){
+    private void drawShadow(Canvas canvas, Ball ball){
         Paint green2 = green;
         int index = ball.getShadowIndex();
         int numShadows = Ball.getNumShadows();
@@ -753,21 +759,21 @@ class GameState {
         }
     }
 
-    private static double getBallAngle(){
+    private static double getBallAngle(Ball ball){
         return Math.atan(ball.getYVel()/ball.getXVel());
     }
 
-    private static void setBallAngle(double angle){
-        double _ballVelocity = getBallVelocity();
+    private static void setBallAngle(double angle, Ball ball){
+        double _ballVelocity = getBallVelocity(ball);
         ball.setXVel(_ballVelocity*Math.cos(angle));
         ball.setYVel(_ballVelocity*Math.sin(angle));
     }
 
-    private static void addAngle(double angle){
-        setBallAngle(angle + getBallAngle());
+    private static void addAngle(double angle, Ball ball){
+        setBallAngle(angle + getBallAngle(ball), ball);
     }
 
-    private static double getBallVelocity(){
+    private static double getBallVelocity(Ball ball){
         return Math.sqrt(ball.getXVel()*ball.getXVel()+ball.getYVel()*ball.getYVel());
     }
 

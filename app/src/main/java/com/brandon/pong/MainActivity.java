@@ -188,7 +188,9 @@ public class MainActivity extends AppCompatActivity {
         restart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                _thread._state.getBall().resetShadows();
+                for(Ball ball:_thread._state.getBalls()) {
+                    ball.resetShadows();
+                }
                 GameState.reset();
                 GameState.toggleGameState();
                 _thread.onPause();
