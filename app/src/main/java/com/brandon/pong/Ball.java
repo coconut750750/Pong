@@ -10,12 +10,38 @@ class Ball {
     private static int size;
     private double xVel;
     private double yVel;
+    private int[][] shadows;
+    private int shadowIndex;
+    private static final int NUM_SHADOWS = 10;
 
     Ball(int x, int y){
         this.xPos = x;
         this.yPos = y;
         xVel = 0;
         yVel = 0;
+    }
+
+    void resetShadows(){
+        shadows = new int[NUM_SHADOWS][2];
+        shadowIndex = 0;
+    }
+
+    void addShadow(){
+        shadows[shadowIndex][0] = this.getX();
+        shadows[shadowIndex][1] = this.getY();
+        shadowIndex = (shadowIndex + 1) % NUM_SHADOWS;
+    }
+
+    int getShadow(int index, int xy){
+        return shadows[index][xy];
+    }
+
+    int getShadowIndex(){
+        return shadowIndex;
+    }
+
+    static int getNumShadows(){
+        return NUM_SHADOWS;
     }
 
     static void setSize(int size){
@@ -65,4 +91,6 @@ class Ball {
     void setYVel(double yVel){
         this.yVel = yVel;
     }
+
+
 }

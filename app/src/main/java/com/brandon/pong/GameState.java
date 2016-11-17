@@ -30,6 +30,10 @@ class GameState {
     private static Ball ball;
     private static Ball ball2;
 
+    Ball getBall(){
+        return ball;
+    }
+
     //constants
     private final static double multiplier = 1.05;
     private final static double multiplierDouble = 1.10;
@@ -88,9 +92,9 @@ class GameState {
     private static int shakingY;
     private static int shakingX;
     private final static int[] shakingProcess = new int[]{7,11,13,14,13,11,7,0,-4,-6,-7,-6,-4,0,2,3,2,0,-1};
-    private final static int numShadows = 10;
-    private static int[][] ballShadows;
-    private static int ballShadowIndex;
+    //private final static int numShadows = 10;
+    //private static int[][] ballShadows;
+    //private static int ballShadowIndex;
     private static boolean win;
     private static boolean lose;
     private static boolean displayMsg;
@@ -109,7 +113,7 @@ class GameState {
         _screenHeight = MainActivity.height;
         reset();
 
-        resetShadows();
+        ball.resetShadows();
 
         setDataForPoints();
         setDataForWin();
@@ -178,8 +182,7 @@ class GameState {
     }
 
     static void resetShadows(){
-        ballShadows = new int[numShadows][2];
-        ballShadowIndex = 0;
+        ball.resetShadows();
     }
 
     private void setDataForPoints(){
@@ -295,10 +298,7 @@ class GameState {
             monkey.move(monkey.getVelocity());
         }
 
-        ballShadows[ballShadowIndex][0] = ball.getX();
-        ballShadows[ballShadowIndex][1] = ball.getY();
-        ballShadowIndex = (ballShadowIndex + 1) % numShadows;
-
+        ball.addShadow();
 
         //DEATH!
         if (ball.getY() + Ball.getSize() > _screenHeight || (ball.getY() < 0 && !isDouble)) {
@@ -321,7 +321,7 @@ class GameState {
             if(isDouble){
                 MainActivity.sendScore(scoreBot, scoreTop);
             }
-            resetShadows();
+            ball.resetShadows();
         } else if (ball.getY() < 0 && isDouble && ball.getYVel() < 0) {
             double xPercent = (ball.getX()+Ball.getSize()/2)/(double)_screenWidth;
             MainActivity.sendPos(xPercent, ball.getXVel()/_screenWidth, ball.getYVel()/_screenHeight);
@@ -623,15 +623,16 @@ class GameState {
 
     private void drawShadow(Canvas canvas){
         Paint green2 = green;
-        int index = ballShadowIndex;
+        int index = ball.getShadowIndex();
+        int numShadows = Ball.getNumShadows();
         for(int i = numShadows-1; i > 0; i--){
             index = (index+numShadows-1)%numShadows;
 
-            if(ballShadows[index][0] == 0 && ballShadows[index][1] == 0){
+            if(ball.getShadow(index, 0) == 0 && ball.getShadow(index, 1) == 0){
                 return;
             }
-            int x = ballShadows[index][0];
-            int y = ballShadows[index][1];
+            int x = ball.getShadow(index, 0);
+            int y = ball.getShadow(index, 1);
             green2.setAlpha(255*i/numShadows);
             int size = Ball.getSize();
             canvas.drawRect(new Rect(x, y, x + size, y + size), green2);
@@ -695,7 +696,7 @@ class GameState {
         ball.setXVel(-1*ballVelX*_screenWidth);
         ball.setYVel(-1*ballVelY*_screenHeight);
         ballIsVisible = true;
-        resetShadows();
+        ball.resetShadows();
     }
 
     static void setScore(int scoreT, int scoreB){
