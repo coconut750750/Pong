@@ -108,12 +108,16 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case MONKEY:
                 GameState.enableMonkey();
+                break;
             case TWO_BALL:
                 GameState.doubleBall();
-            case SINGLE_PLAYER:
-                setContentView(R.layout.activity_main);
-                buttonTop = (Button)findViewById(R.id.buttonTop);
                 break;
+            case SINGLE_PLAYER:
+                break;
+        }
+        if(!type.equals(DOUBLE_PLAYER)){
+            setContentView(R.layout.activity_main);
+            buttonTop = (Button)findViewById(R.id.buttonTop);
         }
 
         //toolbar
