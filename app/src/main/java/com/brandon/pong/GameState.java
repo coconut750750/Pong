@@ -821,4 +821,9 @@ class GameState {
     static void doubleBall(){
         twoBall = true;
     }
+
+    static void resetModes(){
+        monkeyEnabled = false;
+        twoBall = false;
+    }
 }

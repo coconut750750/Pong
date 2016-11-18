@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
         isDouble = false;
 
+        GameState.resetModes();
         switch (type){
             case DOUBLE_PLAYER:
                 isDouble = true;
