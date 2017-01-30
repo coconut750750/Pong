@@ -10,7 +10,7 @@ class Paddle {
     private int isMoving;
     private static boolean isEnabled;
 
-    private static int length;
+    private int length;
     private static int height;
 
     Paddle(int xPos, int yPos){
@@ -57,11 +57,11 @@ class Paddle {
         xPos += speed;
     }
 
-    static void setLength(int length){
-        Paddle.length = length;
+    void setLength(int length){
+        this.length = length;
     }
 
-    static int getLength(){
+    int getLength(){
         return length;
     }
 

@@ -24,6 +24,7 @@ class GameState {
 
     //screen width and height
     private static int _screenWidth;
+    private static int one_fourth;
     private static int _screenHeight;
 
     //The ball
@@ -58,6 +59,7 @@ class GameState {
     final static int _batSpeed = 2;
     private final static int _cpuSpeedMult = 7;
     private final static int batWallBuffer = 50;
+    private static boolean isHardcore;
 
     //Origin
     private static int originX;
@@ -108,6 +110,7 @@ class GameState {
         Point size = new Point();
         display.getSize(size);
         _screenWidth = size.x;
+        one_fourth = _screenWidth/4;
         _screenHeight = MainActivity.height;
         reset();
 
@@ -127,10 +130,9 @@ class GameState {
 
         playerNum = MainActivity.playerNum;
 
-        Paddle.setLength(_screenWidth/4);
-        Paddle.setHeight(Paddle.getLength()/6);
+        Paddle.setHeight(one_fourth/6);
         //_ballSize = Paddle.getLength()/5;
-        Ball.setSize(Paddle.getLength()/5);
+        Ball.setSize(one_fourth/5);
 
 
         if(!isDouble) {
@@ -153,14 +155,17 @@ class GameState {
 
         bounces = 0;
 
-        batOrigin = (_screenWidth/2) - (Paddle.getLength() / 2);
+        batOrigin = (_screenWidth/2) - (one_fourth / 2);
 
         topPaddle = new Paddle(batOrigin, batWallBuffer);
         botPaddle = new Paddle(batOrigin, _screenHeight-batWallBuffer-Paddle.getHeight());
 
+        topPaddle.setLength(one_fourth);
+        botPaddle.setLength(one_fourth);
+
         if(monkeyEnabled) {
             monkey = new Monkey(0, _screenHeight / 2 - Paddle.getHeight() / 2);
-            monkey.setMonkeyLength(Paddle.getLength() / 2);
+            monkey.setMonkeyLength(one_fourth / 2);
             monkey.setVelocity(5);
         }
 
@@ -334,6 +339,9 @@ class GameState {
 
                 //reset bat
                 returnBats();
+                if(isHardcore){
+                    botPaddle.setLength(one_fourth);
+                }
 
                 if (isDouble) {
                     MainActivity.sendScore(scoreBot, scoreTop);
@@ -388,7 +396,7 @@ class GameState {
                 boolean hitTop = ball.hitTop(topPaddle.getY() + Paddle.getHeight(),
                         topPaddle.getY() + Paddle.getHeight() - afterMult,
                         topPaddle.getX() - batBuffer,
-                        topPaddle.getX() + Paddle.getLength() + batBuffer);
+                        topPaddle.getX() + topPaddle.getLength() + batBuffer);
                 if (hitTop)
                     bounce(true, ball);
 
@@ -397,10 +405,13 @@ class GameState {
             boolean hitBot = ball.hitBot(botPaddle.getY(),
                     botPaddle.getY() + afterMult,
                     botPaddle.getX() - batBuffer,
-                    botPaddle.getX() + Paddle.getLength() + batBuffer);
+                    botPaddle.getX() + botPaddle.getLength() + batBuffer);
 
             if (hitBot) {
                 bounce(false, ball);
+                if(isHardcore){
+                    botPaddle.setLength(one_fourth/3 + botPaddle.getLength()/2);
+                }
             }
 
             if (monkeyEnabled) {
@@ -478,7 +489,7 @@ class GameState {
         }
 
         if(bat == 0){
-            int topX =  move(touchPos, topPaddle.getX(), speed);
+            int topX =  move(touchPos, topPaddle, speed);
             topPaddle.setMoving(0);
             if(topX == topPaddle.getX()){
                 topPaddle.setMoving(0);
@@ -491,7 +502,7 @@ class GameState {
             if(topPaddle.getX()<0)
                 topPaddle.setX(0);
         } else{
-            int botX =  move(touchPos, botPaddle.getX(), speed);
+            int botX =  move(touchPos, botPaddle, speed);
             if(botX == botPaddle.getX()){
                 botPaddle.setMoving(0);
             } else if (botX > botPaddle.getX()) {
@@ -505,8 +516,9 @@ class GameState {
         }
     }
 
-    private static int move(int touchPos, int batX, int speed){
-        int length = Paddle.getLength();
+    private static int move(int touchPos, Paddle paddle, int speed){
+        int length = paddle.getLength();
+        int batX = paddle.getX();
         if(!Paddle.getEnabled() || batX+length/2 == touchPos){
             return batX;
         }
@@ -594,10 +606,10 @@ class GameState {
             green.setAlpha(255);
             //draw the bats
             if(!isDouble){
-                canvas.drawRect(new Rect(topPaddle.getX(), topPaddle.getY()+shakeY, topPaddle.getX() + Paddle.getLength(), topPaddle.getY() + Paddle.getHeight() +shakeY), green); //top bat
+                canvas.drawRect(new Rect(topPaddle.getX(), topPaddle.getY()+shakeY, topPaddle.getX() + topPaddle.getLength(), topPaddle.getY() + Paddle.getHeight() +shakeY), green); //top bat
             }
 
-            canvas.drawRect(new Rect(botPaddle.getX(), botPaddle.getY()+shakeY, botPaddle.getX() + Paddle.getLength(), botPaddle.getY() + Paddle.getHeight() +shakeY), green); //bottom bat
+            canvas.drawRect(new Rect(botPaddle.getX(), botPaddle.getY()+shakeY, botPaddle.getX() + botPaddle.getLength(), botPaddle.getY() + Paddle.getHeight() +shakeY), green); //bottom bat
 
             if (isPaused){
                 //draw pause sign
@@ -822,8 +834,13 @@ class GameState {
         twoBall = true;
     }
 
+    static void hardcore(){
+        isHardcore = true;
+    }
+
     static void resetModes(){
         monkeyEnabled = false;
         twoBall = false;
+        isHardcore = false;
     }
 }

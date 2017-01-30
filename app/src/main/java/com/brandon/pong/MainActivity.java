@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     final static String MONKEY = "Monkey in the Middle";
     final static String DOUBLE_PLAYER = "Double Player";
     final static String TWO_BALL = "Twice the Fun";
+    final static String HARDCORE = "Hardcore";
 
     final static String PLAYER_NUM = "PNUM";
 
@@ -111,6 +112,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case TWO_BALL:
                 GameState.doubleBall();
+                break;
+            case HARDCORE:
+                GameState.hardcore();
                 break;
             case SINGLE_PLAYER:
                 break;
